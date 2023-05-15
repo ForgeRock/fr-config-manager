@@ -1,0 +1,37 @@
+{
+  "name": "fr-config-packages",
+  "version": "0.0.0",
+  "description": "The cloud success config manager repository",
+  "devDependencies": {
+    "prettier": "2.8.2"
+  },
+  "scripts": {
+    "test": "npm run test --workspaces",
+    "format-code": "npx prettier --write ."
+  },
+  "repository": {
+    "type": "git",
+    "url": "ssh://git@stash.forgerock.org:7999/cs/cs_config_manager.git"
+  },
+  "workspaces": [
+    "./packages/fr-config-pull",
+    "./packages/fr-config-push",
+    "./packages/fr-config-watch",
+    "./packages/fr-config-common"
+  ],
+  "contributors": [
+    {
+      "name": "Christian Brindley",
+      "email": "christian.brindley@forgerock.com"
+    },
+    {
+      "name": "Kevin Schneider",
+      "email": "kevin.schneider@forgerock.com"
+    },
+    {
+      "name": "Adam Crockett",
+      "email": "adam.crockett@forgerock.com"
+    }
+  ],
+  "license": "ISC"
+}

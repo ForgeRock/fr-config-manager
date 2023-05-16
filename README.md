@@ -20,7 +20,6 @@ This repository provides the following packages
 
 - `fr-config-pull` - A tool to pull configuration from Identity Cloud into a local repository
 - `fr-config-push` - A tool to push configuration from a local repository into Identity Cloud
-- `fr-config-watch` - A tool to monitor configuration changes in Identity Cloud or local repository, and pull/push automatically
 
 ## Prerequisites
 

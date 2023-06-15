@@ -279,7 +279,7 @@ To get started, create a repository and pull your Identity Cloud configuration a
 ```
 mkdir ~/identity-cloud
 cd ~/identity-cloud
-git clone ssh://git@stash.forgerock.org:7999/cs/cs_config_manager.git
+git clone https://github.com/ForgeRock/fr-config-manager.git
 cd cs_config_manager
 npm install --ws
 cd packages/fr-config-pull
@@ -298,7 +298,7 @@ git clone https://github.com/my-org/identity-cloud-config
 
 ```
 cd ~/identity-cloud/identity-cloud-config
-cp ~/cs_config_manager/.env.sample ./.env
+cp ~/fr-config-manager/.env.sample ./.env
 ```
 
 Edit the `.env` file as per instructions above

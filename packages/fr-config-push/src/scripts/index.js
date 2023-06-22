@@ -26,6 +26,7 @@ const updateSecretMappings = require("./update-secret-mappings");
 const updateAuthzPolicies = require("./update-policies");
 const updateEmailProvider = require("./update-email-provider");
 const updateServiceObjects = require("./update-service-objects");
+const updateLocales = require("./update-locales");
 
 module.exports = {
   updateAgents,
@@ -56,4 +57,5 @@ module.exports = {
   updateAuthzPolicies,
   updateEmailProvider,
   updateServiceObjects,
+  updateLocales,
 };

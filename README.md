@@ -269,6 +269,7 @@ The configuration repo contains the following directories for tenant wide config
 | esvs                    | Subdirectories as follows<ul><li>`secrets`- one JSON file`{secret-name}.json` per environment secret<li>`variables`- one JSON file`{variable-name}.json`per environment variable</ul>Each JSON file has a placeholder for the`valueBase64` value. This is intended for substitution with an environment variable in the working environment of the configuration push. In the case of secrets, there are one or more versions of the secret listed in the JSON file. Each version has its own secret value: the highest version in the list will be the active version after running a push. Once the push is complete, any pre-existing versions of a secret are removed. |
 | internal&#x2011;roles   | One JSON file `{role-name}.json` per authorisation role configured in the tenant. This does not include the system roles such as `openidm-admin` etc (system roles are detected and excluded based on their having no configured privileges).                                                                                                                                                                                                                                                                                                                                                                                                                              |
 | service-objects         | This contains the managed objects to push to each environment - e.g. service managed users, managed roles etc. There is one directory per managed object type to be pushed: within each directory there is one JSON file for each object to create, containing the object attributes. The JSON must contain an `_id` attribute, which is used for the push so that the object is created or updated with a fixed ID.                                                                                                                                                                                                                                                       |
+| locales                 | This contains the UI message strings for all locales configured in the tenant. There is one file `{locale}.json` per locale configured.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
 
 ## Quickstart
 
@@ -280,7 +281,7 @@ To get started, create a repository and pull your Identity Cloud configuration a
 mkdir ~/identity-cloud
 cd ~/identity-cloud
 git clone https://github.com/ForgeRock/fr-config-manager.git
-cd cs_config_manager
+cd fr-config-manager
 npm install --ws
 cd packages/fr-config-pull
 npm link

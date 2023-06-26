@@ -25,6 +25,7 @@ const cliOptions = require("./helpers/cli-options");
 const oauth2Agents = require("./scripts/oauth2Agents.js");
 const authzPolicies = require("./scripts/authzPolicies.js");
 const systemUsers = require("./scripts/serviceObjects");
+const locales = require("./scripts/locales");
 
 const yargs = require("yargs");
 
@@ -58,6 +59,7 @@ const COMMAND = {
   OAUTH2_AGENTS: "oauth2-agents",
   AUTHZ_POLICIES: "authz-policies",
   SERVICE_OBJECTS: "service-objects",
+  LOCALES: "locales",
 };
 
 function matchCommand(argv, command) {
@@ -241,6 +243,11 @@ async function getConfig(argv) {
   if (matchCommand(argv, COMMAND.SECRET_MAPPINGS)) {
     console.log("Getting secret mappings");
     secretMappings.exportConfig(realmConfigDir, realms, tenantUrl, token);
+  }
+
+  if (matchCommand(argv, COMMAND.LOCALES)) {
+    console.log("Getting locales");
+    locales.exportLocales(configDir, tenantUrl, token);
   }
 
   if (matchCommand(argv, COMMAND.OAUTH2_AGENTS)) {
@@ -454,6 +461,12 @@ yargs
   .command({
     command: COMMAND.SERVICE_OBJECTS,
     desc: "Get service objects",
+    builder: cliOptions([]),
+    handler: (argv) => getConfig(argv),
+  })
+  .command({
+    command: COMMAND.LOCALES,
+    desc: "Get locales",
     builder: cliOptions([]),
     handler: (argv) => getConfig(argv),
   })

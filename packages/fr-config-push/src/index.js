@@ -29,6 +29,7 @@ const {
   updateAuthzPolicies,
   updateEmailProvider,
   updateServiceObjects,
+  updateLocales,
 } = require("./scripts");
 
 require("dotenv").config();
@@ -53,6 +54,7 @@ async function updateStatic(argv, token) {
   await updateIdmAccessConfig(argv, token);
   await updateIdmSchedules(argv, token);
   await updateEmailProvider(argv, token);
+  await updateLocales(argv, token);
 }
 
 async function getCommands() {
@@ -245,6 +247,12 @@ async function getCommands() {
       desc: "Update service objects",
       builder: cliOptions([]),
       handler: (argv) => updateServiceObjects(argv, token),
+    })
+    .command({
+      command: "locales",
+      desc: "Update locales",
+      builder: cliOptions([]),
+      handler: (argv) => updateLocales(argv, token),
     })
     .command({
       command: "all-static",

@@ -60,6 +60,7 @@ const COMMAND = {
   AUTHZ_POLICIES: "authz-policies",
   SERVICE_OBJECTS: "service-objects",
   LOCALES: "locales",
+  AUDIT: "audit",
 };
 
 function matchCommand(argv, command) {
@@ -248,6 +249,11 @@ async function getConfig(argv) {
   if (matchCommand(argv, COMMAND.LOCALES)) {
     console.log("Getting locales");
     locales.exportLocales(configDir, tenantUrl, token);
+  }
+
+  if (matchCommand(argv, COMMAND.AUDIT)) {
+    console.log("Getting audit settings");
+    idmFlatConfig.exportConfig("audit", configDir, "audit", tenantUrl, token);
   }
 
   if (matchCommand(argv, COMMAND.OAUTH2_AGENTS)) {
@@ -467,6 +473,12 @@ yargs
   .command({
     command: COMMAND.LOCALES,
     desc: "Get locales",
+    builder: cliOptions([]),
+    handler: (argv) => getConfig(argv),
+  })
+  .command({
+    command: COMMAND.AUDIT,
+    desc: "Get audit config",
     builder: cliOptions([]),
     handler: (argv) => getConfig(argv),
   })

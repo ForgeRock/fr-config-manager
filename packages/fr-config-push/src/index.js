@@ -30,6 +30,7 @@ const {
   updateEmailProvider,
   updateServiceObjects,
   updateLocales,
+  updateAudit,
 } = require("./scripts");
 
 require("dotenv").config();
@@ -55,6 +56,7 @@ async function updateStatic(argv, token) {
   await updateIdmSchedules(argv, token);
   await updateEmailProvider(argv, token);
   await updateLocales(argv, token);
+  await updateAudit(argv, token);
 }
 
 async function getCommands() {
@@ -253,6 +255,12 @@ async function getCommands() {
       desc: "Update locales",
       builder: cliOptions([]),
       handler: (argv) => updateLocales(argv, token),
+    })
+    .command({
+      command: "audit",
+      desc: "Update audit configuration",
+      builder: cliOptions([]),
+      handler: (argv) => updateAudit(argv, token),
     })
     .command({
       command: "all-static",

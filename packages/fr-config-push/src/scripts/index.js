@@ -27,6 +27,7 @@ const updateAuthzPolicies = require("./update-policies");
 const updateEmailProvider = require("./update-email-provider");
 const updateServiceObjects = require("./update-service-objects");
 const updateLocales = require("./update-locales");
+const updateAudit = require("./update-audit");
 
 module.exports = {
   updateAgents,
@@ -58,4 +59,5 @@ module.exports = {
   updateEmailProvider,
   updateServiceObjects,
   updateLocales,
+  updateAudit,
 };

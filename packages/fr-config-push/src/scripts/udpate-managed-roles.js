@@ -3,6 +3,7 @@ const path = require("path");
 const fidcRequest = require("../helpers/fidc-request");
 
 const updateManagedRoles = async (argv, token) => {
+  console.log("Updating managed roles");
   const { TENANT_BASE_URL, CONFIG_DIR } = process.env;
 
   try {
@@ -10,6 +11,11 @@ const updateManagedRoles = async (argv, token) => {
 
     // Combine managed object JSON files
     const dir = path.join(CONFIG_DIR, `/realms/${realm}/managed-roles`);
+
+    if (!fs.existsSync(dir)) {
+      console.log("Warning: no managed roles config defined");
+      return;
+    }
 
     const managedRolesFileContent = fs
       .readdirSync(dir)

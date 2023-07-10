@@ -18,6 +18,7 @@ function processThemes(theme, themePath) {
   }
 }
 const updateThemes = async (argv, token) => {
+  console.log("Updating themes");
   const { REALMS, TENANT_BASE_URL, CONFIG_DIR } = process.env;
 
   var themerealm = {
@@ -25,9 +26,12 @@ const updateThemes = async (argv, token) => {
     realm: {},
   };
   try {
-    console.log("starting");
     for (const realm of JSON.parse(REALMS)) {
       const dir = path.join(CONFIG_DIR, `/realms/${realm}/themes`);
+      if (!fs.existsSync(dir)) {
+        console.log(`Warning: no themes config defined in realm ${realm}`);
+        continue;
+      }
       const themes = fs
         .readdirSync(`${dir}`, { withFileTypes: true })
         .filter((dirent) => dirent.isDirectory())
@@ -39,7 +43,6 @@ const updateThemes = async (argv, token) => {
           fs.readFileSync(path.join(themePath, `${themename}.json`))
         );
         const mergedTheme = processThemes(theme, themePath);
-        console.log(`Updating template ${theme.name} in realm ${realm}`);
         realmthemes.push(mergedTheme);
       }
       themerealm.realm[realm] = realmthemes;
@@ -48,7 +51,6 @@ const updateThemes = async (argv, token) => {
 
     await fidcRequest(requestUrl, themerealm, token);
 
-    console.log("Themes updated");
   } catch (error) {
     console.error(error.message);
     process.exit(1);

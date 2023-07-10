@@ -1,16 +1,15 @@
 const fs = require("fs");
 const path = require("path");
 const fidcRequest = require("../helpers/fidc-request");
-const fidcGet = require("../helpers/fidc-get");
-const fidcPost = require("../helpers/fidc-post");
+
 const {
   replaceEnvSpecificValues,
   removeProperty,
 } = require("../helpers/config-process");
 
 const updateServiceObjects = async (argv, token) => {
+  console.log("Updating IDM service objects");
   const { TENANT_BASE_URL, CONFIG_DIR } = process.env;
-  console.log("Updating service objects");
 
   try {
     const baseDir = path.join(CONFIG_DIR, `/service-objects`);
@@ -21,7 +20,6 @@ const updateServiceObjects = async (argv, token) => {
 
     const objectTypes = fs.readdirSync(baseDir);
     for (const objectType of objectTypes) {
-      console.log("Updating objects of type", objectType);
       const subDir = path.join(baseDir, objectType);
 
       const objectFiles = fs
@@ -43,7 +41,6 @@ const updateServiceObjects = async (argv, token) => {
         removeProperty(objectAttributes, "_refProperties");
 
         const resourceUrl = `${TENANT_BASE_URL}/openidm/managed/${objectType}/${objectAttributes._id}`;
-        console.log("Pushing object", objectFile);
         await fidcRequest(`${resourceUrl}`, objectAttributes, token);
       }
     }

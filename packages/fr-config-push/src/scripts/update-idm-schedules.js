@@ -5,6 +5,7 @@ const fidcRequest = require("../helpers/fidc-request");
 const fileFilter = require("../helpers/file-filter");
 
 const updateScripts = async (argv, token) => {
+  console.log("Updating schedules");
   const { TENANT_BASE_URL, filenameFilter, CONFIG_DIR } = process.env;
 
   try {
@@ -12,7 +13,7 @@ const updateScripts = async (argv, token) => {
     const useFF = filenameFilter || argv.filenameFilter;
 
     if (!existsSync(dir)) {
-      console.log("No schedules to push");
+      console.log("Warning: no schedules config defined");
       return;
     }
     

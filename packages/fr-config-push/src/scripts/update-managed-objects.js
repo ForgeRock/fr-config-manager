@@ -10,6 +10,10 @@ const updateManagedObjects = async (argv, token) => {
   try {
     // Combine managed object JSON files
     const dir = path.join(CONFIG_DIR, "/managed-objects");
+    if (!fs.existsSync(dir)) {
+      console.log("Warning: no managed objects defined");
+      return;
+    }
 
     let mappings = [];
     const managedObjectPaths = fs
@@ -67,7 +71,6 @@ const updateManagedObjects = async (argv, token) => {
     };
 
     await fidcRequest(requestUrl, requestBody, token);
-    console.log("Managed objects updated");
   } catch (error) {
     console.error(error.message);
     process.exit(1);

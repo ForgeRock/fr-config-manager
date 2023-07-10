@@ -7,11 +7,15 @@ const fidcGet = require("../helpers/fidc-get");
 const fidcPost = require("../helpers/fidc-post");
 
 const updateSecrets = async (argv, token) => {
+  console.log("Updating secret mappings");
   const { TENANT_BASE_URL } = process.env;
   const { CONFIG_DIR } = process.env;
   try {
     const dir = path.join(CONFIG_DIR, "esvs/secrets");
-    if (fs.existsSync(dir)) {
+    if (!fs.existsSync(dir)) {
+      console.log("Warning: No secrets defined");
+      return;
+    }
       const secretFiles = fs
         .readdirSync(dir)
         .filter((name) => path.extname(name) === ".json");
@@ -25,9 +29,6 @@ const updateSecrets = async (argv, token) => {
         let secretObject = JSON.parse(
           replaceEnvSpecificValues(secretFileContents, true)
         );
-
-        console.log("Processing secret", secretObject._id);
-
         const resourceUrl = `${TENANT_BASE_URL}/environment/secrets/${secretObject._id}`;
         const currentVersions = await fidcGet(
           `${resourceUrl}/versions`,
@@ -67,7 +68,6 @@ const updateSecrets = async (argv, token) => {
             process.exit(1);
           }
 
-          console.log("Added secret version", versionResponse.version);
         }
 
         if (!currentVersions) {
@@ -78,14 +78,13 @@ const updateSecrets = async (argv, token) => {
           if (currentVersion.status === "DESTROYED") {
             continue;
           }
-          console.log("Removing version", currentVersion.version);
           await fidcDelete(
             `${resourceUrl}/versions/${currentVersion.version}`,
             token
           );
         }
       }
-    }
+    
   } catch (error) {
     console.error(error.message);
     process.exit(1);

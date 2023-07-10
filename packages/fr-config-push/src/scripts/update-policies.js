@@ -1,5 +1,4 @@
 const fs = require("fs");
-const { request } = require("https");
 const path = require("path");
 const fidcRequest = require("../helpers/fidc-request");
 const fidcPost = require("../helpers/fidc-post");
@@ -42,13 +41,14 @@ async function upsertResource(
 }
 
 const updateAuthzPolicies = async (argv, token) => {
+  console.log("Updating authz policies");
   const { REALMS, TENANT_BASE_URL, CONFIG_DIR } = process.env;
   for (const realm of JSON.parse(REALMS)) {
-    console.log("Updating authz policies in realm " + realm);
 
     try {
       const baseDir = path.join(CONFIG_DIR, `/realms/${realm}/authorization`);
       if (!fs.existsSync(baseDir)) {
+        console.log(`Warning: no policies config defined for realm ${realm}`);
         continue;
       }
 
@@ -80,7 +80,6 @@ const updateAuthzPolicies = async (argv, token) => {
       if (fs.existsSync(policySetsDir)) {
         const policySetDirs = fs.readdirSync(policySetsDir);
         for (const policySetDir of policySetDirs) {
-          console.log("Updating policy set", policySetDir);
           const policySetObject = JSON.parse(
             fs.readFileSync(
               path.join(policySetsDir, policySetDir, `${policySetDir}.json`)
@@ -110,9 +109,6 @@ const updateAuthzPolicies = async (argv, token) => {
               const policyObject = JSON.parse(
                 fs.readFileSync(path.join(policiesDir, policyFile))
               );
-
-              console.log("Updating policy", policyObject.name);
-
               clearOperationalAttributes(policyObject);
 
               const resourcePath = `${TENANT_BASE_URL}/am/json/realms/root/realms/${realm}/policies`;

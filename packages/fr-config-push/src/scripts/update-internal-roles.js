@@ -3,6 +3,7 @@ const path = require("path");
 const fidcRequest = require("../helpers/fidc-request");
 
 const updateInternalRoles = async (argv, token) => {
+  console.log("Updating internal roles");
   const { TENANT_BASE_URL, CONFIG_DIR } = process.env;
 
   try {
@@ -38,7 +39,6 @@ const updateInternalRoles = async (argv, token) => {
       await fidcRequest(requestUrl, roleObject, token);
     }
 
-    console.log("Internal roles updated");
   } catch (error) {
     console.error(error.message);
     process.exit(1);

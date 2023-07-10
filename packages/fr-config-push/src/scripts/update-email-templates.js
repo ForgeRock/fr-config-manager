@@ -29,6 +29,10 @@ const updateEmailTemplates = async (argv, token) => {
     console.log("Updating email templates");
     const dir = path.join(CONFIG_DIR, "/email-templates");
 
+    if (!fs.existsSync(dir)) {
+      console.log("Warning: no email-templates config defined");
+      return;
+    }
     const emailTemplates = fs
       .readdirSync(`${dir}`, { withFileTypes: true })
       .filter((dirent) => dirent.isDirectory())
@@ -48,12 +52,9 @@ const updateEmailTemplates = async (argv, token) => {
       if (template.styles) {
         template.styles = mergeFileContent(template.styles, emailTemplatePath);
       }
-      console.log(`Updating template ${template._id}`);
       const requestUrl = `${TENANT_BASE_URL}/openidm/config/${template._id}`;
       await fidcRequest(requestUrl, template, token);
     }
-
-    console.log("Email Templates updated");
   } catch (error) {
     console.error(error.message);
     process.exit(1);

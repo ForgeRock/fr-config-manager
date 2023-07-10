@@ -1,9 +1,8 @@
-const { readFile } = require("fs/promises");
 const path = require("path");
 const fidcRequest = require("../helpers/fidc-request");
 const fileFilter = require("../helpers/file-filter");
 const glob = require("glob");
-const { readFileSync } = require("fs");
+const fs = require("fs");
 
 async function handleEndpoint(dir, endpoint, baseUrl, token) {
   const data = readFileSync(`${dir}/${endpoint.file}`, "utf8");
@@ -14,20 +13,24 @@ async function handleEndpoint(dir, endpoint, baseUrl, token) {
   console.log(`IDM endpoint updated: ${endpoint._id}`);
 }
 const updateScripts = async (argv, token) => {
+  console.log("Updating IDM endpoints");
   const { TENANT_BASE_URL, CONFIG_DIR, filenameFilter } = process.env;
 
   try {
     // Read auth tree JSON files
     const dir = path.join(CONFIG_DIR, "/endpoints");
     const useFF = filenameFilter || argv.filenameFilter;
-    console.log("updating endpoints");
+    if (!fs.existsSync(dir)) {
+      console.log("Warning: no IDM endpoints defined");
+      return;
+    }
     await glob("*/*.json", { cwd: dir }, async (error, endpoints) => {
       if (error) {
         throw error;
       }
       for (const fileContent of endpoints) {
         const endpoint = JSON.parse(
-          await readFile(path.join(dir, fileContent))
+          await fs.readFile(path.join(dir, fileContent))
         );
         if (!fileFilter(endpoint.file, useFF)) {
           return;

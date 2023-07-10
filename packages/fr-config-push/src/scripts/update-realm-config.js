@@ -1,21 +1,25 @@
 const fs = require("fs");
 const { readFile } = require("fs/promises");
-const { request } = require("http");
 const path = require("path");
 const fidcRequest = require("../helpers/fidc-request");
 
 const updateServices = async (argv, token) => {
+  console.log("Updating realm config");
   const { REALMS, TENANT_BASE_URL, CONFIG_DIR } = process.env;
 
   try {
     for (const realm of JSON.parse(REALMS)) {
       // Read JSON files
       const dir = path.join(CONFIG_DIR, `/realms/${realm}/realm-config`);
-
+      if (!fs.existsSync(dir)) {
+        console.log(`Warning: no realm-config config defined in realm ${realm}`);
+        continue;
+      }
       const configFiles = fs
         .readdirSync(dir)
         .filter((name) => path.extname(name) === ".json"); // Filter out any non JSON files
       // Map JSON file content to an array
+
 
       // Update each service
       await Promise.all(
@@ -30,7 +34,6 @@ const updateServices = async (argv, token) => {
 
           const requestUrl = `${TENANT_BASE_URL}/am/json/realms/root/realms/${realm}/realm-config/${configFileName}`;
           await fidcRequest(requestUrl, fileContent, token);
-          console.log(`${configFileName} updated in realm ${realm}`);
           return Promise.resolve();
         })
       );

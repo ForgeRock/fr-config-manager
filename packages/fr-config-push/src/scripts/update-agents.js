@@ -4,9 +4,10 @@ const fidcRequest = require("../helpers/fidc-request");
 const replaceEnvSpecificValues = require("../helpers/config-process").replaceEnvSpecificValues;
 
 const updateAgents = async (argv, token) => {
+  console.log("Updating agents");
   const { REALMS, TENANT_BASE_URL, CONFIG_DIR } = process.env;
   for (const realm of JSON.parse(REALMS)) {
-    console.log("Updating agents in realm " + realm);
+   
 
     try {
       // Read agent JSON files
@@ -15,12 +16,12 @@ const updateAgents = async (argv, token) => {
         `/realms/${realm}/realm-config/agents`
       );
       if (!fs.existsSync(baseDir)) {
-        continue;
+        console.log("Warning: no agents config defined");
+        return;
       }
 
       const agentTypes = fs.readdirSync(baseDir);
       for (const agentType of agentTypes) {
-        console.log("Updating agents of type", agentType);
         const subDir = path.join(baseDir, agentType);
 
         const agentFiles = fs
@@ -38,7 +39,6 @@ const updateAgents = async (argv, token) => {
           delete agentObject._rev;
           const requestUrl = `${TENANT_BASE_URL}/am/json/realms/root/realms/${realm}/realm-config/agents/${agentType}/${agentObject._id}`;
           await fidcRequest(requestUrl, agentObject, token);
-          console.log(`Updated ${agentObject._id}`);
         }
       }
     } catch (error) {

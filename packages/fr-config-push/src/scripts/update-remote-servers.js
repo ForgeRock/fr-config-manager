@@ -4,7 +4,7 @@ const fidcRequest = require("../helpers/fidc-request");
 const { existsSync } = require("fs");
 
 const updateRemoteServers = async (argv, token) => {
-  console.log("Update Remote Connector Servers");
+  console.log("Updating Remote Connector Servers");
   const { TENANT_BASE_URL, CONFIG_DIR } = process.env;
   const dir = path.join(CONFIG_DIR, "/sync/rcs");
 
@@ -19,13 +19,12 @@ const updateRemoteServers = async (argv, token) => {
       const requestUrl = `${TENANT_BASE_URL}/openidm/config/provisioner.openicf.connectorinfoprovider`;
 
       await fidcRequest(requestUrl, fileContent, token);
-      console.log("Remote servers updated");
     } catch (error) {
       console.error(error.message);
       process.exit(1);
     }
   } else {
-    console.log("No RCS config file found");
+    console.log("Warning: No RCS config file found");
   }
 };
 

@@ -3,6 +3,7 @@ const fs = require("fs");
 const fidcRequest = require("../helpers/fidc-request");
 
 const updateConnectorDefinitions = async (argv, token) => {
+  console.log("Updating connectors");
   const { TENANT_BASE_URL, CONFIG_DIR } = process.env;
 
   try {

@@ -3,6 +3,7 @@ const path = require("path");
 const fidcRequest = require("../helpers/fidc-request");
 
 const updateLocales = async (argv, token) => {
+  console.log("Updating locales");
   const { TENANT_BASE_URL, CONFIG_DIR } = process.env;
 
   try {
@@ -25,13 +26,10 @@ const updateLocales = async (argv, token) => {
 
       let localeObject = JSON.parse(localeFileContent);
       const localeName = localeObject._id.split("/")[1];
-
-      console.log(`Updating locale ${localeName}`);
       const requestUrl = `${TENANT_BASE_URL}/openidm/config/${localeObject._id}`;
       await fidcRequest(requestUrl, localeObject, token);
     }
 
-    console.log("Locales updated");
   } catch (error) {
     console.error(error.message);
     process.exit(1);

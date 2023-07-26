@@ -46,6 +46,11 @@ const updateScripts = async (argv, token) => {
       const dir = path.join(CONFIG_DIR, `/realms/${realm}/scripts`);
       const useFF = filenameFilter || argv.filenameFilter;
 
+      if (!fs.existsSync(dir)) {
+        console.log(`Warning: no script config defined in realm ${realm}`);
+        continue;
+      }
+
       const scriptFileContent = fs
         .readdirSync(dir)
         .filter((name) => path.extname(name) === ".json") // Filter out any non JSON files
@@ -80,21 +85,16 @@ const updateScripts = async (argv, token) => {
 
         script.script = Buffer.from(originalScript).toString("base64");
 
-        console.log(`updating script : ${script.name}`);
         const requestUrl = `${baseUrl}/scripts/${script._id}`;
 
         await fidcRequest(requestUrl, script, token);
       }
-
-      console.log("scripts updated in realm " + realm);
-
       if (lintingWarnedScripts.length > 0) {
         console.warn(
           "\n** Linting warnings for scripts : " + lintingWarnedScripts + "\n"
         );
       }
     }
-    console.log("Updating scripts complete");
   } catch (error) {
     console.error(error.message);
     process.exit(1);

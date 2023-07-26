@@ -4,6 +4,7 @@ const fidcRequest = require("../helpers/fidc-request");
 const fs = require("fs");
 
 const updateAudit = async (argv, token) => {
+  console.log("Updating audit config");
   const { TENANT_BASE_URL, CONFIG_DIR } = process.env;
   try {
     const dir = path.join(CONFIG_DIR, "/audit");
@@ -20,7 +21,6 @@ const updateAudit = async (argv, token) => {
 
     await fidcRequest(requestUrl, fileContent, token);
 
-    console.log("IDM audit configuration updated");
   } catch (error) {
     console.error(error.message);
     process.exit(1);

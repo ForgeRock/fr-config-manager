@@ -5,13 +5,17 @@ const fidcRequest = require("../helpers/fidc-request");
 const SOCIAL_IDENTITY_PROVIDER_SERVICE = "SocialIdentityProviders";
 
 const updateServices = async (argv, token) => {
+  console.log("Updating AM services");
   const { REALMS, TENANT_BASE_URL, CONFIG_DIR } = process.env;
 
   try {
     for (const realm of JSON.parse(REALMS)) {
-      console.log("updating services in realm " + realm);
       // Read JSON files
       const dir = path.join(CONFIG_DIR, `/realms/${realm}/services`);
+      if (!fs.existsSync(dir)) {
+        console.log(`Warning: no servcies config defined in realm ${realm}`);
+        continue;
+      }
 
       const servicesFileContent = fs
         .readdirSync(dir)
@@ -29,8 +33,6 @@ const updateServices = async (argv, token) => {
 
           const requestUrl = `${TENANT_BASE_URL}/am/json/realms/root/realms/${realm}/realm-config/services/${serviceName}`;
           await fidcRequest(requestUrl, serviceFile, token);
-          console.log(`${serviceName} updated`);
-
           // Descendents
           const descendentsDir = `${dir}/${serviceName}`;
           if (
@@ -55,7 +57,6 @@ const updateServices = async (argv, token) => {
               const descendentType = descendentFile._type._id;
               const descendentRequestUrl = `${TENANT_BASE_URL}/am/json/realms/root/realms/${realm}/realm-config/services/${serviceName}/${descendentType}/${descendentId}`;
               await fidcRequest(descendentRequestUrl, descendentFile, token);
-              console.log(`${descendentId} updated`);
             });
           }
           return Promise.resolve();

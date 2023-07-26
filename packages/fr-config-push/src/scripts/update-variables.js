@@ -1,16 +1,18 @@
 const fs = require("fs");
 const path = require("path");
 const fidcRequest = require("../helpers/fidc-request");
-const fidcGet = require("../helpers/fidc-get");
-const fidcPost = require("../helpers/fidc-post");
 const replaceEnvSpecificValues = require("../helpers/config-process").replaceEnvSpecificValues;
 
 const updateVariables = async (argv, token) => {
+  console.log("Updating variables");
   const { TENANT_BASE_URL } = process.env;
   const { CONFIG_DIR } = process.env;
   try {
     const dir = path.join(CONFIG_DIR, "esvs/variables");
-    if (fs.existsSync(dir)) {
+    if (!fs.existsSync(dir)) {
+      console.log("Warning: No variables defined");
+      return;
+    }
       const variableFiles = fs
         .readdirSync(dir)
         .filter((name) => path.extname(name) === ".json");
@@ -26,9 +28,8 @@ const updateVariables = async (argv, token) => {
         );
         const requestUrl = `${TENANT_BASE_URL}/environment/variables/${variableObject._id}`;
         await fidcRequest(requestUrl, variableObject, token);
-        console.log(`Updated ${variableObject._id}`);
       }
-    }
+    
   } catch (error) {
     console.error(error.message);
     process.exit(1);

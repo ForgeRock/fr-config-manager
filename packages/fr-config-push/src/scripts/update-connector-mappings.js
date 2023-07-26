@@ -3,6 +3,7 @@ const fs = require("fs");
 const fidcRequest = require("../helpers/fidc-request");
 
 const updateConnectorMappings = async (argv, token) => {
+  console.log("Updating mappings");
   const { TENANT_BASE_URL, CONFIG_DIR } = process.env;
 
   try {
@@ -75,9 +76,8 @@ const updateConnectorMappings = async (argv, token) => {
 
       await fidcRequest(requestUrl, requestBody, token);
 
-      console.log("Connector mappings updated");
     } else {
-      console.log("No Connector mappings");
+      console.log("Warning: No Connector mappings");
     }
     return Promise.resolve();
   } catch (error) {

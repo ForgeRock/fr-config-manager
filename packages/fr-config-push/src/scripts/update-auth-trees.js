@@ -67,6 +67,11 @@ const updateAuthTrees = async (argv, token) => {
 
       const dir = path.join(CONFIG_DIR, `/realms/${realm}/journeys`);
 
+      if (!fs.existsSync(dir)) {
+        console.log(`Warning: no journey config defined for realm ${realm}`);
+        continue;
+      }
+
       await glob("*/*.json", { cwd: dir }, async (error, journeys) => {
         if (error) {
           throw error;
@@ -76,7 +81,6 @@ const updateAuthTrees = async (argv, token) => {
         }
       });
     }
-    console.log("Journeys updated");
   } catch (error) {
     console.error(error);
     process.exit(1);

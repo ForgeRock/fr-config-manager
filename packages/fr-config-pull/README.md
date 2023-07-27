@@ -54,9 +54,31 @@ Commands:
   fr-config-pull internal-roles         Get internal roles
   fr-config-pull secrets                Get secrets
   fr-config-pull variables              Get environment specific variables
+  fr-config-pull service-objects        Get service objects
+  fr-config-pull locales                Get locales
+  fr-config-pull audit                  Get audit config
 
 Options:
-  -h, --help  Show help                                                [boolean]
+  -h, --help               Show help                                   [boolean]
+  -n, --name               Specific config                              [string]
+  -r, --realm              Specific realm (overrides environment)       [string]
+  -d, --pull-dependencies  Pull dependencies                           [boolean]
 ```
 
 This will create the directory `${CONFIG_DIR}` containing the exported config.
+
+Notes on specific options:
+
+- `fr-config-pull journeys`
+
+The `--name` option can be used with the `journeys` command to pull a specific journey. This can only be used if a single realm is requested, either via the .env/environment setting or via the `--realm` option. For example
+
+```
+fr-config-pull journeys --name "Customer Login" --realm alpha
+```
+
+The `--pull-dependencies` option can be used with the `journeys` command to pull all scripts and inner journeys associated with each journey pulled. For example
+
+```
+fr-config-pull journeys --name "Customer Login" --realm alpha --pull-dependencies
+```

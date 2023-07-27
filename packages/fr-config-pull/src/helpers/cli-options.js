@@ -1,35 +1,24 @@
 const cliOptions = (requestedOptions) => {
   const options = {
     realm: {
-      alias: "r",
+      alias: "realm",
       demandOption: false,
       describe: "ForgeRock Realm",
     },
     versionNumber: {
-      alias: "v",
+      alias: "version",
       demandOption: true,
       describe: "FIDC Config Version Number",
     },
-    authTreeName: {
-      alias: "atn",
-      demandOption: false,
-      describe: "Auth Tree Name",
-    },
-    managedUsername: {
-      alias: "mu",
-      demandOption: false,
-      describe: "Managed Username",
-    },
-    filenameFilter: {
-      alias: "ff",
-      demandOption: false,
-      describe:
-        "Filename Filter (combine multiples using comma, use ~ prefix on entry for wildcard match)",
-    },
     configDir: {
-      alias: "c",
+      alias: "configdir",
       demandOption: true,
       describe: "Path to the config directory. E.g. /tmp/config",
+    },
+    name: {
+      alias: "name",
+      demandOption: false,
+      describe: "Pull specific name",
     },
   };
 

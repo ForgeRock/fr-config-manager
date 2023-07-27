@@ -9,6 +9,25 @@ const SCRIPT_SUB_DIR = "scripts";
 const SCRIPT_CONFIG_FILE = "scripts-config.json";
 const SCRIPTS_CONTENT_DIR = "scripts-content";
 
+function saveScriptToFile(script, exportDir) {
+  const scriptContentRelativePath = `${SCRIPTS_CONTENT_DIR}/${script.context}`;
+  const scriptContentPath = `${exportDir}/${scriptContentRelativePath}`;
+  if (!fs.existsSync(scriptContentPath)) {
+    fs.mkdirSync(scriptContentPath, { recursive: true });
+  }
+
+  const scriptFilename = `${script.name}.js`;
+  const buff = Buffer.from(script.script, "base64");
+  const source = buff.toString("utf-8");
+  fs.writeFileSync(`${scriptContentPath}/${scriptFilename}`, source);
+  script.script = {
+    file: `${scriptContentRelativePath}/${scriptFilename}`,
+  };
+
+  const scriptFileName = `${exportDir}/${script.name}.json`;
+  saveJsonToFile(script, scriptFileName);
+}
+
 function processScripts(scripts, exportDir) {
   const scriptConfig = { scripts: [] };
 
@@ -22,26 +41,29 @@ function processScripts(scripts, exportDir) {
         return;
       }
 
-      const scriptContentRelativePath = `${SCRIPTS_CONTENT_DIR}/${script.context}`;
-      const scriptContentPath = `${exportDir}/${scriptContentRelativePath}`;
-      if (!fs.existsSync(scriptContentPath)) {
-        fs.mkdirSync(scriptContentPath, { recursive: true });
-      }
-
-      const scriptFilename = `${script.name}.js`;
-      const buff = Buffer.from(script.script, "base64");
-      const source = buff.toString("utf-8");
-      fs.writeFileSync(`${scriptContentPath}/${scriptFilename}`, source);
-      script.script = {
-        file: `${scriptContentRelativePath}/${scriptFilename}`,
-      };
-
-      const scriptFileName = `${exportDir}/${script.name}.json`;
-      saveJsonToFile(script, scriptFileName);
+      saveScriptToFile(script, exportDir);
     });
   } catch (err) {
     console.error(err);
   }
+}
+
+async function exportScriptById(exportDir, tenantUrl, realm, id, token) {
+  const amEndpoint = `${tenantUrl}/am/json/${realm}/scripts/${id}`;
+
+  const response = await axios({
+    method: "get",
+    url: amEndpoint,
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  const script = response.data;
+
+  const fileDir = `${exportDir}/${realm}/${SCRIPT_SUB_DIR}`;
+
+  saveScriptToFile(script, fileDir);
 }
 
 async function exportScripts(exportDir, tenantUrl, realms, prefixes, token) {
@@ -53,29 +75,38 @@ async function exportScripts(exportDir, tenantUrl, realms, prefixes, token) {
     process.exit(1);
   }
 
+  let queryFilter = "true";
+
+  for (let i = 0; i < scriptPrefixes.length; i++) {
+    if (i === 0) {
+      queryFilter = `name+sw+"${scriptPrefixes[0]}"`;
+    } else {
+      queryFilter += `+or+name+sw+"${scriptPrefixes[i]}"`;
+    }
+  }
+
   for (const realm of realms) {
-    for (const prefix of scriptPrefixes) {
-      try {
-        const amEndpoint = `${tenantUrl}/am/json/${realm}/scripts?_queryFilter=name+sw+"${prefix}"`;
+    try {
+      const amEndpoint = `${tenantUrl}/am/json/${realm}/scripts?_queryFilter=${queryFilter}`;
 
-        const response = await axios({
-          method: "get",
-          url: amEndpoint,
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
+      const response = await axios({
+        method: "get",
+        url: amEndpoint,
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
-        const scripts = response.data.result;
+      const scripts = response.data.result;
 
-        const fileDir = `${exportDir}/${realm}/${SCRIPT_SUB_DIR}`;
-        processScripts(scripts, fileDir);
-      } catch (err) {
-        console.error(err);
-        process.exit(1);
-      }
+      const fileDir = `${exportDir}/${realm}/${SCRIPT_SUB_DIR}`;
+      processScripts(scripts, fileDir);
+    } catch (err) {
+      console.error(err);
+      process.exit(1);
     }
   }
 }
 
 module.exports.exportScripts = exportScripts;
+module.exports.exportScriptById = exportScriptById;

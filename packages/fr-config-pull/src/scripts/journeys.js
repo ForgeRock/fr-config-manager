@@ -4,6 +4,8 @@ const fs = require("fs");
 const process = require("process");
 const constants = require("../../../fr-config-common/src/constants.js");
 const { AuthzTypes } = constants;
+const scriptUtils = require("./scripts.js");
+const { exportScriptById } = scriptUtils;
 
 const { saveJsonToFile } = utils;
 
@@ -41,14 +43,31 @@ function fileNameFromNode(displayName, id) {
   return fileSafe(`${displayName} - ${id}`);
 }
 
-async function processJourneys(journeys, realm, tenantUrl, token, exportDir) {
+function matchJourneyName(journeys, journey, name) {
+  return journey._id === name;
+}
+
+async function processJourneys(
+  journeys,
+  realm,
+  name,
+  pullDependencies,
+  tenantUrl,
+  token,
+  exportDir
+) {
+  const fileDir = `${exportDir}/${realm}/${JOURNEY_SUB_DIR}`;
+
   try {
     var nodeCache = {};
-    if (!fs.existsSync(exportDir)) {
-      fs.mkdirSync(exportDir, { recursive: true });
+    if (!fs.existsSync(fileDir)) {
+      fs.mkdirSync(fileDir, { recursive: true });
     }
     for (const journey of journeys) {
-      const journeyDir = `${exportDir}/${fileSafe(journey._id)}`;
+      if (name && !matchJourneyName(journeys, journey, name)) {
+        continue;
+      }
+      const journeyDir = `${fileDir}/${fileSafe(journey._id)}`;
       const nodeDir = `${journeyDir}/${NODES_SUB_DIR}`;
 
       if (!fs.existsSync(nodeDir)) {
@@ -93,6 +112,23 @@ async function processJourneys(journeys, realm, tenantUrl, token, exportDir) {
             )}.json`;
             saveJsonToFile(subNodeSpec, subNodeFilename, true);
           }
+        } else if (pullDependencies) {
+          if (
+            node._type._id === "ScriptedDecisionNode" ||
+            node._type._id === "ConfigProviderNode"
+          ) {
+            exportScriptById(exportDir, tenantUrl, realm, node.script, token);
+          } else if (node._type._id === "InnerTreeEvaluatorNode") {
+            processJourneys(
+              journeys,
+              realm,
+              node.tree,
+              pullDependencies,
+              tenantUrl,
+              token,
+              exportDir
+            );
+          }
         }
         saveJsonToFile(node, `${nodeFileNameRoot}.json`, true);
       }
@@ -105,7 +141,14 @@ async function processJourneys(journeys, realm, tenantUrl, token, exportDir) {
   }
 }
 
-async function exportJourneys(exportDir, tenantUrl, realms, token) {
+async function exportJourneys(
+  exportDir,
+  tenantUrl,
+  realms,
+  name,
+  pullDependencies,
+  token
+) {
   for (const realm of realms) {
     try {
       const amEndpoint = `${tenantUrl}/am/json/realms/root/realms/${realm}/realm-config/authentication/authenticationtrees/trees?_queryFilter=true`;
@@ -120,8 +163,15 @@ async function exportJourneys(exportDir, tenantUrl, realms, token) {
 
       const journeys = response.data.result;
 
-      const fileDir = `${exportDir}/${realm}/${JOURNEY_SUB_DIR}`;
-      processJourneys(journeys, realm, tenantUrl, token, fileDir);
+      processJourneys(
+        journeys,
+        realm,
+        name,
+        pullDependencies,
+        tenantUrl,
+        token,
+        exportDir
+      );
     } catch (err) {
       console.log(err);
     }

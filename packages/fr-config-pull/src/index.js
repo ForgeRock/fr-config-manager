@@ -63,6 +63,12 @@ const COMMAND = {
   AUDIT: "audit",
 };
 
+const OPTION = {
+  NAME: "name",
+  REALM: "realm",
+  PULL_DEPENDENCIES: "pull-dependencies",
+};
+
 function matchCommand(argv, command) {
   return argv._.includes(command) || argv._.includes(COMMAND.ALL);
 }
@@ -122,8 +128,24 @@ async function getConfig(argv) {
   }
 
   if (matchCommand(argv, COMMAND.AUTH_TREE)) {
-    console.log("Getting journeys");
-    journeys.exportJourneys(realmConfigDir, tenantUrl, realms, token);
+    if (argv.name) {
+      if (realms.length !== 1) {
+        console.error("Error: for a named journey, specify a single realm");
+        process.exit(1);
+      }
+      console.log("Getting journey", argv.name, "in realm", realms[0]);
+    } else {
+      console.log("Getting journeys");
+    }
+
+    journeys.exportJourneys(
+      realmConfigDir,
+      tenantUrl,
+      realms,
+      argv[OPTION.NAME],
+      argv[OPTION.PULL_DEPENDENCIES],
+      token
+    );
   }
 
   if (matchCommand(argv, COMMAND.IDM_ENDPOINTS)) {
@@ -311,13 +333,13 @@ yargs
   .command({
     command: COMMAND.ALL,
     desc: "Get all configuration",
-    builder: cliOptions(["realm"]),
+    builder: cliOptions([OPTION.REALM]),
     handler: (argv) => getConfig(argv),
   })
   .command({
     command: COMMAND.AUTH_TREE,
     desc: "Get journeys",
-    builder: cliOptions(["authTreeName", "realm"]),
+    builder: cliOptions([OPTION.NAME, OPTION.REALM]),
     handler: (argv) => getConfig(argv),
   })
   .command({
@@ -353,7 +375,7 @@ yargs
   .command({
     command: COMMAND.THEMES,
     desc: "Get themes",
-    builder: cliOptions(["realm"]),
+    builder: cliOptions([OPTION.REALM]),
     handler: (argv) => getConfig(argv),
   })
   .command({
@@ -365,13 +387,13 @@ yargs
   .command({
     command: COMMAND.SCRIPTS,
     desc: "Get Auth Scripts",
-    builder: cliOptions(["realm", "filenameFilter"]),
+    builder: cliOptions([OPTION.REALM, OPTION.NAME]),
     handler: (argv) => getConfig(argv),
   })
   .command({
     command: COMMAND.SERVICES,
     desc: "Get Auth Services",
-    builder: cliOptions(["realm"]),
+    builder: cliOptions([OPTION.REALM]),
     handler: (argv) => getConfig(argv),
   })
   .command({
@@ -383,7 +405,7 @@ yargs
   .command({
     command: COMMAND.PASSWORD_POLICY,
     desc: "Get Password Policy",
-    builder: cliOptions(["realm"]),
+    builder: cliOptions([OPTION.REALM]),
     handler: (argv) => getConfig(argv),
   })
   .command({
@@ -395,13 +417,13 @@ yargs
   .command({
     command: COMMAND.IDM_ENDPOINTS,
     desc: "Get Custom Endpoints",
-    builder: cliOptions(["filenameFilter"]),
+    builder: cliOptions([OPTION.NAME]),
     handler: (argv) => getConfig(argv),
   })
   .command({
     command: COMMAND.IDM_SCHEDULES,
     desc: "Get Schedules",
-    builder: cliOptions(["filenameFilter"]),
+    builder: cliOptions([OPTION.NAME]),
     handler: (argv) => getConfig(argv),
   })
   .command({
@@ -482,6 +504,20 @@ yargs
     builder: cliOptions([]),
     handler: (argv) => getConfig(argv),
   })
-
+  .option(OPTION.NAME, {
+    alias: "n",
+    describe: "Specific config",
+    type: "string",
+  })
+  .option(OPTION.REALM, {
+    alias: "r",
+    describe: "Specific realm (overrides environment)",
+    type: "string",
+  })
+  .option(OPTION.PULL_DEPENDENCIES, {
+    alias: "d",
+    describe: "Pull dependencies",
+    type: "boolean",
+  })
   .demandCommand()
   .parse();

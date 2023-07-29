@@ -8,12 +8,18 @@ const { AuthzTypes } = constants;
 const SCRIPT_SUB_DIR = "scripts";
 const SCRIPT_CONFIG_FILE = "scripts-config.json";
 const SCRIPTS_CONTENT_DIR = "scripts-content";
+const SCRIPTS_CONFIG_DIR = "scripts-config";
 
 function saveScriptToFile(script, exportDir) {
   const scriptContentRelativePath = `${SCRIPTS_CONTENT_DIR}/${script.context}`;
   const scriptContentPath = `${exportDir}/${scriptContentRelativePath}`;
   if (!fs.existsSync(scriptContentPath)) {
     fs.mkdirSync(scriptContentPath, { recursive: true });
+  }
+
+  const scriptConfigPath = `${exportDir}/${SCRIPTS_CONFIG_DIR}`;
+  if (!fs.existsSync(scriptConfigPath)) {
+    fs.mkdirSync(scriptConfigPath, { recursive: true });
   }
 
   const scriptFilename = `${script.name}.js`;
@@ -24,7 +30,7 @@ function saveScriptToFile(script, exportDir) {
     file: `${scriptContentRelativePath}/${scriptFilename}`,
   };
 
-  const scriptFileName = `${exportDir}/${script.name}.json`;
+  const scriptFileName = `${scriptConfigPath}/${script._id}.json`;
   saveJsonToFile(script, scriptFileName);
 }
 

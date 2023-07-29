@@ -9,6 +9,58 @@ function regexIndexOf(text, re, i) {
   return indexInSuffix < 0 ? indexInSuffix : indexInSuffix + i;
 }
 
+async function pushScriptById(
+  configDir,
+  scriptId,
+  tenantBaseUrl,
+  realm,
+  token
+) {
+  const baseDir = path.join(configDir, `/realms/${realm}/scripts`);
+  const scriptConfigDir = path.join(baseDir, "scripts-config");
+
+  const scriptConfigFile = path.join(scriptConfigDir, `${scriptId}.json`);
+  const scriptJson = fs.readFileSync(scriptConfigFile);
+  const script = JSON.parse(scriptJson);
+
+  let lintingWarnedScripts = [];
+
+  await pushScript(
+    script,
+    baseDir,
+    tenantBaseUrl,
+    realm,
+    lintingWarnedScripts,
+    token
+  );
+
+  if (lintingWarnedScripts.length > 0) {
+    console.warn("\n** Linting warnings for script", lintingWarnedScripts[0]);
+  }
+}
+
+async function pushScript(
+  script,
+  dir,
+  tenantBaseUrl,
+  realm,
+  lintingWarnedScripts,
+  token
+) {
+  const originalScript = fs.readFileSync(`${dir}/${script.script.file}`, {
+    encoding: "utf-8",
+  });
+
+  lintWithWarnings(script.script.file, originalScript, lintingWarnedScripts);
+
+  script.script = Buffer.from(originalScript).toString("base64");
+
+  const baseUrl = `${tenantBaseUrl}/am/json/realms/root/realms/${realm}`;
+  const requestUrl = `${baseUrl}/scripts/${script._id}`;
+
+  await fidcRequest(requestUrl, script, token);
+}
+
 function lintWithWarnings(scriptName, mergedScript, lintingWarnedScripts) {
   if (!mergedScript || !scriptName.endsWith(".js")) {
     return mergedScript;
@@ -43,23 +95,29 @@ const updateScripts = async (argv, token) => {
   console.log("Updating scripts");
   try {
     for (const realm of JSON.parse(REALMS)) {
-      const dir = path.join(CONFIG_DIR, `/realms/${realm}/scripts`);
+      const baseDir = path.join(CONFIG_DIR, `/realms/${realm}/scripts`);
+      const configDir = path.join(baseDir, "scripts-config");
+
       const useFF = filenameFilter || argv.filenameFilter;
 
-      if (!fs.existsSync(dir)) {
-        console.log(`Warning: no script config defined in realm ${realm}`);
+      if (!fs.existsSync(configDir)) {
+        console.log(
+          "Warning: no script config defined in realm",
+          realm,
+          "Expecting directory",
+          configDir
+        );
         continue;
       }
 
       const scriptFileContent = fs
-        .readdirSync(dir)
+        .readdirSync(configDir)
         .filter((name) => path.extname(name) === ".json") // Filter out any non JSON files
         .map((filename) =>
-          JSON.parse(fs.readFileSync(path.join(dir, filename)))
+          JSON.parse(fs.readFileSync(path.join(configDir, filename)))
         ); // Map JSON file content to an array
 
       const lintingWarnedScripts = [];
-      const baseUrl = `${TENANT_BASE_URL}/am/json/realms/root/realms/${realm}`;
 
       for (const script of scriptFileContent) {
         if (!fileFilter(script.script.file, useFF)) {
@@ -72,22 +130,14 @@ const updateScripts = async (argv, token) => {
           );
         }
 
-        // updates the script content with encoded file
-        const originalScript = fs.readFileSync(`${dir}/${script.script.file}`, {
-          encoding: "utf-8",
-        });
-
-        lintWithWarnings(
-          script.script.file,
-          originalScript,
-          lintingWarnedScripts
+        pushScript(
+          script,
+          baseDir,
+          TENANT_BASE_URL,
+          realm,
+          lintingWarnedScripts,
+          token
         );
-
-        script.script = Buffer.from(originalScript).toString("base64");
-
-        const requestUrl = `${baseUrl}/scripts/${script._id}`;
-
-        await fidcRequest(requestUrl, script, token);
       }
       if (lintingWarnedScripts.length > 0) {
         console.warn(
@@ -101,4 +151,5 @@ const updateScripts = async (argv, token) => {
   }
 };
 
-module.exports = updateScripts;
+module.exports.updateScripts = updateScripts;
+module.exports.pushScriptById = pushScriptById;

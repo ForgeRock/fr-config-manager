@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 const yargs = require("yargs");
-const cliOptions = require("./helpers/cli-options");
+const cliUtils = require("./helpers/cli-options");
+const { cliOptions, OPTION } = cliUtils;
 const {
   updateAgents,
   updateAuthTrees,
@@ -91,7 +92,11 @@ async function getCommands() {
     .command({
       command: "journeys",
       desc: "Update Authentication Journeys",
-      builder: cliOptions(["filenameFilter"]),
+      builder: cliOptions([
+        OPTION.NAME,
+        OPTION.REALM,
+        OPTION.PUSH_DEPENDENCIES,
+      ]),
       handler: (argv) => updateAuthTrees(argv, token),
     })
     .command({
@@ -139,7 +144,7 @@ async function getCommands() {
     .command({
       command: "scripts",
       desc: "Update Scripts",
-      builder: cliOptions(["filenameFilter"]),
+      builder: cliOptions([OPTION.FILENAME_FILTER]),
       handler: (argv) => updateScripts(argv, token),
     })
     .command({
@@ -175,13 +180,13 @@ async function getCommands() {
     .command({
       command: "endpoints",
       desc: "Update Custom Endpoints",
-      builder: cliOptions(["filenameFilter"]),
+      builder: cliOptions([OPTION.FILENAME_FILTER]),
       handler: (argv) => updateIdmEndpoints(argv, token),
     })
     .command({
       command: "schedules",
       desc: "Update Schedules",
-      builder: cliOptions(["filenameFilter"]),
+      builder: cliOptions([OPTION.FILENAME_FILTER]),
       handler: (argv) => updateIdmSchedules(argv, token),
     })
     .command({
@@ -267,6 +272,26 @@ async function getCommands() {
       desc: "Update Static Configuration",
       builder: cliOptions([]),
       handler: (argv) => updateStatic(argv, token),
+    })
+    .option(OPTION.NAME, {
+      alias: "n",
+      describe: "Specific config",
+      type: "string",
+    })
+    .option(OPTION.REALM, {
+      alias: "r",
+      describe: "Specific realm (overrides environment)",
+      type: "string",
+    })
+    .option(OPTION.PUSH_DEPENDENCIES, {
+      alias: "d",
+      describe: "Push dependencies",
+      type: "boolean",
+    })
+    .option(OPTION.FILENAME_FILTER, {
+      alias: "f",
+      describe: "Filename filter",
+      type: "string",
     })
     .demandCommand()
     .parse();

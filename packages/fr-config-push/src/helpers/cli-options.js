@@ -1,3 +1,10 @@
+const OPTION = {
+  NAME: "name",
+  REALM: "realm",
+  PUSH_DEPENDENCIES: "push-dependencies",
+  FILENAME_FILTER: "filenameFilter",
+};
+
 const cliOptions = (requestedOptions) => {
   const options = {
     username: {
@@ -14,7 +21,11 @@ const cliOptions = (requestedOptions) => {
       alias: "r",
       demandOption: false,
       describe: "ForgeRock Realm",
-      default: "alpha",
+    },
+    name: {
+      alias: "n",
+      demandOption: false,
+      describe: "Push specific name",
     },
     idmUsername: {
       alias: "iu",
@@ -101,4 +112,5 @@ const cliOptions = (requestedOptions) => {
   );
 };
 
-module.exports = cliOptions;
+module.exports.cliOptions = cliOptions;
+module.exports.OPTION = OPTION;

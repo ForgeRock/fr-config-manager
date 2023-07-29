@@ -21,7 +21,8 @@ const secrets = require("./scripts/secrets.js");
 const variables = require("./scripts/variables.js");
 const secretMappings = require("./scripts/secretMappings.js");
 const constants = require("../../fr-config-common/src/constants");
-const cliOptions = require("./helpers/cli-options");
+const cliUtils = require("./helpers/cli-options");
+const { cliOptions, OPTION } = cliUtils;
 const oauth2Agents = require("./scripts/oauth2Agents.js");
 const authzPolicies = require("./scripts/authzPolicies.js");
 const systemUsers = require("./scripts/serviceObjects");
@@ -61,12 +62,6 @@ const COMMAND = {
   SERVICE_OBJECTS: "service-objects",
   LOCALES: "locales",
   AUDIT: "audit",
-};
-
-const OPTION = {
-  NAME: "name",
-  REALM: "realm",
-  PULL_DEPENDENCIES: "pull-dependencies",
 };
 
 function matchCommand(argv, command) {

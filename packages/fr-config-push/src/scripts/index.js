@@ -6,7 +6,6 @@ const updateCors = require("./update-cors");
 const updateInternalRoles = require("./update-internal-roles");
 const updateManagedObjects = require("./update-managed-objects");
 const updateRemoteServers = require("./update-remote-servers");
-const updateScripts = require("./update-scripts");
 const updateServices = require("./update-services");
 const updateTermsAndConditions = require("./update-terms-and-conditions");
 const updatePasswordPolicy = require("./update-password-policy");
@@ -28,6 +27,8 @@ const updateEmailProvider = require("./update-email-provider");
 const updateServiceObjects = require("./update-service-objects");
 const updateLocales = require("./update-locales");
 const updateAudit = require("./update-audit");
+const scriptUtils = require("./update-scripts");
+const { updateScripts } = scriptUtils;
 
 module.exports = {
   updateAgents,

@@ -1,3 +1,9 @@
+const OPTION = {
+  NAME: "name",
+  REALM: "realm",
+  PULL_DEPENDENCIES: "pull-dependencies",
+};
+
 const cliOptions = (requestedOptions) => {
   const options = {
     realm: {
@@ -28,4 +34,5 @@ const cliOptions = (requestedOptions) => {
   );
 };
 
-module.exports = cliOptions;
+module.exports.cliOptions = cliOptions;
+module.exports.OPTION = OPTION;

@@ -1,28 +1,23 @@
-# FIDC Config Manager
+# Configuration Manager: fr-config-pull
 
-## Preparation
+This tool is used to pull configuration from a ForgeRock Identity Cloud tenant.
+
+## Installation
+
+The tool is installed from the package directory as follows
 
 ```
 npm install
-```
-
-## Build
-
-```
 npm link
 ```
 
-## Use
+## Configuration
 
-Create a .env file from the sample
+The tool is configured via environment variables. Copy the sample `.env` file and configure as per the instructions in the [configuration README](../docs/environment.md).
 
-```
-cp .env.sample .env
-```
+## Usage
 
-Edit the .env file with your tenant values - refer to the main READNE for details.
-
-Run a pull of all or selected config:
+Run the `fr-config-pull` tool as follows to create an export of your Identity Cloud configuration on your local workstation.
 
 ```
 Usage: fr-config-pull [arguments]
@@ -65,11 +60,9 @@ Options:
   -d, --pull-dependencies  Pull dependencies                           [boolean]
 ```
 
-This will create the directory `${CONFIG_DIR}` containing the exported config.
-
 Notes on specific options:
 
-- `fr-config-pull journeys`
+`fr-config-pull journeys`
 
 The `--name` option can be used with the `journeys` command to pull a specific journey. This can only be used if a single realm is requested, either via the .env/environment setting or via the `--realm` option. For example
 

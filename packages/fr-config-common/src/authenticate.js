@@ -27,6 +27,11 @@ async function getToken(tenantUrl, clientConfig) {
 
     var key;
 
+    if (!clientConfig.privateKey) {
+      console.error("Private key not defined");
+      process.exit(1);
+    }
+
     if (getPrivateKeyFormat(clientConfig.privateKey) === PrivateKeyFormat.JWK) {
       key = await jose.JWK.asKey(JSON.parse(clientConfig.privateKey));
     } else {

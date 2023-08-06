@@ -45,7 +45,7 @@ const COMMAND = {
   REMOTE_SERVERS: "remote-servers",
   SCRIPTS: "scripts",
   SERVICES: "services",
-  REALM_CONFIG: "realm-config",
+  AUTHENTICATION: "authentication",
   TERMS_AND_CONDITIONS: "terms-and-conditions",
   PASSWORD_POLICY: "password-policy",
   UI_CONFIG: "ui-config",
@@ -68,8 +68,35 @@ function matchCommand(argv, command) {
   return argv._.includes(command) || argv._.includes(COMMAND.ALL);
 }
 
+const REQUIRED_CONFIG = [
+  "TENANT_BASE_URL",
+  "SERVICE_ACCOUNT_CLIENT_ID",
+  "SERVICE_ACCOUNT_ID",
+  "SERVICE_ACCOUNT_KEY",
+  "SERVICE_ACCOUNT_SCOPE",
+  "REALMS",
+];
+
+function checkConfig() {
+  var valid = true;
+
+  for (const parameter of REQUIRED_CONFIG) {
+    if (!process.env[parameter]) {
+      console.error("Required config", parameter, "not found");
+      valid = false;
+    }
+  }
+  return valid;
+}
+
 async function getConfig(argv) {
+  if (!checkConfig()) {
+    console.error("Configuration errors");
+    process.exit(1);
+  }
+
   const tenantUrl = process.env.TENANT_BASE_URL;
+
   const realms = argv.realm ? [argv.realm] : JSON.parse(process.env.REALMS);
   process.env.CONFIG_DIR = process.env.CONFIG_DIR || process.cwd();
   const configDir = process.env.CONFIG_DIR;
@@ -91,8 +118,18 @@ async function getConfig(argv) {
   const realmConfigDir = `${configDir}/${REALM_SUB_DIR}`;
 
   if (matchCommand(argv, COMMAND.EMAIL_TEMPLATES)) {
-    console.log("Getting email templates");
-    emailTemplates.exportEmailTemplates(configDir, tenantUrl, token);
+    if (argv[OPTION.NAME]) {
+      console.log("Getting email template", argv[OPTION.NAME]);
+    } else {
+      console.log("Getting email templates");
+    }
+
+    emailTemplates.exportEmailTemplates(
+      configDir,
+      tenantUrl,
+      argv[OPTION.NAME],
+      token
+    );
   }
 
   if (matchCommand(argv, COMMAND.EMAIL_PROVIDER)) {
@@ -108,16 +145,26 @@ async function getConfig(argv) {
 
   if (matchCommand(argv, COMMAND.MANAGED_OBJECTS)) {
     console.log("Getting managed objects");
-    idm.exportManagedObjects(configDir, tenantUrl, token);
+    idm.exportManagedObjects(configDir, tenantUrl, argv[OPTION.NAME], token);
   }
 
   if (matchCommand(argv, COMMAND.SCRIPTS)) {
-    console.log("Getting scripts");
+    if (argv.name) {
+      if (realms.length !== 1) {
+        console.error("Error: for a named script, specify a single realm");
+        process.exit(1);
+      }
+      console.log("Getting script", argv.name, "in realm", realms[0]);
+    } else {
+      console.log("Getting scripts");
+    }
+
     scripts.exportScripts(
       realmConfigDir,
       tenantUrl,
       realms,
       scriptPrefixes,
+      argv[OPTION.NAME],
       token
     );
   }
@@ -145,22 +192,22 @@ async function getConfig(argv) {
 
   if (matchCommand(argv, COMMAND.IDM_ENDPOINTS)) {
     console.log("Getting endpoints");
-    endpoints.exportEndpoints(configDir, tenantUrl, token);
+    endpoints.exportEndpoints(configDir, tenantUrl, argv[OPTION.NAME], token);
   }
 
   if (matchCommand(argv, COMMAND.IDM_SCHEDULES)) {
     console.log("Getting schedules");
-    schedules.exportSchedules(configDir, tenantUrl, token);
+    schedules.exportSchedules(configDir, tenantUrl, argv[OPTION.NAME], token);
   }
 
   if (matchCommand(argv, COMMAND.CONNECTOR_DEFINITIONS)) {
     console.log("Getting connectors");
-    connectors.exportConnectors(configDir, tenantUrl, token);
+    connectors.exportConnectors(configDir, tenantUrl, argv[OPTION.NAME], token);
   }
 
   if (matchCommand(argv, COMMAND.CONNECTOR_MAPPINGS)) {
     console.log("Getting mappings");
-    mappings.exportMappings(configDir, tenantUrl, token);
+    mappings.exportMappings(configDir, tenantUrl, argv[OPTION.NAME], token);
   }
 
   if (matchCommand(argv, COMMAND.IDM_ACCESS_CONFIG)) {
@@ -186,12 +233,23 @@ async function getConfig(argv) {
 
   if (matchCommand(argv, COMMAND.THEMES)) {
     console.log("Getting themes");
-    themes.exportThemes(realmConfigDir, realms, tenantUrl, token);
+    themes.exportThemes(
+      realmConfigDir,
+      realms,
+      tenantUrl,
+      argv[OPTION.NAME],
+      token
+    );
   }
 
   if (matchCommand(argv, COMMAND.TERMS_AND_CONDITIONS)) {
     console.log("Getting terms and conditions");
-    termsAndConditions.exportTerms(configDir, tenantUrl, token);
+    termsAndConditions.exportTerms(
+      configDir,
+      tenantUrl,
+      argv[OPTION.NAME],
+      token
+    );
   }
 
   if (matchCommand(argv, COMMAND.KBA)) {
@@ -206,12 +264,27 @@ async function getConfig(argv) {
   }
 
   if (matchCommand(argv, COMMAND.SERVICES)) {
-    console.log("Getting services config");
-    amServices.exportConfig(realmConfigDir, realms, tenantUrl, token);
+    if (argv.name) {
+      if (realms.length !== 1) {
+        console.error("Error: for a named service, specify a single realm");
+        process.exit(1);
+      }
+      console.log("Getting service", argv.name, "in realm", realms[0]);
+    } else {
+      console.log("Getting services");
+    }
+
+    amServices.exportConfig(
+      realmConfigDir,
+      realms,
+      tenantUrl,
+      argv[OPTION.NAME],
+      token
+    );
   }
 
-  if (matchCommand(argv, COMMAND.REALM_CONFIG)) {
-    console.log("Getting realm config");
+  if (matchCommand(argv, COMMAND.AUTHENTICATION)) {
+    console.log("Getting authentication config");
     amRealmConfig.exportConfig(
       realmConfigDir,
       realms,
@@ -245,27 +318,52 @@ async function getConfig(argv) {
 
   if (matchCommand(argv, COMMAND.INTERNAL_ROLES)) {
     console.log("Getting internal roles");
-    internalRoles.exportConfig(configDir, tenantUrl, token);
+    internalRoles.exportConfig(configDir, tenantUrl, argv[OPTION.NAME], token);
   }
 
   if (matchCommand(argv, COMMAND.SECRETS)) {
-    console.log("Getting secrets");
-    secrets.exportConfig(configDir, tenantUrl, token);
+    if (argv.name) {
+      if (realms.length !== 1) {
+        console.error("Error: for a named secret, specify a single realm");
+        process.exit(1);
+      }
+      console.log("Getting secret", argv.name, "in realm", realms[0]);
+    } else {
+      console.log("Getting secrets");
+    }
+
+    secrets.exportConfig(configDir, tenantUrl, argv[OPTION.NAME], token);
   }
 
   if (matchCommand(argv, COMMAND.ESVS)) {
     console.log("Getting variables");
-    variables.exportConfig(configDir, tenantUrl, token);
+    variables.exportConfig(configDir, tenantUrl, argv[OPTION.NAME], token);
   }
 
   if (matchCommand(argv, COMMAND.SECRET_MAPPINGS)) {
-    console.log("Getting secret mappings");
-    secretMappings.exportConfig(realmConfigDir, realms, tenantUrl, token);
+    if (argv.name) {
+      if (realms.length !== 1) {
+        console.error(
+          "Error: for a named secret mapping, specify a single realm"
+        );
+        process.exit(1);
+      }
+      console.log("Getting secret mapping", argv.name, "in realm", realms[0]);
+    } else {
+      console.log("Getting secret mappings");
+    }
+    secretMappings.exportConfig(
+      realmConfigDir,
+      realms,
+      tenantUrl,
+      argv[OPTION.NAME],
+      token
+    );
   }
 
   if (matchCommand(argv, COMMAND.LOCALES)) {
     console.log("Getting locales");
-    locales.exportLocales(configDir, tenantUrl, token);
+    locales.exportLocales(configDir, tenantUrl, argv[OPTION.NAME], token);
   }
 
   if (matchCommand(argv, COMMAND.AUDIT)) {
@@ -340,13 +438,13 @@ yargs
   .command({
     command: COMMAND.CONNECTOR_DEFINITIONS,
     desc: "Get Connector Definitions ",
-    builder: cliOptions([]),
+    builder: cliOptions([OPTION.NAME]),
     handler: (argv) => getConfig(argv),
   })
   .command({
     command: COMMAND.CONNECTOR_MAPPINGS,
     desc: "Get Connector Mappings",
-    builder: cliOptions([]),
+    builder: cliOptions([OPTION.NAME]),
     handler: (argv) => getConfig(argv),
   })
   .command({
@@ -358,25 +456,25 @@ yargs
   .command({
     command: COMMAND.MANAGED_OBJECTS,
     desc: "Get Managed Objects",
-    builder: cliOptions([]),
+    builder: cliOptions([OPTION.NAME]),
     handler: (argv) => getConfig(argv),
   })
   .command({
     command: COMMAND.EMAIL_TEMPLATES,
     desc: "Get email templates",
-    builder: cliOptions([]),
+    builder: cliOptions([OPTION.NAME]),
     handler: (argv) => getConfig(argv),
   })
   .command({
     command: COMMAND.THEMES,
     desc: "Get themes",
-    builder: cliOptions([OPTION.REALM]),
+    builder: cliOptions([OPTION.REALM, OPTION.NAME]),
     handler: (argv) => getConfig(argv),
   })
   .command({
     command: COMMAND.REMOTE_SERVERS,
     desc: "Get Remote Connector Servers",
-    builder: cliOptions([]),
+    builder: cliOptions([OPTION.NAME]),
     handler: (argv) => getConfig(argv),
   })
   .command({
@@ -388,13 +486,13 @@ yargs
   .command({
     command: COMMAND.SERVICES,
     desc: "Get Auth Services",
-    builder: cliOptions([OPTION.REALM]),
+    builder: cliOptions([OPTION.REALM, OPTION.NAME]),
     handler: (argv) => getConfig(argv),
   })
   .command({
     command: COMMAND.TERMS_AND_CONDITIONS,
     desc: "Get Terms and Conditions",
-    builder: cliOptions([]),
+    builder: cliOptions([OPTION.NAME]),
     handler: (argv) => getConfig(argv),
   })
   .command({
@@ -436,7 +534,7 @@ yargs
   .command({
     command: COMMAND.SECRET_MAPPINGS,
     desc: "Get secret mappings",
-    builder: cliOptions([]),
+    builder: cliOptions([OPTION.NAME, OPTION.REALM]),
     handler: (argv) => getConfig(argv),
   })
   .command({
@@ -458,27 +556,27 @@ yargs
     handler: (argv) => getConfig(argv),
   })
   .command({
-    command: COMMAND.REALM_CONFIG,
-    desc: "Get realm config",
-    builder: cliOptions([]),
+    command: COMMAND.AUTHENTICATION,
+    desc: "Get authentication config",
+    builder: cliOptions([OPTION.REALM]),
     handler: (argv) => getConfig(argv),
   })
   .command({
     command: COMMAND.INTERNAL_ROLES,
     desc: "Get internal roles",
-    builder: cliOptions([]),
+    builder: cliOptions([OPTION.NAME]),
     handler: (argv) => getConfig(argv),
   })
   .command({
     command: COMMAND.SECRETS,
     desc: "Get secrets",
-    builder: cliOptions([]),
+    builder: cliOptions([OPTION.NAME]),
     handler: (argv) => getConfig(argv),
   })
   .command({
     command: COMMAND.ESVS,
     desc: "Get environment specific variables",
-    builder: cliOptions([]),
+    builder: cliOptions([OPTION.NAME]),
     handler: (argv) => getConfig(argv),
   })
   .command({
@@ -490,7 +588,7 @@ yargs
   .command({
     command: COMMAND.LOCALES,
     desc: "Get locales",
-    builder: cliOptions([]),
+    builder: cliOptions([OPTION.NAME]),
     handler: (argv) => getConfig(argv),
   })
   .command({

@@ -6,13 +6,16 @@ const { saveJsonToFile } = utils;
 const EXPORT_SUB_DIR = "terms-conditions";
 const EXPORT_FILE_NAME = "terms-conditions.json";
 
-function processTerms(terms, fileDir) {
+function processTerms(terms, fileDir, name) {
   if (!fs.existsSync(fileDir)) {
     fs.mkdirSync(fileDir, { recursive: true });
   }
 
   try {
     terms.versions.forEach((version) => {
+      if (name && name !== version.version) {
+        return;
+      }
       const versionPath = `${fileDir}/${version.version}`;
 
       if (!fs.existsSync(versionPath)) {
@@ -35,7 +38,7 @@ function processTerms(terms, fileDir) {
   }
 }
 
-async function exportTerms(exportDir, tenantUrl, token) {
+async function exportTerms(exportDir, tenantUrl, name, token) {
   try {
     const idmEndpoint = `${tenantUrl}/openidm/config/selfservice.terms`;
 
@@ -50,7 +53,7 @@ async function exportTerms(exportDir, tenantUrl, token) {
     const terms = response.data;
 
     const fileDir = `${exportDir}/${EXPORT_SUB_DIR}`;
-    processTerms(terms, fileDir);
+    processTerms(terms, fileDir, name);
   } catch (err) {
     console.log(err);
   }

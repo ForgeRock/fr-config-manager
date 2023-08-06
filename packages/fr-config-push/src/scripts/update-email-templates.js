@@ -1,6 +1,8 @@
 const fs = require("fs");
 const path = require("path");
 const fidcRequest = require("../helpers/fidc-request");
+const cliUtils = require("../helpers/cli-options");
+const { OPTION } = cliUtils;
 
 function mergeFileContent(templateObject, templatePath) {
   if (typeof templateObject === "object") {
@@ -26,8 +28,14 @@ const updateEmailTemplates = async (argv, token) => {
   const { TENANT_BASE_URL, CONFIG_DIR } = process.env;
 
   try {
-    console.log("Updating email templates");
     const dir = path.join(CONFIG_DIR, "/email-templates");
+    const requestedTemplateName = argv[OPTION.NAME];
+
+    if (requestedTemplateName) {
+      console.log("Updating email template", requestedTemplateName);
+    } else {
+      console.log("Updating email templates");
+    }
 
     if (!fs.existsSync(dir)) {
       console.log("Warning: no email-templates config defined");
@@ -40,6 +48,9 @@ const updateEmailTemplates = async (argv, token) => {
 
     for (const emailTemplatePath of emailTemplates) {
       const templatename = path.parse(emailTemplatePath).base;
+      if (requestedTemplateName && requestedTemplateName !== templatename) {
+        continue;
+      }
       const template = JSON.parse(
         fs.readFileSync(path.join(emailTemplatePath, `${templatename}.json`))
       );

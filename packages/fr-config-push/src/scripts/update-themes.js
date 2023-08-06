@@ -1,6 +1,8 @@
 const fs = require("fs");
 const path = require("path");
 const fidcRequest = require("../helpers/fidc-request");
+const cliUtils = require("../helpers/cli-options");
+const { OPTION } = cliUtils;
 
 const HTML_FIELDS = ["accountFooter", "journeyFooter", "journeyHeader"];
 
@@ -18,15 +20,27 @@ function processThemes(theme, themePath) {
   }
 }
 const updateThemes = async (argv, token) => {
-  console.log("Updating themes");
   const { REALMS, TENANT_BASE_URL, CONFIG_DIR } = process.env;
+  const requestedThemeName = argv[OPTION.NAME];
+  const realms = argv[OPTION.REALM] ? [argv[OPTION.REALM]] : JSON.parse(REALMS);
+
+  if (requestedThemeName) {
+    if (realms.length !== 1) {
+      console.error("Error: for a named theme, specify a single realm");
+      process.exit(1);
+    } else {
+      console.log("Updating theme", requestedThemeName);
+    }
+  } else {
+    console.log("Updating themes");
+  }
 
   var themerealm = {
     _id: "ui/themerealm",
     realm: {},
   };
   try {
-    for (const realm of JSON.parse(REALMS)) {
+    for (const realm of realms) {
       const dir = path.join(CONFIG_DIR, `/realms/${realm}/themes`);
       if (!fs.existsSync(dir)) {
         console.log(`Warning: no themes config defined in realm ${realm}`);
@@ -39,6 +53,9 @@ const updateThemes = async (argv, token) => {
       const realmthemes = [];
       for (const themePath of themes) {
         const themename = path.parse(themePath).base;
+        if (requestedThemeName && requestedThemeName !== themename) {
+          continue;
+        }
         const theme = JSON.parse(
           fs.readFileSync(path.join(themePath, `${themename}.json`))
         );
@@ -50,7 +67,6 @@ const updateThemes = async (argv, token) => {
     const requestUrl = `${TENANT_BASE_URL}/openidm/config/ui/themerealm`;
 
     await fidcRequest(requestUrl, themerealm, token);
-
   } catch (error) {
     console.error(error.message);
     process.exit(1);

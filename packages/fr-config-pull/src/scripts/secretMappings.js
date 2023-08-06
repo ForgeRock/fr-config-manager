@@ -5,7 +5,7 @@ const { saveJsonToFile } = utils;
 
 const EXPORT_SUBDIR = "secret-mappings";
 
-async function exportConfig(exportDir, realms, tenantUrl, token) {
+async function exportConfig(exportDir, realms, tenantUrl, name, token) {
   try {
     for (const realm of realms) {
       const amEndpoint = `${tenantUrl}/am/json/realms/root/realms/${realm}/realm-config/secrets/stores/GoogleSecretManagerSecretStoreProvider/ESV/mappings`;
@@ -29,6 +29,9 @@ async function exportConfig(exportDir, realms, tenantUrl, token) {
       }
 
       mappings.forEach((mapping) => {
+        if (name && name !== mapping._id) {
+          return;
+        }
         const fileName = `${targetDir}/${mapping._id}.json`;
         saveJsonToFile(mapping, fileName);
       });

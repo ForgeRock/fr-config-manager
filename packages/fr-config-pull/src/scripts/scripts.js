@@ -34,7 +34,7 @@ function saveScriptToFile(script, exportDir) {
   saveJsonToFile(script, scriptFileName);
 }
 
-function processScripts(scripts, exportDir) {
+function processScripts(scripts, exportDir, name) {
   const scriptConfig = { scripts: [] };
 
   try {
@@ -44,6 +44,10 @@ function processScripts(scripts, exportDir) {
 
     scripts.forEach((script) => {
       if (script.language !== "JAVASCRIPT") {
+        return;
+      }
+
+      if (name && name !== script.name) {
         return;
       }
 
@@ -72,7 +76,14 @@ async function exportScriptById(exportDir, tenantUrl, realm, id, token) {
   saveScriptToFile(script, fileDir);
 }
 
-async function exportScripts(exportDir, tenantUrl, realms, prefixes, token) {
+async function exportScripts(
+  exportDir,
+  tenantUrl,
+  realms,
+  prefixes,
+  name,
+  token
+) {
   var scriptPrefixes = null;
   try {
     scriptPrefixes = JSON.parse(prefixes);
@@ -106,7 +117,7 @@ async function exportScripts(exportDir, tenantUrl, realms, prefixes, token) {
       const scripts = response.data.result;
 
       const fileDir = `${exportDir}/${realm}/${SCRIPT_SUB_DIR}`;
-      processScripts(scripts, fileDir);
+      processScripts(scripts, fileDir, name);
     } catch (err) {
       console.error(err);
       process.exit(1);

@@ -19,10 +19,15 @@ function splitLangToFile(property, templatePath, templateName, suffix) {
   });
 }
 
-function processEmailTemplates(templates, fileDir) {
+function processEmailTemplates(templates, fileDir, name) {
   try {
     templates.forEach((template) => {
       const templateName = template._id.split("/")[1];
+
+      if (name && name !== templateName) {
+        return;
+      }
+
       const templatePath = `${fileDir}/${templateName}`;
 
       if (!fs.existsSync(templatePath)) {
@@ -47,7 +52,7 @@ function processEmailTemplates(templates, fileDir) {
   }
 }
 
-async function exportEmailTemplates(exportDir, tenantUrl, token) {
+async function exportEmailTemplates(exportDir, tenantUrl, name, token) {
   try {
     const idmEndpoint = `${tenantUrl}/openidm/config`;
 
@@ -64,7 +69,7 @@ async function exportEmailTemplates(exportDir, tenantUrl, token) {
     const templates = response.data.result;
 
     const fileDir = `${exportDir}/${EMAIL_SUB_DIR}`;
-    processEmailTemplates(templates, fileDir);
+    processEmailTemplates(templates, fileDir, name);
   } catch (err) {
     console.log(err);
   }

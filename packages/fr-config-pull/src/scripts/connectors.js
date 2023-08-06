@@ -5,7 +5,7 @@ const { saveJsonToFile } = utils;
 
 const CONNECTORS_SUBDIR = "sync/connectors";
 
-function processConnectors(connectors, fileDir) {
+function processConnectors(connectors, fileDir, name) {
   try {
     if (!fs.existsSync(fileDir)) {
       fs.mkdirSync(fileDir, { recursive: true });
@@ -13,6 +13,9 @@ function processConnectors(connectors, fileDir) {
 
     connectors.forEach((connector) => {
       const connectorName = connector._id.split("/")[1];
+      if (name && name !== connectorName) {
+        return;
+      }
       const fileName = `${fileDir}/${connectorName}.json`;
       saveJsonToFile(connector, fileName);
     });
@@ -21,7 +24,7 @@ function processConnectors(connectors, fileDir) {
   }
 }
 
-async function exportConnectors(exportDir, tenantUrl, token) {
+async function exportConnectors(exportDir, tenantUrl, name, token) {
   try {
     const idmEndpoint = `${tenantUrl}/openidm/config`;
 
@@ -37,7 +40,7 @@ async function exportConnectors(exportDir, tenantUrl, token) {
     const connectors = response.data.result;
 
     const fileDir = `${exportDir}/${CONNECTORS_SUBDIR}`;
-    processConnectors(connectors, fileDir);
+    processConnectors(connectors, fileDir, name);
   } catch (err) {
     console.log(err);
   }

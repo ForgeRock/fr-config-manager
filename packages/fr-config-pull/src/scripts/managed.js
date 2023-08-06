@@ -8,9 +8,13 @@ const SCRIPT_HOOKS = ["onStore", "onRetrieve", "onValidate"];
 
 // Split managed.json into separate objects, each with separate scripts
 
-function processManagedObjects(managedObjects, targetDir) {
+function processManagedObjects(managedObjects, targetDir, name) {
   try {
     managedObjects.forEach((managedObject) => {
+      if (name && name !== managedObject.name) {
+        return;
+      }
+
       const objectPath = `${targetDir}/${managedObject.name}`;
 
       if (!fs.existsSync(objectPath)) {
@@ -54,7 +58,7 @@ function processManagedObjects(managedObjects, targetDir) {
   }
 }
 
-async function exportManagedObjects(exportDir, tenantUrl, token) {
+async function exportManagedObjects(exportDir, tenantUrl, name, token) {
   try {
     const idmEndpoint = `${tenantUrl}/openidm/config/managed`;
 
@@ -69,7 +73,7 @@ async function exportManagedObjects(exportDir, tenantUrl, token) {
     const managedObjects = response.data.objects;
 
     const fileDir = `${exportDir}/${EXPORT_SUBDIR}`;
-    processManagedObjects(managedObjects, fileDir);
+    processManagedObjects(managedObjects, fileDir, name);
   } catch (err) {
     console.log(err);
   }

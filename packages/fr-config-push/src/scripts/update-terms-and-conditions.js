@@ -3,9 +3,10 @@ const { readFile } = require("fs/promises");
 const fidcRequest = require("../helpers/fidc-request");
 const replaceSensitiveValues = require("../helpers/replace-sensitive-values");
 const fs = require("fs");
+const cliUtils = require("../helpers/cli-options");
+const { OPTION } = cliUtils;
 
 async function updateTranslations(fileContent, dir) {
-  console.log("Updating terms and conditions");
   for (const version of fileContent.versions) {
     for (const [language, text] of Object.entries(version.termsTranslations)) {
       const fileName = `${version.version}/${language}.html`;
@@ -19,6 +20,14 @@ async function updateTranslations(fileContent, dir) {
 
 const updateTermsAndConditions = async (argv, token) => {
   const { TENANT_BASE_URL, CONFIG_DIR } = process.env;
+  const requestedTerms = argv[OPTION.NAME];
+
+  if (requestedTerms) {
+    console.log("Updating terms and conditions", requestedTerms);
+  } else {
+    console.log("Updating terms and conditions");
+  }
+
   try {
     // Combine managed object JSON files
     const dir = path.join(CONFIG_DIR, "/terms-conditions");

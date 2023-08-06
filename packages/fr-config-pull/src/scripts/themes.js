@@ -7,9 +7,12 @@ const EXPORT_SUB_DIR = "themes";
 
 const HTML_FIELDS = ["accountFooter", "journeyFooter", "journeyHeader"];
 
-function processThemes(themes, fileDir) {
+function processThemes(themes, fileDir, name) {
   try {
     themes.forEach((theme) => {
+      if (name && name !== theme.name) {
+        return;
+      }
       const themePath = `${fileDir}/${theme.name}`;
 
       if (!fs.existsSync(themePath)) {
@@ -33,7 +36,7 @@ function processThemes(themes, fileDir) {
   }
 }
 
-async function exportThemes(exportDir, realms, tenantUrl, token) {
+async function exportThemes(exportDir, realms, tenantUrl, name, token) {
   try {
     for (const realm of realms) {
       const idmEndpoint = `${tenantUrl}/openidm/config/ui/themerealm`;
@@ -50,7 +53,7 @@ async function exportThemes(exportDir, realms, tenantUrl, token) {
       const themes = response.data.realm[realm];
 
       const fileDir = `${exportDir}/${realm}/${EXPORT_SUB_DIR}`;
-      processThemes(themes, fileDir);
+      processThemes(themes, fileDir, name);
     }
   } catch (err) {
     console.log(err);

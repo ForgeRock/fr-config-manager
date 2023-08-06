@@ -1,11 +1,39 @@
 const fs = require("fs");
 const path = require("path");
 const fidcRequest = require("../helpers/fidc-request");
+const cliUtils = require("../helpers/cli-options");
+const { request } = require("http");
+const { OPTION } = cliUtils;
+const fidcGet = require("../helpers/fidc-get");
+
+async function mergeExistingObjects(newManagedObject, resourceUrl, token) {
+  const result = await fidcGet(resourceUrl, token, true);
+  const existingObjects = result.objects;
+
+  const existingObjectIndex = existingObjects.findIndex((el) => {
+    return el.name === newManagedObject.name;
+  });
+
+  if (existingObjectIndex >= 0) {
+    existingObjects.splice(existingObjectIndex, 1);
+  }
+
+  existingObjects.push(newManagedObject);
+
+  return existingObjects;
+}
 
 const updateManagedObjects = async (argv, token) => {
   const { TENANT_BASE_URL, CONFIG_DIR } = process.env;
   const SCRIPT_HOOKS = ["onStore", "onRetrieve", "onValidate"];
-  console.log("Updating Managed Objects");
+
+  const requestedObjectName = argv[OPTION.NAME];
+
+  if (requestedObjectName) {
+    console.log("Updating managed object", requestedObjectName);
+  } else {
+    console.log("Updating managed objects");
+  }
 
   try {
     // Combine managed object JSON files
@@ -21,7 +49,7 @@ const updateManagedObjects = async (argv, token) => {
       .filter((dirent) => dirent.isDirectory())
       .map((dirent) => path.join(`${dir}`, dirent.name));
 
-    const managedObjects = [];
+    let managedObjects = [];
     for (const managedObjectPath of managedObjectPaths) {
       const managedObjectName = path.parse(managedObjectPath).base;
       const managedObject = JSON.parse(
@@ -29,6 +57,10 @@ const updateManagedObjects = async (argv, token) => {
           path.join(managedObjectPath, `${managedObjectName}.json`)
         )
       );
+
+      if (requestedObjectName && requestedObjectName !== managedObjectName) {
+        continue;
+      }
 
       // Update the Event scripts if we have been supplied them in the config
       Object.entries(managedObject).forEach(([key, value]) => {
@@ -64,8 +96,18 @@ const updateManagedObjects = async (argv, token) => {
       managedObjects.push(managedObject);
     }
 
-    // Update all managed objects
     const requestUrl = `${TENANT_BASE_URL}/openidm/config/managed`;
+
+    if (requestedObjectName) {
+      managedObjects = await mergeExistingObjects(
+        managedObjects[0],
+        requestUrl,
+        token
+      );
+    }
+
+    // Update all managed objects
+
     const requestBody = {
       objects: managedObjects,
     };

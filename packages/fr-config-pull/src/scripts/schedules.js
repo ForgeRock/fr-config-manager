@@ -7,10 +7,14 @@ const SCHEDULE_SUBDIR = "schedules";
 const SCHEDULE_CONFIG_FILENAME = "schedule-config.json";
 const SCRIPT_CONTENT_SUBDIR = "scripts-content";
 
-function processSchedules(schedules, fileDir) {
+function processSchedules(schedules, fileDir, name) {
   try {
     schedules.forEach((schedule) => {
       const scheduleName = schedule._id.split("/")[1];
+
+      if (name && name !== scheduleName) {
+        return;
+      }
       var scheduleDir = `${fileDir}/${scheduleName}`;
       if (!fs.existsSync(scheduleDir)) {
         fs.mkdirSync(scheduleDir, { recursive: true });
@@ -48,7 +52,7 @@ function processSchedules(schedules, fileDir) {
   }
 }
 
-async function exportSchedules(exportDir, tenantUrl, token) {
+async function exportSchedules(exportDir, tenantUrl, name, token) {
   try {
     const idmEndpoint = `${tenantUrl}/openidm/config`;
 
@@ -64,7 +68,7 @@ async function exportSchedules(exportDir, tenantUrl, token) {
     const schedules = response.data.result;
 
     const fileDir = `${exportDir}/${SCHEDULE_SUBDIR}`;
-    processSchedules(schedules, fileDir);
+    processSchedules(schedules, fileDir, name);
   } catch (err) {
     console.log(err);
   }

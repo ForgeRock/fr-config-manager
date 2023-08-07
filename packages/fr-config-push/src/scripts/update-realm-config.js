@@ -2,6 +2,7 @@ const fs = require("fs");
 const { readFile } = require("fs/promises");
 const path = require("path");
 const fidcRequest = require("../helpers/fidc-request");
+const fidcGet = require("../helpers/fidc-get");
 
 const updateRealmConfig = async (argv, configName, token) => {
   console.log("Updating realm config", configName);
@@ -20,6 +21,7 @@ const updateRealmConfig = async (argv, configName, token) => {
       }
 
       const fileContent = JSON.parse(await readFile(configFileName));
+      delete fileContent._rev;
       const requestUrl = `${TENANT_BASE_URL}/am/json/realms/root/realms/${realm}/realm-config/${configName}`;
 
       await fidcRequest(requestUrl, fileContent, token);

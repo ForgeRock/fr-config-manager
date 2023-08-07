@@ -7,10 +7,10 @@ const { OPTION } = cliUtils;
 const updateConnectorDefinitions = async (argv, token) => {
   const { TENANT_BASE_URL, CONFIG_DIR } = process.env;
 
-  const connectorName = argv[OPTION.NAME];
+  const requestedConnectorName = argv[OPTION.NAME];
 
-  if (connectorName) {
-    console.log("Updating connector", connectorName);
+  if (requestedConnectorName) {
+    console.log("Updating connector", requestedConnectorName);
   } else {
     console.log("Updating connectors");
   }
@@ -26,7 +26,11 @@ const updateConnectorDefinitions = async (argv, token) => {
         );
 
       for (const connectorFile of connectorFileContent) {
-        if (connectorName && connectorName !== connectorFile._id) {
+        const connectorName = connectorFile._id.split("/")[1];
+        if (
+          requestedConnectorName &&
+          requestedConnectorName !== connectorName
+        ) {
           continue;
         }
         const requestUrl = `${TENANT_BASE_URL}/openidm/config/${connectorFile._id}`;

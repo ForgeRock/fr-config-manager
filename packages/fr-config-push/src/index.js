@@ -41,7 +41,7 @@ async function updateStatic(argv, token) {
   await updateScripts(argv, token);
   await updateAuthTrees(argv, token);
   await updateServices(argv, token);
-  await updateRealmConfig(argv, token);
+  await updateRealmConfig(argv, null, token);
   await updateManagedObjects(argv, token);
   await updateRemoteServers(argv, token);
   await updateIdmEndpoints(argv, token);

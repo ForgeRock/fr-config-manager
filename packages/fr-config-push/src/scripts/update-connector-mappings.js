@@ -29,10 +29,10 @@ const updateConnectorMappings = async (argv, token) => {
         if (requestedMappingName && requestedMappingName !== mappingname) {
           continue;
         }
-        const mappingObject = require(path.join(
-          mappingPath,
-          `${mappingname}.json`
-        ));
+
+        const mappingObject = JSON.parse(
+          fs.readFileSync(path.join(mappingPath, `${mappingname}.json`))
+        );
         // Update the Event scripts if we have been supplied them in the config
         for (const eventName of ["onCreate", "onUpdate", "onError"]) {
           const eventScriptName = mappingObject.name + "_" + eventName + ".js";

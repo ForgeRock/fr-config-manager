@@ -521,7 +521,7 @@ yargs
   })
   .command({
     command: COMMAND.IDM_ACCESS_CONFIG,
-    desc: "Update Access Configuration",
+    desc: "Get Access Configuration",
     builder: cliOptions([]),
     handler: (argv) => getConfig(argv),
   })

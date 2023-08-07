@@ -17,7 +17,7 @@ const updateServices = async (argv, token) => {
       console.error("Error: for a named  service, specify a single realm");
       process.exit(1);
     } else {
-      console.log("Updating service", requestedMappingName);
+      console.log("Updating service", requestedServiceName);
     }
   } else {
     console.log("Updating services");

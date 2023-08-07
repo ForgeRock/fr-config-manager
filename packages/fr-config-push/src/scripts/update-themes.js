@@ -3,8 +3,25 @@ const path = require("path");
 const fidcRequest = require("../helpers/fidc-request");
 const cliUtils = require("../helpers/cli-options");
 const { OPTION } = cliUtils;
+const fidcGet = require("../helpers/fidc-get");
 
 const HTML_FIELDS = ["accountFooter", "journeyFooter", "journeyHeader"];
+
+async function mergeExistingThemes(newTheme, realm, resourceUrl, token) {
+  const themes = await fidcGet(resourceUrl, token, true);
+
+  const existingThemeIndex = themes.realm[realm].findIndex((el) => {
+    return el.name === newTheme.name;
+  });
+
+  if (existingThemeIndex >= 0) {
+    themes.realm[realm].splice(existingThemeIndex, 1);
+  }
+
+  themes.realm[realm].push(newTheme);
+
+  return themes;
+}
 
 function processThemes(theme, themePath) {
   try {
@@ -62,10 +79,19 @@ const updateThemes = async (argv, token) => {
         const mergedTheme = processThemes(theme, themePath);
         realmthemes.push(mergedTheme);
       }
+
       themerealm.realm[realm] = realmthemes;
     }
     const requestUrl = `${TENANT_BASE_URL}/openidm/config/ui/themerealm`;
 
+    if (requestedThemeName) {
+      themerealm = await mergeExistingThemes(
+        themerealm.realm[realms[0]][0],
+        realms[0],
+        requestUrl,
+        token
+      );
+    }
     await fidcRequest(requestUrl, themerealm, token);
   } catch (error) {
     console.error(error.message);

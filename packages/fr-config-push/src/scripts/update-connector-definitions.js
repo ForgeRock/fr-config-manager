@@ -1,10 +1,19 @@
 const path = require("path");
 const fs = require("fs");
 const fidcRequest = require("../helpers/fidc-request");
+const cliUtils = require("../helpers/cli-options");
+const { OPTION } = cliUtils;
 
 const updateConnectorDefinitions = async (argv, token) => {
-  console.log("Updating connectors");
   const { TENANT_BASE_URL, CONFIG_DIR } = process.env;
+
+  const requestedConnectorName = argv[OPTION.NAME];
+
+  if (requestedConnectorName) {
+    console.log("Updating connector", requestedConnectorName);
+  } else {
+    console.log("Updating connectors");
+  }
 
   try {
     const dir = path.join(CONFIG_DIR, "sync/connectors");
@@ -17,6 +26,13 @@ const updateConnectorDefinitions = async (argv, token) => {
         );
 
       for (const connectorFile of connectorFileContent) {
+        const connectorName = connectorFile._id.split("/")[1];
+        if (
+          requestedConnectorName &&
+          requestedConnectorName !== connectorName
+        ) {
+          continue;
+        }
         const requestUrl = `${TENANT_BASE_URL}/openidm/config/${connectorFile._id}`;
         await fidcRequest(requestUrl, connectorFile, token);
         console.log(`${connectorFile._id} updated`);

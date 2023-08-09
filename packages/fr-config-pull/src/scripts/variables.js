@@ -5,7 +5,7 @@ const { saveJsonToFile, esvToEnv } = utils;
 
 const EXPORT_SUBDIR = "esvs/variables";
 
-async function exportConfig(exportDir, tenantUrl, token) {
+async function exportConfig(exportDir, tenantUrl, name, token) {
   try {
     const envEndpoint = `${tenantUrl}/environment/variables`;
 
@@ -26,6 +26,9 @@ async function exportConfig(exportDir, tenantUrl, token) {
     const variables = response.data.result;
 
     variables.forEach((variable) => {
+      if (name && name !== variable._id) {
+        return;
+      }
       const variableObject = {
         _id: variable._id,
         expressionType: variable.expressionType,

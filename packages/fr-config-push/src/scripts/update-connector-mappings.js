@@ -1,10 +1,18 @@
 const path = require("path");
 const fs = require("fs");
 const fidcRequest = require("../helpers/fidc-request");
+const cliUtils = require("../helpers/cli-options");
+const { OPTION } = cliUtils;
 
 const updateConnectorMappings = async (argv, token) => {
-  console.log("Updating mappings");
   const { TENANT_BASE_URL, CONFIG_DIR } = process.env;
+  const requestedMappingName = argv[OPTION.NAME];
+
+  if (requestedMappingName) {
+    console.log("Updating mapping", requestedMappingName);
+  } else {
+    console.log("Updating mappings");
+  }
 
   try {
     const dir = path.join(CONFIG_DIR, "/sync/mappings");
@@ -18,10 +26,13 @@ const updateConnectorMappings = async (argv, token) => {
 
       for (const mappingPath of mappingPaths) {
         const mappingname = path.parse(mappingPath).base;
-        const mappingObject = require(path.join(
-          mappingPath,
-          `${mappingname}.json`
-        ));
+        if (requestedMappingName && requestedMappingName !== mappingname) {
+          continue;
+        }
+
+        const mappingObject = JSON.parse(
+          fs.readFileSync(path.join(mappingPath, `${mappingname}.json`))
+        );
         // Update the Event scripts if we have been supplied them in the config
         for (const eventName of ["onCreate", "onUpdate", "onError"]) {
           const eventScriptName = mappingObject.name + "_" + eventName + ".js";
@@ -75,7 +86,6 @@ const updateConnectorMappings = async (argv, token) => {
       };
 
       await fidcRequest(requestUrl, requestBody, token);
-
     } else {
       console.log("Warning: No Connector mappings");
     }

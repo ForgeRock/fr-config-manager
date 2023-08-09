@@ -7,9 +7,13 @@ const EXPORT_SUBDIR = "sync/mappings";
 
 // Split managed.json into separate objects, each with separate scripts
 
-function processMappings(mappings, targetDir) {
+function processMappings(mappings, targetDir, name) {
   try {
     mappings.forEach((mapping) => {
+      if (name && name !== mapping.name) {
+        return;
+      }
+
       const mappingPath = `${targetDir}/${mapping.name}`;
 
       if (!fs.existsSync(mappingPath)) {
@@ -38,7 +42,7 @@ function processMappings(mappings, targetDir) {
   }
 }
 
-async function exportMappings(exportDir, tenantUrl, token) {
+async function exportMappings(exportDir, tenantUrl, name, token) {
   try {
     const idmEndpoint = `${tenantUrl}/openidm/config/sync`;
 
@@ -64,7 +68,7 @@ async function exportMappings(exportDir, tenantUrl, token) {
     const mappings = response.data.mappings;
 
     const fileDir = `${exportDir}/${EXPORT_SUBDIR}`;
-    processMappings(mappings, fileDir);
+    processMappings(mappings, fileDir, name);
   } catch (err) {
     console.log(err);
   }

@@ -1,12 +1,27 @@
 const fs = require("fs");
 const path = require("path");
 const fidcRequest = require("../helpers/fidc-request");
+const cliUtils = require("../helpers/cli-options");
+const { OPTION } = cliUtils;
 
 const SOCIAL_IDENTITY_PROVIDER_SERVICE = "SocialIdentityProviders";
 
 const updateServices = async (argv, token) => {
-  console.log("Updating AM services");
   const { REALMS, TENANT_BASE_URL, CONFIG_DIR } = process.env;
+
+  const requestedServiceName = argv[OPTION.NAME];
+  const realms = argv[OPTION.REALM] ? [argv[OPTION.REALM]] : JSON.parse(REALMS);
+
+  if (requestedServiceName) {
+    if (realms.length !== 1) {
+      console.error("Error: for a named  service, specify a single realm");
+      process.exit(1);
+    } else {
+      console.log("Updating service", requestedServiceName);
+    }
+  } else {
+    console.log("Updating services");
+  }
 
   try {
     for (const realm of JSON.parse(REALMS)) {
@@ -28,6 +43,10 @@ const updateServices = async (argv, token) => {
       await Promise.all(
         servicesFileContent.map(async (serviceFile) => {
           const serviceName = serviceFile._type._id;
+
+          if (requestedServiceName && requestedServiceName !== serviceName) {
+            return;
+          }
           //remove _rev if present to prevent validation error
           delete serviceFile._rev;
 

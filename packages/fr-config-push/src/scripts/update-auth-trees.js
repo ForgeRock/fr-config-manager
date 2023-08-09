@@ -141,7 +141,7 @@ const updateAuthTrees = async (argv, token) => {
 
   const realms = argv[OPTION.REALM] ? [argv[OPTION.REALM]] : JSON.parse(REALMS);
 
-  const journeyName = argv.name;
+  const journeyName = argv[OPTION.NAME];
 
   const pushInnerJourneys = !journeyName || argv[OPTION.PUSH_DEPENDENCIES];
 

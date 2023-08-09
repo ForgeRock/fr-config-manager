@@ -3,7 +3,7 @@ const { readFile } = require("fs/promises");
 const path = require("path");
 const fidcRequest = require("../helpers/fidc-request");
 
-const updateAccessConfig = async (argv, token) => {
+const updateKba = async (argv, token) => {
   console.log("updating KBA");
   const { TENANT_BASE_URL, CONFIG_DIR } = process.env;
   try {
@@ -26,4 +26,4 @@ const updateAccessConfig = async (argv, token) => {
   }
 };
 
-module.exports = updateAccessConfig;
+module.exports = updateKba;

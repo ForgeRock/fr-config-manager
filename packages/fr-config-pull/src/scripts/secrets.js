@@ -5,7 +5,7 @@ const { saveJsonToFile, esvToEnv } = utils;
 
 const EXPORT_SUBDIR = "esvs/secrets";
 
-async function exportConfig(exportDir, tenantUrl, token) {
+async function exportConfig(exportDir, tenantUrl, name, token) {
   try {
     const envEndpoint = `${tenantUrl}/environment/secrets`;
 
@@ -26,6 +26,9 @@ async function exportConfig(exportDir, tenantUrl, token) {
     }
 
     for (const secret of secrets) {
+      if (name && name !== secret._id) {
+        return;
+      }
       const versionsEndpoint = `${tenantUrl}/environment/secrets/${secret._id}/versions`;
 
       const versionsResponse = await axios({

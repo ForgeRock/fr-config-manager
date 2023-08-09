@@ -35,7 +35,7 @@ async function saveDescendents(targetDir, amEndpoint, serviceName, token) {
   }
 }
 
-async function exportConfig(exportDir, realms, tenantUrl, token) {
+async function exportConfig(exportDir, realms, tenantUrl, name, token) {
   try {
     for (const realm of realms) {
       const targetDir = `${exportDir}/${realm}/${EXPORT_SUB_DIR}`;
@@ -60,7 +60,10 @@ async function exportConfig(exportDir, realms, tenantUrl, token) {
 
       for (const service of services) {
         const serviceName = service._id;
-        if (EXCLUDE_SERVICES.includes(serviceName)) {
+        if (
+          EXCLUDE_SERVICES.includes(serviceName) ||
+          (name && name !== serviceName)
+        ) {
           continue;
         }
 

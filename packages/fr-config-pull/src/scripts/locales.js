@@ -5,10 +5,15 @@ const { saveJsonToFile } = utils;
 
 const LOCALES_SUBDIR = "locales";
 
-function processLocales(locales, fileDir, tenantUrl, token) {
+function processLocales(locales, fileDir, tenantUrl, name, token) {
   try {
     locales.forEach((locale) => {
       const localeName = locale._id.split("/")[1];
+
+      if (name && name !== localeName) {
+        return;
+      }
+
       const idmEndpoint = `${tenantUrl}/openidm/config/${locale._id}`;
 
       axios({
@@ -29,7 +34,7 @@ function processLocales(locales, fileDir, tenantUrl, token) {
   }
 }
 
-async function exportLocales(exportDir, tenantUrl, token) {
+async function exportLocales(exportDir, tenantUrl, name, token) {
   try {
     const idmEndpoint = `${tenantUrl}/openidm/config`;
 
@@ -48,7 +53,7 @@ async function exportLocales(exportDir, tenantUrl, token) {
     if (!fs.existsSync(fileDir)) {
       fs.mkdirSync(fileDir, { recursive: true });
     }
-    processLocales(locales, fileDir, tenantUrl, token);
+    processLocales(locales, fileDir, tenantUrl, name, token);
   } catch (err) {
     console.log(err);
   }

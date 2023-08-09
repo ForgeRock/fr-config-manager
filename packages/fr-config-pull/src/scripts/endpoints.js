@@ -7,10 +7,14 @@ const ENDPOINT_SUBDIR = "endpoints";
 const ENDPOINT_CONFIG_FILENAME = "endpoint-config.json";
 const SCRIPT_CONTENT_SUBDIR = "scripts-content";
 
-function processEndpoints(endpoints, fileDir) {
+function processEndpoints(endpoints, fileDir, name) {
   try {
     endpoints.forEach((endpoint) => {
       const endpointName = endpoint._id.split("/")[1];
+
+      if (name && name !== endpointName) {
+        return;
+      }
       const endpointDir = `${fileDir}/${endpointName}`;
       if (!fs.existsSync(endpointDir)) {
         fs.mkdirSync(endpointDir, { recursive: true });
@@ -28,7 +32,7 @@ function processEndpoints(endpoints, fileDir) {
   }
 }
 
-async function exportEndpoints(exportDir, tenantUrl, token) {
+async function exportEndpoints(exportDir, tenantUrl, name, token) {
   try {
     const idmEndpoint = `${tenantUrl}/openidm/config`;
 
@@ -48,7 +52,7 @@ async function exportEndpoints(exportDir, tenantUrl, token) {
     const endpoints = endpointsResponse.data.result;
 
     const fileDir = `${exportDir}/${ENDPOINT_SUBDIR}`;
-    processEndpoints(endpoints, fileDir);
+    processEndpoints(endpoints, fileDir, name);
   } catch (err) {
     console.log(err);
   }

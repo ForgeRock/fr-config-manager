@@ -1,10 +1,19 @@
 const fs = require("fs");
 const path = require("path");
 const fidcRequest = require("../helpers/fidc-request");
+const cliUtils = require("../helpers/cli-options");
+const { OPTION } = cliUtils;
 
 const updateInternalRoles = async (argv, token) => {
-  console.log("Updating internal roles");
   const { TENANT_BASE_URL, CONFIG_DIR } = process.env;
+
+  const requestedRoleName = argv[OPTION.NAME];
+
+  if (requestedRoleName) {
+    console.log("Updating internal role", requestedRoleName);
+  } else {
+    console.log("Updating internal roles");
+  }
 
   try {
     // Combine internal roles JSON files
@@ -26,6 +35,11 @@ const updateInternalRoles = async (argv, token) => {
       );
 
       let roleObject = JSON.parse(internalRolesFileContent);
+
+      if (requestedRoleName && requestedRoleName !== roleObject.name) {
+        continue;
+      }
+
       delete roleObject._rev;
       if (
         roleObject.temporalConstraints &&
@@ -38,7 +52,6 @@ const updateInternalRoles = async (argv, token) => {
       const requestUrl = `${TENANT_BASE_URL}/openidm/internal/role/${roleObject._id}`;
       await fidcRequest(requestUrl, roleObject, token);
     }
-
   } catch (error) {
     console.error(error.message);
     process.exit(1);

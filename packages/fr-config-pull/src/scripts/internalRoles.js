@@ -6,7 +6,7 @@ const { saveJsonToFile } = utils;
 const EXPORT_SUBDIR = "internal-roles";
 const EXPORT_FILENAME = "internal-roles.json";
 
-async function exportConfig(exportDir, tenantUrl, token) {
+async function exportConfig(exportDir, tenantUrl, name, token) {
   try {
     const idmEndpoint = `${tenantUrl}/openidm/internal/role`;
 
@@ -32,6 +32,9 @@ async function exportConfig(exportDir, tenantUrl, token) {
     }
 
     roles.forEach((role) => {
+      if (name && name !== role.name) {
+        return;
+      }
       if (role.privileges && role.privileges.length > 0) {
         const fileName = `${targetDir}/${role.name}.json`;
         saveJsonToFile(role, fileName);

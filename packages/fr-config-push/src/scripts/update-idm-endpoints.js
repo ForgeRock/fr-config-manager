@@ -44,7 +44,7 @@ const updateIdmEndpoints = async (argv, token) => {
 
       for (const fileContent of endpoints) {
         const endpoint = JSON.parse(
-          await fs.readFile(path.join(dir, fileContent))
+          await fs.readFileSync(path.join(dir, fileContent))
         );
 
         const endpointName = endpoint._id.split("/")[1];

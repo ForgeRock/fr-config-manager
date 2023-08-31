@@ -6,6 +6,8 @@ const path = require("path");
 const fs = require("fs");
 const fidcGet = require("../helpers/fidc-get");
 const fidcPost = require("../helpers/fidc-post");
+const cliUtils = require("../helpers/cli-options");
+const { OPTION } = cliUtils;
 
 const updateSecrets = async (argv, token) => {
   const { TENANT_BASE_URL } = process.env;

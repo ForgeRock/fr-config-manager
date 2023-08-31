@@ -8,7 +8,7 @@ const { request } = require("http");
 const { OPTION } = cliUtils;
 
 async function handleEndpoint(dir, endpoint, baseUrl, token) {
-  const data = readFileSync(`${dir}/${endpoint.file}`, "utf8");
+  const data = fs.readFileSync(`${dir}/${endpoint.file}`, "utf8");
   endpoint.source = data;
   delete endpoint.file;
   const requestUrl = `${baseUrl}/${endpoint._id}`;
@@ -44,7 +44,7 @@ const updateIdmEndpoints = async (argv, token) => {
 
       for (const fileContent of endpoints) {
         const endpoint = JSON.parse(
-          await fs.readFile(path.join(dir, fileContent))
+          fs.readFileSync(path.join(dir, fileContent))
         );
 
         const endpointName = endpoint._id.split("/")[1];

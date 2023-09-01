@@ -82,11 +82,6 @@ function checkConfig() {
 }
 
 async function getCommands() {
-  if (!checkConfig()) {
-    console.error("Configuration errors");
-    process.exit(1);
-  }
-
   if (process.env.TENANT_READONLY && process.env.TENANT_READONLY === "true") {
     console.error("Environment set to readonly - no push permitted");
     process.exit(1);
@@ -103,11 +98,19 @@ async function getCommands() {
     scope: process.env.SERVICE_ACCOUNT_SCOPE,
   };
 
-  const token = await authenticate.getToken(tenantUrl, clientConfig);
+  function getAccessToken() {
+    if (!checkConfig()) {
+      console.error("Configuration errors");
+      process.exit(1);
+    }
+
+    return authenticate.getToken(tenantUrl, clientConfig);
+  }
 
   // Script arguments
   yargs
     .usage("Usage: $0 [arguments]")
+    .strict()
     .version(false)
     .help("h")
     .alias("h", "help")
@@ -115,73 +118,89 @@ async function getCommands() {
       command: "all-static",
       desc: "Update all static Configuration",
       builder: cliOptions([]),
-      handler: (argv) => updateStatic(argv, token),
+      handler: (argv) =>
+        getAccessToken().then((token) => updateStatic(argv, token)),
     })
     .command({
       command: "access-config",
       desc: "Update access configuration",
       builder: cliOptions([]),
-      handler: (argv) => updateIdmAccessConfig(argv, token),
+      handler: (argv) =>
+        getAccessToken().then((token) => updateIdmAccessConfig(argv, token)),
     })
     .command({
       command: "audit",
       desc: "Update audit configuration",
       builder: cliOptions([]),
-      handler: (argv) => updateAudit(argv, token),
+      handler: (argv) =>
+        getAccessToken().then((token) => updateAudit(argv, token)),
     })
     .command({
       command: "authentication",
       desc: "Update authentication configuration",
       builder: cliOptions([OPTION.REALM]),
-      handler: (argv) => updateRealmConfig(argv, "authentication", token),
+      handler: (argv) =>
+        getAccessToken().then((token) =>
+          updateRealmConfig(argv, "authentication", token)
+        ),
     })
     .command({
       command: "authz-policies",
       desc: "Update authorization policies",
       builder: cliOptions([]),
-      handler: (argv) => updateAuthzPolicies(argv, token),
+      handler: (argv) =>
+        getAccessToken().then((token) => updateAuthzPolicies(argv, token)),
     })
     .command({
       command: "connector-definitions",
       desc: "Update connector definitions",
       builder: cliOptions([OPTION.NAME]),
-      handler: (argv) => updateConnectorDefinitions(argv, token),
+      handler: (argv) =>
+        getAccessToken().then((token) =>
+          updateConnectorDefinitions(argv, token)
+        ),
     })
     .command({
       command: "connector-mappings",
       desc: "Update connector mappings",
       builder: cliOptions([OPTION.NAME]),
-      handler: (argv) => updateConnectorMappings(argv, token),
+      handler: (argv) =>
+        getAccessToken().then((token) => updateConnectorMappings(argv, token)),
     })
     .command({
       command: "cors",
       desc: "Update CORS configuration",
       builder: cliOptions([]),
-      handler: (argv) => updateCors(argv, token),
+      handler: (argv) =>
+        getAccessToken().then((token) => updateCors(argv, token)),
     })
     .command({
       command: "email-provider",
       desc: "Update email provider settings",
       builder: cliOptions([]),
-      handler: (argv) => updateEmailProvider(argv, token),
+      handler: (argv) =>
+        getAccessToken().then((token) => updateEmailProvider(argv, token)),
     })
     .command({
       command: "email-templates",
       desc: "Update email templates",
       builder: cliOptions([OPTION.NAME]),
-      handler: (argv) => updateEmailTemplates(argv, token),
+      handler: (argv) =>
+        getAccessToken().then((token) => updateEmailTemplates(argv, token)),
     })
     .command({
       command: "endpoints",
       desc: "Update custom endpoints",
       builder: cliOptions([OPTION.FILENAME_FILTER, OPTION.NAME]),
-      handler: (argv) => updateIdmEndpoints(argv, token),
+      handler: (argv) =>
+        getAccessToken().then((token) => updateIdmEndpoints(argv, token)),
     })
     .command({
       command: "internal-roles",
       desc: "Update internal roles",
       builder: cliOptions([OPTION.NAME]),
-      handler: (argv) => updateInternalRoles(argv, token),
+      handler: (argv) =>
+        getAccessToken().then((token) => updateInternalRoles(argv, token)),
     })
     .command({
       command: "journeys",
@@ -191,110 +210,127 @@ async function getCommands() {
         OPTION.REALM,
         OPTION.PUSH_DEPENDENCIES,
       ]),
-      handler: (argv) => updateAuthTrees(argv, token),
+      handler: (argv) =>
+        getAccessToken().then((token) => updateAuthTrees(argv, token)),
     })
-
     .command({
       command: "kba",
       desc: "Update KBA configuration",
       builder: cliOptions([]),
-      handler: (argv) => updateKba(argv, token),
+      handler: (argv) =>
+        getAccessToken().then((token) => updateKba(argv, token)),
     })
     .command({
       command: "locales",
       desc: "Update locales",
       builder: cliOptions([OPTION.NAME]),
-      handler: (argv) => updateLocales(argv, token),
+      handler: (argv) =>
+        getAccessToken().then((token) => updateLocales(argv, token)),
     })
     .command({
       command: "managed-objects",
       desc: "Update managed objects",
       builder: cliOptions([OPTION.NAME, OPTION.REALM]),
-      handler: (argv) => updateManagedObjects(argv, token),
+      handler: (argv) =>
+        getAccessToken().then((token) => updateManagedObjects(argv, token)),
     })
     .command({
       command: "oauth2-agents",
       desc: "Update OAuth2 agents",
       builder: cliOptions([]),
-      handler: (argv) => updateAgents(argv, token),
+      handler: (argv) =>
+        getAccessToken().then((token) => updateAgents(argv, token)),
     })
     .command({
       command: "password-policy",
       desc: "Update password policy",
       builder: cliOptions([]),
-      handler: (argv) => updatePasswordPolicy(argv, token),
+      handler: (argv) =>
+        getAccessToken().then((token) => updatePasswordPolicy(argv, token)),
     })
     .command({
       command: "remote-servers",
       desc: "Update remote connector servers",
       builder: cliOptions([OPTION.NAME]),
-      handler: (argv) => updateRemoteServers(argv, token),
+      handler: (argv) =>
+        getAccessToken().then((token) => updateRemoteServers(argv, token)),
     })
     .command({
       command: "restart",
       desc: "Restart tenant",
       builder: cliOptions([]),
-      handler: (argv) => restartFidc(argv, token),
+      handler: (argv) =>
+        getAccessToken().then((token) => restartFidc(argv, token)),
     })
     .command({
       command: "schedules",
       desc: "Update schedules",
       builder: cliOptions([OPTION.FILENAME_FILTER, OPTION.NAME]),
-      handler: (argv) => updateIdmSchedules(argv, token),
+      handler: (argv) =>
+        getAccessToken().then((token) => updateIdmSchedules(argv, token)),
     })
     .command({
       command: "scripts",
       desc: "Update authentication scripts",
       builder: cliOptions([OPTION.FILENAME_FILTER, OPTION.NAME, OPTION.REALM]),
-      handler: (argv) => updateScripts(argv, token),
+      handler: (argv) =>
+        getAccessToken().then((token) => updateScripts(argv, token)),
     })
     .command({
       command: "secrets",
       desc: "Update secrets",
       builder: cliOptions([OPTION.NAME]),
-      handler: (argv) => updateSecrets(argv, token),
+      handler: (argv) =>
+        getAccessToken().then((token) => updateSecrets(argv, token)),
     })
     .command({
       command: "secret-mappings",
       desc: "Update secret mappings",
       builder: cliOptions([OPTION.NAME, OPTION.REALM]),
-      handler: (argv) => updateSecretMappings(argv, token),
+      handler: (argv) =>
+        getAccessToken().then((token) => updateSecretMappings(argv, token)),
     })
     .command({
       command: "service-objects",
       desc: "Update service objects",
       builder: cliOptions([]),
-      handler: (argv) => updateServiceObjects(argv, token),
+      handler: (argv) =>
+        getAccessToken().then((token) => updateServiceObjects(argv, token)),
     })
     .command({
       command: "services",
       desc: "Update authentication services",
       builder: cliOptions([OPTION.NAME, OPTION.REALM]),
-      handler: (argv) => updateServices(argv, token),
+      handler: (argv) =>
+        getAccessToken().then((token) => updateServices(argv, token)),
     })
     .command({
       command: "terms-and-conditions",
       desc: "Update terms and conditions",
       builder: cliOptions([OPTION.NAME]),
-      handler: (argv) => updateTermsAndConditions(argv, token),
+      handler: (argv) =>
+        getAccessToken().then((token) => updateTermsAndConditions(argv, token)),
     })
     .command({
       command: "themes",
       desc: "Update UI themes",
       builder: cliOptions([OPTION.NAME, OPTION.REALM]),
-      handler: (argv) => updateThemes(argv, token),
+      handler: (argv) =>
+        getAccessToken().then((token) => updateThemes(argv, token)),
     })
     .command({
       command: "ui-config",
       desc: "Update UI configuration",
       builder: cliOptions([]),
-      handler: (argv) => updateUiConfig(argv, token),
+      handler: (argv) =>
+        getAccessToken().then((token) => updateUiConfig(argv, token)),
     })
     .command({
       command: "variables",
       desc: "Update environment specific variables",
       builder: cliOptions([OPTION.NAME]),
-      handler: (argv) => updateVariables(argv, token),
+      handler: (argv) =>
+        getAccessToken().then((token) => updateVariables(argv, token)),
     })
     .option(OPTION.NAME, {
       alias: "n",

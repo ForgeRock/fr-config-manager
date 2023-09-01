@@ -423,6 +423,7 @@ yargs
   .version(false)
   .help("h")
   .alias("h", "help")
+  .strict()
   .command({
     command: COMMAND.ALL,
     desc: "Get all configuration",

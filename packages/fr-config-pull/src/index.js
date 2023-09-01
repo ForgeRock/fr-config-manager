@@ -430,33 +430,51 @@ yargs
     handler: (argv) => getConfig(argv),
   })
   .command({
-    command: COMMAND.AUTH_TREE,
-    desc: "Get journeys",
-    builder: cliOptions([OPTION.NAME, OPTION.REALM]),
+    command: COMMAND.IDM_ACCESS_CONFIG,
+    desc: "Get access configuration",
+    builder: cliOptions([]),
+    handler: (argv) => getConfig(argv),
+  })
+  .command({
+    command: COMMAND.AUDIT,
+    desc: "Get audit configuration",
+    builder: cliOptions([]),
+    handler: (argv) => getConfig(argv),
+  })
+  .command({
+    command: COMMAND.AUTHENTICATION,
+    desc: "Get authentication configuration",
+    builder: cliOptions([OPTION.REALM]),
+    handler: (argv) => getConfig(argv),
+  })
+  .command({
+    command: COMMAND.AUTHZ_POLICIES,
+    desc: "Get authorization policies",
+    builder: cliOptions([]),
     handler: (argv) => getConfig(argv),
   })
   .command({
     command: COMMAND.CONNECTOR_DEFINITIONS,
-    desc: "Get Connector Definitions ",
+    desc: "Get connector cefinitions ",
     builder: cliOptions([OPTION.NAME]),
     handler: (argv) => getConfig(argv),
   })
   .command({
     command: COMMAND.CONNECTOR_MAPPINGS,
-    desc: "Get Connector Mappings",
+    desc: "Get connector mappings",
     builder: cliOptions([OPTION.NAME]),
     handler: (argv) => getConfig(argv),
   })
   .command({
     command: COMMAND.CORS,
-    desc: "Get CORS definitions",
+    desc: "Get CORS configuration",
     builder: cliOptions([]),
     handler: (argv) => getConfig(argv),
   })
   .command({
-    command: COMMAND.MANAGED_OBJECTS,
-    desc: "Get Managed Objects",
-    builder: cliOptions([OPTION.NAME]),
+    command: COMMAND.EMAIL_PROVIDER,
+    desc: "Get email provider configuration",
+    builder: cliOptions([]),
     handler: (argv) => getConfig(argv),
   })
   .command({
@@ -466,99 +484,9 @@ yargs
     handler: (argv) => getConfig(argv),
   })
   .command({
-    command: COMMAND.THEMES,
-    desc: "Get themes",
-    builder: cliOptions([OPTION.REALM, OPTION.NAME]),
-    handler: (argv) => getConfig(argv),
-  })
-  .command({
-    command: COMMAND.REMOTE_SERVERS,
-    desc: "Get Remote Connector Servers",
-    builder: cliOptions([OPTION.NAME]),
-    handler: (argv) => getConfig(argv),
-  })
-  .command({
-    command: COMMAND.SCRIPTS,
-    desc: "Get Auth Scripts",
-    builder: cliOptions([OPTION.REALM, OPTION.NAME]),
-    handler: (argv) => getConfig(argv),
-  })
-  .command({
-    command: COMMAND.SERVICES,
-    desc: "Get Auth Services",
-    builder: cliOptions([OPTION.REALM, OPTION.NAME]),
-    handler: (argv) => getConfig(argv),
-  })
-  .command({
-    command: COMMAND.TERMS_AND_CONDITIONS,
-    desc: "Get Terms and Conditions",
-    builder: cliOptions([OPTION.NAME]),
-    handler: (argv) => getConfig(argv),
-  })
-  .command({
-    command: COMMAND.PASSWORD_POLICY,
-    desc: "Get Password Policy",
-    builder: cliOptions([OPTION.REALM]),
-    handler: (argv) => getConfig(argv),
-  })
-  .command({
-    command: COMMAND.UI_CONFIG,
-    desc: "Get UI config",
-    builder: cliOptions([]),
-    handler: (argv) => getConfig(argv),
-  })
-  .command({
     command: COMMAND.IDM_ENDPOINTS,
-    desc: "Get Custom Endpoints",
+    desc: "Get custom endpoints",
     builder: cliOptions([OPTION.NAME]),
-    handler: (argv) => getConfig(argv),
-  })
-  .command({
-    command: COMMAND.IDM_SCHEDULES,
-    desc: "Get Schedules",
-    builder: cliOptions([OPTION.NAME]),
-    handler: (argv) => getConfig(argv),
-  })
-  .command({
-    command: COMMAND.IDM_ACCESS_CONFIG,
-    desc: "Get Access Configuration",
-    builder: cliOptions([]),
-    handler: (argv) => getConfig(argv),
-  })
-  .command({
-    command: COMMAND.KBA,
-    desc: "Get KBA Configuration",
-    builder: cliOptions([]),
-    handler: (argv) => getConfig(argv),
-  })
-  .command({
-    command: COMMAND.SECRET_MAPPINGS,
-    desc: "Get secret mappings",
-    builder: cliOptions([OPTION.NAME, OPTION.REALM]),
-    handler: (argv) => getConfig(argv),
-  })
-  .command({
-    command: COMMAND.OAUTH2_AGENTS,
-    desc: "Get OAuth2 Agents",
-    builder: cliOptions([]),
-    handler: (argv) => getConfig(argv),
-  })
-  .command({
-    command: COMMAND.AUTHZ_POLICIES,
-    desc: "Get Authorization Policies",
-    builder: cliOptions([]),
-    handler: (argv) => getConfig(argv),
-  })
-  .command({
-    command: COMMAND.EMAIL_PROVIDER,
-    desc: "Get email provider settings",
-    builder: cliOptions([]),
-    handler: (argv) => getConfig(argv),
-  })
-  .command({
-    command: COMMAND.AUTHENTICATION,
-    desc: "Get authentication config",
-    builder: cliOptions([OPTION.REALM]),
     handler: (argv) => getConfig(argv),
   })
   .command({
@@ -568,20 +496,14 @@ yargs
     handler: (argv) => getConfig(argv),
   })
   .command({
-    command: COMMAND.SECRETS,
-    desc: "Get secrets",
-    builder: cliOptions([OPTION.NAME]),
+    command: COMMAND.AUTH_TREE,
+    desc: "Get journeys",
+    builder: cliOptions([OPTION.NAME, OPTION.REALM]),
     handler: (argv) => getConfig(argv),
   })
   .command({
-    command: COMMAND.ESVS,
-    desc: "Get environment specific variables",
-    builder: cliOptions([OPTION.NAME]),
-    handler: (argv) => getConfig(argv),
-  })
-  .command({
-    command: COMMAND.SERVICE_OBJECTS,
-    desc: "Get service objects",
+    command: COMMAND.KBA,
+    desc: "Get KBA configuration",
     builder: cliOptions([]),
     handler: (argv) => getConfig(argv),
   })
@@ -592,14 +514,92 @@ yargs
     handler: (argv) => getConfig(argv),
   })
   .command({
-    command: COMMAND.AUDIT,
-    desc: "Get audit config",
+    command: COMMAND.MANAGED_OBJECTS,
+    desc: "Get managed objects",
+    builder: cliOptions([OPTION.NAME]),
+    handler: (argv) => getConfig(argv),
+  })
+  .command({
+    command: COMMAND.OAUTH2_AGENTS,
+    desc: "Get OAuth2 agents",
     builder: cliOptions([]),
+    handler: (argv) => getConfig(argv),
+  })
+  .command({
+    command: COMMAND.PASSWORD_POLICY,
+    desc: "Get password policy",
+    builder: cliOptions([OPTION.REALM]),
+    handler: (argv) => getConfig(argv),
+  })
+  .command({
+    command: COMMAND.REMOTE_SERVERS,
+    desc: "Get remote connector servers",
+    builder: cliOptions([OPTION.NAME]),
+    handler: (argv) => getConfig(argv),
+  })
+  .command({
+    command: COMMAND.IDM_SCHEDULES,
+    desc: "Get schedules",
+    builder: cliOptions([OPTION.NAME]),
+    handler: (argv) => getConfig(argv),
+  })
+  .command({
+    command: COMMAND.SCRIPTS,
+    desc: "Get authentication scripts",
+    builder: cliOptions([OPTION.REALM, OPTION.NAME]),
+    handler: (argv) => getConfig(argv),
+  })
+  .command({
+    command: COMMAND.SECRETS,
+    desc: "Get secrets",
+    builder: cliOptions([OPTION.NAME]),
+    handler: (argv) => getConfig(argv),
+  })
+  .command({
+    command: COMMAND.SECRET_MAPPINGS,
+    desc: "Get secret mappings",
+    builder: cliOptions([OPTION.NAME, OPTION.REALM]),
+    handler: (argv) => getConfig(argv),
+  })
+  .command({
+    command: COMMAND.SERVICE_OBJECTS,
+    desc: "Get service objects",
+    builder: cliOptions([]),
+    handler: (argv) => getConfig(argv),
+  })
+  .command({
+    command: COMMAND.SERVICES,
+    desc: "Get authentication services",
+    builder: cliOptions([OPTION.REALM, OPTION.NAME]),
+    handler: (argv) => getConfig(argv),
+  })
+  .command({
+    command: COMMAND.THEMES,
+    desc: "Get UI themes",
+    builder: cliOptions([OPTION.REALM, OPTION.NAME]),
+    handler: (argv) => getConfig(argv),
+  })
+  .command({
+    command: COMMAND.TERMS_AND_CONDITIONS,
+    desc: "Get terms and conditions",
+    builder: cliOptions([OPTION.NAME]),
+    handler: (argv) => getConfig(argv),
+  })
+  .command({
+    command: COMMAND.UI_CONFIG,
+    desc: "Get UI configuration",
+    builder: cliOptions([]),
+    handler: (argv) => getConfig(argv),
+  })
+  .command({
+    command: COMMAND.ESVS,
+    desc: "Get environment specific variables",
+    builder: cliOptions([OPTION.NAME]),
     handler: (argv) => getConfig(argv),
   })
   .option(OPTION.NAME, {
     alias: "n",
-    describe: "Specific config",
+    describe: "Specific configuration item",
     type: "string",
   })
   .option(OPTION.REALM, {

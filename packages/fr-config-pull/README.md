@@ -24,38 +24,39 @@ Usage: fr-config-pull [arguments]
 
 Commands:
   fr-config-pull all                    Get all configuration
-  fr-config-pull journeys               Get journeys
-  fr-config-pull connector-definitions  Get Connector Definitions
-  fr-config-pull connector-mappings     Get Connector Mappings
-  fr-config-pull cors                   Get CORS definitions
-  fr-config-pull managed-objects        Get Managed Objects
+  fr-config-pull access-config          Get access configuration
+  fr-config-pull audit                  Get audit configuration
+  fr-config-pull authentication         Get authentication configuration
+  fr-config-pull authz-policies         Get authorization policies
+  fr-config-pull config-metadata        Show config metadata
+  fr-config-pull connector-definitions  Get connector cefinitions
+  fr-config-pull connector-mappings     Get connector mappings
+  fr-config-pull cors                   Get CORS configuration
+  fr-config-pull email-provider         Get email provider configuration
   fr-config-pull email-templates        Get email templates
-  fr-config-pull themes                 Get themes
-  fr-config-pull remote-servers         Get Remote Connector Servers
-  fr-config-pull scripts                Get Auth Scripts
-  fr-config-pull services               Get Auth Services
-  fr-config-pull terms-and-conditions   Get Terms and Conditions
-  fr-config-pull password-policy        Get Password Policy
-  fr-config-pull ui-config              Get UI config
-  fr-config-pull endpoints              Get Custom Endpoints
-  fr-config-pull schedules              Get Schedules
-  fr-config-pull access-config          Update Access Configuration
-  fr-config-pull kba                    Get KBA Configuration
-  fr-config-pull secret-mappings        Get secret mappings
-  fr-config-pull oauth2-agents          Get OAuth2 Agents
-  fr-config-pull authz-policies         Get Authorization Policies
-  fr-config-pull email-provider         Get email provider settings
-  fr-config-pull realm-config           Get realm config
+  fr-config-pull endpoints              Get custom endpoints
   fr-config-pull internal-roles         Get internal roles
-  fr-config-pull secrets                Get secrets
-  fr-config-pull variables              Get environment specific variables
-  fr-config-pull service-objects        Get service objects
+  fr-config-pull journeys               Get journeys
+  fr-config-pull kba                    Get KBA configuration
   fr-config-pull locales                Get locales
-  fr-config-pull audit                  Get audit config
+  fr-config-pull managed-objects        Get managed objects
+  fr-config-pull oauth2-agents          Get OAuth2 agents
+  fr-config-pull password-policy        Get password policy
+  fr-config-pull remote-servers         Get remote connector servers
+  fr-config-pull schedules              Get schedules
+  fr-config-pull scripts                Get authentication scripts
+  fr-config-pull secrets                Get secrets
+  fr-config-pull secret-mappings        Get secret mappings
+  fr-config-pull service-objects        Get service objects
+  fr-config-pull services               Get authentication services
+  fr-config-pull themes                 Get UI themes
+  fr-config-pull terms-and-conditions   Get terms and conditions
+  fr-config-pull ui-config              Get UI configuration
+  fr-config-pull variables              Get environment specific variables
 
 Options:
   -h, --help               Show help                                   [boolean]
-  -n, --name               Specific config                              [string]
+  -n, --name               Specific configuration item                  [string]
   -r, --realm              Specific realm (overrides environment)       [string]
   -d, --pull-dependencies  Pull dependencies                           [boolean]
 ```

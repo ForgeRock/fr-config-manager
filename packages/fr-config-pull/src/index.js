@@ -29,6 +29,7 @@ const systemUsers = require("./scripts/serviceObjects");
 const locales = require("./scripts/locales");
 
 const yargs = require("yargs");
+const { showConfigMetadata } = require("./scripts/configMetadata.js");
 
 require("dotenv").config();
 
@@ -62,6 +63,7 @@ const COMMAND = {
   SERVICE_OBJECTS: "service-objects",
   LOCALES: "locales",
   AUDIT: "audit",
+  CONFIG_METADATA: "config-metadata",
 };
 
 function matchCommand(argv, command) {
@@ -109,7 +111,6 @@ async function getConfig(argv) {
     scope: process.env.SERVICE_ACCOUNT_SCOPE,
   };
 
-  console.log("Authenticating");
   const token = await authenticate.getToken(tenantUrl, clientConfig);
 
   const REALM_SUB_DIR = "realms";
@@ -416,6 +417,10 @@ async function getConfig(argv) {
       );
     }
   }
+
+  if (argv._.includes(COMMAND.CONFIG_METADATA)) {
+    showConfigMetadata(tenantUrl, token);
+  }
 }
 
 yargs
@@ -451,6 +456,12 @@ yargs
   .command({
     command: COMMAND.AUTHZ_POLICIES,
     desc: "Get authorization policies",
+    builder: cliOptions([]),
+    handler: (argv) => getConfig(argv),
+  })
+  .command({
+    command: COMMAND.CONFIG_METADATA,
+    desc: "Show config metadata",
     builder: cliOptions([]),
     handler: (argv) => getConfig(argv),
   })

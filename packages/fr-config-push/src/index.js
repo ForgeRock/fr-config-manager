@@ -32,6 +32,7 @@ const {
   updateServiceObjects,
   updateLocales,
   updateAudit,
+  updateConfigMetadata,
 } = require("./scripts");
 
 require("dotenv").config();
@@ -58,6 +59,7 @@ async function updateStatic(argv, token) {
   await updateEmailProvider(argv, token);
   await updateLocales(argv, token);
   await updateAudit(argv, token);
+  await updateConfigMetadata(argv, token);
 }
 
 const REQUIRED_CONFIG = [
@@ -111,13 +113,17 @@ async function getCommands() {
   yargs
     .usage("Usage: $0 [arguments]")
     .strict()
+    .parserConfiguration({
+      "parse-numbers": false,
+      "camel-case-expansion": false,
+    })
     .version(false)
     .help("h")
     .alias("h", "help")
     .command({
       command: "all-static",
-      desc: "Update all static Configuration",
-      builder: cliOptions([]),
+      desc: "Update all static configuration",
+      builder: cliOptions([OPTION.METADATA]),
       handler: (argv) =>
         getAccessToken().then((token) => updateStatic(argv, token)),
     })
@@ -150,6 +156,13 @@ async function getCommands() {
       builder: cliOptions([]),
       handler: (argv) =>
         getAccessToken().then((token) => updateAuthzPolicies(argv, token)),
+    })
+    .command({
+      command: "config-metadata",
+      desc: "Update configuration metadata",
+      builder: cliOptions([OPTION.METADATA]),
+      handler: (argv) =>
+        getAccessToken().then((token) => updateConfigMetadata(argv, token)),
     })
     .command({
       command: "connector-definitions",
@@ -351,6 +364,11 @@ async function getCommands() {
       alias: "f",
       describe: "Filename filter",
       type: "string",
+    })
+    .option(OPTION.METADATA, {
+      alias: "m",
+      describe: "Configuration metadata",
+      type: "object",
     })
     .demandCommand()
     .parse();

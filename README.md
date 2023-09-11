@@ -94,6 +94,7 @@ mkdir ~/identity-cloud
 cd ~/identity-cloud
 git clone https://github.com/ForgeRock/fr-config-manager.git
 cd fr-config-manager
+git checkout v1.0
 npm install --ws
 cd packages/fr-config-pull
 npm link

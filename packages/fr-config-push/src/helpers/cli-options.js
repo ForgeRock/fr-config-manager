@@ -3,6 +3,7 @@ const OPTION = {
   REALM: "realm",
   PUSH_DEPENDENCIES: "push-dependencies",
   FILENAME_FILTER: "filenameFilter",
+  METADATA: "metadata",
 };
 
 const cliOptions = (requestedOptions) => {
@@ -16,6 +17,11 @@ const cliOptions = (requestedOptions) => {
       alias: "n",
       demandOption: false,
       describe: "Push specific name",
+    },
+    metadata: {
+      alias: "m",
+      demandOption: false,
+      describe: "Config metadata",
     },
     filenameFilter: {
       alias: "ff",

@@ -27,6 +27,7 @@ const updateEmailProvider = require("./update-email-provider");
 const updateServiceObjects = require("./update-service-objects");
 const updateLocales = require("./update-locales");
 const updateAudit = require("./update-audit");
+const updateConfigMetadata = require("./update-config-metadata");
 const scriptUtils = require("./update-scripts");
 const { updateScripts } = scriptUtils;
 
@@ -61,4 +62,5 @@ module.exports = {
   updateServiceObjects,
   updateLocales,
   updateAudit,
+  updateConfigMetadata,
 };

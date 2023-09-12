@@ -44,6 +44,14 @@ const updateVariables = async (argv, token) => {
       ) {
         continue;
       }
+
+      if (
+        !variableObject.expressionType ||
+        variableObject.expressionType === ""
+      ) {
+        variableObject.expressionType = "string";
+      }
+
       const requestUrl = `${TENANT_BASE_URL}/environment/variables/${variableObject._id}`;
       await fidcRequest(requestUrl, variableObject, token);
     }

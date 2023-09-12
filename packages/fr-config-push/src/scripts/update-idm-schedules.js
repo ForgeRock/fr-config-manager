@@ -6,17 +6,12 @@ const fileFilter = require("../helpers/file-filter");
 const cliUtils = require("../helpers/cli-options");
 const { request } = require("http");
 const { OPTION } = cliUtils;
+const fs = require("fs");
 
 const updateIdmSchedules = async (argv, token) => {
   const { TENANT_BASE_URL, filenameFilter, CONFIG_DIR } = process.env;
 
   const requestedScheduleName = argv[OPTION.NAME];
-
-  if (requestedScheduleName) {
-    console.log("Updating schedule", requestedScheduleName);
-  } else {
-    console.log("Updating schedules");
-  }
 
   try {
     const dir = path.join(CONFIG_DIR, "/schedules");
@@ -27,59 +22,49 @@ const updateIdmSchedules = async (argv, token) => {
       return;
     }
 
-    const fileContent = JSON.parse(
-      await readFile(path.join(dir, "schedule-config.json"))
-    );
+    const schedulePaths = fs
+      .readdirSync(`${dir}`, { withFileTypes: true })
+      .filter((dirent) => dirent.isDirectory())
+      .map((dirent) => path.join(`${dir}`, dirent.name));
 
-    // Update each script
-    fileContent.forEach(async (schedule) => {
+    for (const schedulePath of schedulePaths) {
+      const scheduleDirName = path.parse(schedulePath).base;
+      const schedule = JSON.parse(
+        fs.readFileSync(path.join(schedulePath, `${scheduleDirName}.json`))
+      );
+
       const scheduleName = schedule._id.split("/")[1];
+
       if (requestedScheduleName && requestedScheduleName !== scheduleName) {
-        return;
+        continue;
       }
-      if (!fileFilter(schedule.file, useFF)) {
-        return;
-      }
-      const requestUrl = `${TENANT_BASE_URL}/openidm/config/${schedule._id}`;
+
       if (
         schedule.invokeService === "script" &&
         schedule.invokeContext.script.file
       ) {
-        await readFile(
-          `${dir}/${schedule.invokeContext.script.file}`,
-          "utf-8",
-          async (err, data) => {
-            if (err) {
-              return console.log(err);
-            }
-            schedule.invokeContext.script.source = data;
-            delete schedule.invokeContext.script.file;
-            fidcRequest(requestUrl, schedule, token);
-            console.log(`IDM schedule updated: ${schedule._id}`);
-          }
+        const scriptData = fs.readFileSync(
+          `${schedulePath}/${schedule.invokeContext.script.file}`,
+          "utf8"
         );
+        schedule.invokeContext.script.source = scriptData;
+        delete schedule.invokeContext.script.file;
       } else if (
         schedule.invokeService === "taskscanner" &&
         schedule.invokeContext.task.script.file
       ) {
-        await readFile(
-          `${dir}/${schedule.invokeContext.task.script.file}`,
-          "utf-8",
-          async (err, data) => {
-            if (err) {
-              return console.log(err);
-            }
-            schedule.invokeContext.task.script.source = data;
-            delete schedule.invokeContext.task.script.file;
-            fidcRequest(requestUrl, schedule, token);
-            console.log(`IDM taskscanner updated: ${schedule._id}`);
-          }
+        const scriptData = fs.readFileSync(
+          `${schedulePath}/${schedule.invokeContext.task.script.file}`,
+          "utf8"
         );
-      } else {
-        fidcRequest(requestUrl, schedule, token);
-        console.log(`IDM taskscanner updated: ${schedule._id}`);
+        schedule.invokeContext.task.script.source = data;
+        delete schedule.invokeContext.task.script.file;
       }
-    });
+
+      console.log("Updating schedule", scheduleName);
+      const requestUrl = `${TENANT_BASE_URL}/openidm/config/${schedule._id}`;
+      fidcRequest(requestUrl, schedule, token);
+    }
   } catch (error) {
     console.error(error.message);
     process.exit(1);

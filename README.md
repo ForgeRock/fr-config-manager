@@ -1,7 +1,5 @@
 # ForgeRock Identity Cloud - Demonstration Configuration Management Tools
 
-<b>Note: This is an alpha release candidate: it should not be used in production in its current state.</b>
-
 ## Disclaimer
 
 The sample code described herein is provided on an "as is" basis, without warranty of any kind, to the fullest extent permitted by law. ForgeRock does not warrant or guarantee the individual success developers may have in implementing the sample code on their development platforms or in production configurations. ForgeRock does not warrant, guarantee or make any representations regarding the use, results of use, accuracy, timeliness or completeness of any data or information relating to the sample code. ForgeRock disclaims all warranties, expressed or implied, and in particular, disclaims all warranties of merchantability, and warranties related to the code, or any service or software related thereto.
@@ -94,7 +92,7 @@ mkdir ~/identity-cloud
 cd ~/identity-cloud
 git clone https://github.com/ForgeRock/fr-config-manager.git
 cd fr-config-manager
-git checkout v1.0
+git checkout v1.0.0
 npm install --ws
 cd packages/fr-config-pull
 npm link
@@ -111,18 +109,22 @@ git clone https://github.com/my-org/identity-cloud-config
 ### Configure tenant access
 
 ```
-cd ~/identity-cloud/identity-cloud-config
+cd ~/identity-cloud
 cp ~/fr-config-manager/.env.sample ./.env
 ```
 
-Edit the `.env` file as per instructions above
+Edit the `.env` file as per instructions above, using the cloned repo as the config target directory - i.e. in your `.env` file:
+
+`CONFIG_DIR=fr-config-manager`
 
 ### Pull config, commit and push
 
 ```
 cd ~/identity-cloud/identity-cloud-config
 git checkout -b initial-config
+cd ~/identity-cloud
 fr-config-pull
+cd ~/identity-cloud/identity-cloud-config
 git add .
 git commit -m "Initial config"
 git push origin initial-config
@@ -130,4 +132,4 @@ git push origin initial-config
 
 ### Merge
 
-You can now create a pull request for the `initial-config` branch in github and merge.
+You can now create a pull request for the `initial-config` branch in github and merge, and optionally tag.

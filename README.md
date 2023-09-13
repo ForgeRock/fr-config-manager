@@ -1,6 +1,6 @@
 # ForgeRock Identity Cloud - Demonstration Configuration Management Tools
 
-<b>Note: This is an alpha release candidate: it should not be used in production in its current state.</b>
+
 
 ## Disclaimer
 

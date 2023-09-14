@@ -1,6 +1,6 @@
 {
   "name": "fr-config-pull",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "description": "Config tools for FIDC",
   "main": "src/index.js",
   "dependencies": {

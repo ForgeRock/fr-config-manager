@@ -64,6 +64,7 @@ const COMMAND = {
   LOCALES: "locales",
   AUDIT: "audit",
   CONFIG_METADATA: "config-metadata",
+  VERSION: "version",
 };
 
 function matchCommand(argv, command) {
@@ -428,7 +429,9 @@ yargs
   .version(false)
   .help("h")
   .alias("h", "help")
+  .alias("v", "version")
   .strict()
+  .version()
   .command({
     command: COMMAND.ALL,
     desc: "Get all configuration",

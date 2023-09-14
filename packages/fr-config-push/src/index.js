@@ -113,11 +113,12 @@ async function getCommands() {
   yargs
     .usage("Usage: $0 [arguments]")
     .strict()
+    .version()
+    .alias("v", "version")
     .parserConfiguration({
       "parse-numbers": false,
       "camel-case-expansion": false,
     })
-    .version(false)
     .help("h")
     .alias("h", "help")
     .command({

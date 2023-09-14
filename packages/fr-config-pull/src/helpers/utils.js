@@ -1,9 +1,10 @@
 const fs = require("fs");
-const slugify = require("slugify");
+const sanitize = require("sanitize-filename");
 
-function getTypedFilename(name, type, suffix = "json") {
-  const slug = slugify(name.replace(/^http(s?):\/\//, ""));
-  return `${slug}.${type}.${suffix}`;
+function safeFileName(filename) {
+  return sanitize(filename, {
+    replacement: (character) => encodeURIComponent(character),
+  });
 }
 
 function deepSort(obj) {
@@ -73,6 +74,6 @@ function logPullError(error) {
 }
 
 module.exports.saveJsonToFile = saveJsonToFile;
-module.exports.getTypedFilename = getTypedFilename;
+module.exports.safeFileName = safeFileName;
 module.exports.esvToEnv = esvToEnv;
 module.exports.logPullError = logPullError;

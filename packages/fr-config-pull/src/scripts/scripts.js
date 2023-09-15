@@ -1,9 +1,10 @@
-const utils = require("./utils.js");
+const utils = require("../helpers/utils.js");
 const constants = require("../../../fr-config-common/src/constants.js");
 const fs = require("fs");
 const axios = require("axios");
 const { saveJsonToFile } = utils;
 const { AuthzTypes } = constants;
+const { safeFileName } = utils;
 
 const SCRIPT_SUB_DIR = "scripts";
 const SCRIPT_CONFIG_FILE = "scripts-config.json";
@@ -22,7 +23,7 @@ function saveScriptToFile(script, exportDir) {
     fs.mkdirSync(scriptConfigPath, { recursive: true });
   }
 
-  const scriptFilename = `${script.name}.js`;
+  const scriptFilename = `${safeFileName(script.name)}.js`;
   const buff = Buffer.from(script.script, "base64");
   const source = buff.toString("utf-8");
   fs.writeFileSync(`${scriptContentPath}/${scriptFilename}`, source);

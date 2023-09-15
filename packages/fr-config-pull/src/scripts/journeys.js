@@ -1,5 +1,5 @@
 const axios = require("axios");
-const utils = require("./utils.js");
+const utils = require("../helpers/utils.js");
 const fs = require("fs");
 const process = require("process");
 const constants = require("../../../fr-config-common/src/constants.js");
@@ -7,7 +7,7 @@ const { AuthzTypes } = constants;
 const scriptUtils = require("./scripts.js");
 const { exportScriptById } = scriptUtils;
 
-const { saveJsonToFile } = utils;
+const { saveJsonToFile, safeFileName } = utils;
 
 const JOURNEY_SUB_DIR = "journeys";
 const NODES_SUB_DIR = "nodes";
@@ -35,12 +35,8 @@ async function cacheNodesByType(nodeCache, nodeType, tenantUrl, realm, token) {
   return nodeCache;
 }
 
-function fileSafe(filename) {
-  return filename.replaceAll("/", " ");
-}
-
 function fileNameFromNode(displayName, id) {
-  return fileSafe(`${displayName} - ${id}`);
+  return safeFileName(`${displayName} - ${id}`);
 }
 
 function matchJourneyName(journeys, journey, name) {
@@ -67,7 +63,7 @@ async function processJourneys(
       if (name && !matchJourneyName(journeys, journey, name)) {
         continue;
       }
-      const journeyDir = `${fileDir}/${fileSafe(journey._id)}`;
+      const journeyDir = `${fileDir}/${safeFileName(journey._id)}`;
       const nodeDir = `${journeyDir}/${NODES_SUB_DIR}`;
 
       if (!fs.existsSync(nodeDir)) {

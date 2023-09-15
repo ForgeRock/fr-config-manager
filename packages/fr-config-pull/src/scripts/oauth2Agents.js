@@ -1,4 +1,4 @@
-const utils = require("./utils.js");
+const utils = require("../helpers/utils.js");
 const fs = require("fs");
 const axios = require("axios");
 const { saveJsonToFile } = utils;

@@ -5,7 +5,10 @@ const cliUtils = require("../helpers/cli-options");
 const { OPTION } = cliUtils;
 const fidcGet = require("../helpers/fidc-get");
 
-const HTML_FIELDS = ["accountFooter", "journeyFooter", "journeyHeader"];
+const EXPORT_SUB_DIR = "themes";
+const {
+  THEME_HTML_FIELDS,
+} = require("../../../fr-config-common/src/constants.js");
 
 async function mergeExistingThemes(newTheme, realm, resourceUrl, token) {
   const themes = await fidcGet(resourceUrl, token, true);
@@ -25,17 +28,33 @@ async function mergeExistingThemes(newTheme, realm, resourceUrl, token) {
 
 function processThemes(theme, themePath) {
   try {
-    for (const field of HTML_FIELDS) {
-      const fieldFilename = `${field}.html`;
-      const breakoutFile = `${themePath}/${fieldFilename}`;
-      const file = fs.readFileSync(breakoutFile, "utf-8");
-      theme[field] = file;
+    for (const field of THEME_HTML_FIELDS) {
+      if (theme[field].file) {
+        const breakoutFile = path.join(themePath, theme[field].file);
+        const fieldValue = fs.readFileSync(breakoutFile, "utf-8");
+        theme[field] = fieldValue;
+        continue;
+      }
+
+      if (typeof theme[field] !== "object") {
+        console.error(
+          `Unexpected object type for ${field} in theme ${theme.name}`
+        );
+        process.exit(1);
+      }
+
+      Object.keys(theme[field]).forEach((locale) => {
+        const breakoutFile = path.join(themePath, theme[field][locale].file);
+        const fieldValue = fs.readFileSync(breakoutFile, "utf-8");
+        theme[field][locale] = fieldValue;
+      });
     }
     return theme;
   } catch (err) {
     console.error(err);
   }
 }
+
 const updateThemes = async (argv, token) => {
   const { REALMS, TENANT_BASE_URL, CONFIG_DIR } = process.env;
   const requestedThemeName = argv[OPTION.NAME];

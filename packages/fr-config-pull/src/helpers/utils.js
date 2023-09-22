@@ -26,6 +26,33 @@ function deepSort(obj) {
   return sortedObj;
 }
 
+function deepMerge(targetObj, sourceObj) {
+  // Check if either of the objects is null or undefined
+  if (sourceObj == null || targetObj == null) {
+    return targetObj;
+  }
+  // Check if both objects are arrays
+  if (Array.isArray(sourceObj) && Array.isArray(targetObj)) {
+    return targetObj.concat(sourceObj);
+  }
+  // Check if both objects are objects
+  if (typeof sourceObj === "object" && typeof targetObj === "object") {
+    // Iterate over all properties in the source object
+    for (const key in sourceObj) {
+      if (sourceObj.hasOwnProperty(key)) {
+        // If the target object also has a property with this key, merge them
+        if (targetObj.hasOwnProperty(key)) {
+          targetObj[key] = deepMerge(targetObj[key], sourceObj[key]);
+        } else {
+          // Otherwise, add the property from the source object to the target object
+          targetObj[key] = sourceObj[key];
+        }
+      }
+    }
+  }
+  return targetObj;
+}
+
 function saveJsonToFile(data, filename, sort = true) {
   if (sort) {
     data = deepSort(data);
@@ -77,3 +104,4 @@ module.exports.saveJsonToFile = saveJsonToFile;
 module.exports.safeFileName = safeFileName;
 module.exports.esvToEnv = esvToEnv;
 module.exports.logPullError = logPullError;
+module.exports.deepMerge = deepMerge;

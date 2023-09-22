@@ -1,8 +1,10 @@
 const fs = require("fs");
 const path = require("path");
-const fidcRequest = require("../helpers/fidc-request");
-const fidcPost = require("../helpers/fidc-post");
-const fidcGet = require("../helpers/fidc-get");
+const {
+  restPut,
+  restPost,
+  restGet,
+} = require("../../../fr-config-common/src/restClient");
 
 function clearOperationalAttributes(obj) {
   delete obj._id;
@@ -16,7 +18,7 @@ function clearOperationalAttributes(obj) {
 async function alreadyExists(requestUrl, accessToken) {
   var exists = false;
   try {
-    const response = await fidcGet(requestUrl, accessToken);
+    const response = await restGet(requestUrl, null, accessToken);
     exists = true;
   } catch (e) {}
   return exists;
@@ -33,10 +35,16 @@ async function upsertResource(
 
   if (await alreadyExists(requestUrl, token)) {
     console.log("Updating resource");
-    await fidcRequest(requestUrl, resourceObject, token, apiVersion);
+    await restPut(requestUrl, resourceObject, token, apiVersion);
   } else {
     console.log("Creating resource");
-    await fidcPost(`${path}?_action=create`, resourceObject, token, apiVersion);
+    await restPost(
+      requestUrl,
+      { _action: "create" },
+      resourceObject,
+      token,
+      apiVersion
+    );
   }
 }
 
@@ -44,7 +52,6 @@ const updateAuthzPolicies = async (argv, token) => {
   console.log("Updating authz policies");
   const { REALMS, TENANT_BASE_URL, CONFIG_DIR } = process.env;
   for (const realm of JSON.parse(REALMS)) {
-
     try {
       const baseDir = path.join(CONFIG_DIR, `/realms/${realm}/authorization`);
       if (!fs.existsSync(baseDir)) {

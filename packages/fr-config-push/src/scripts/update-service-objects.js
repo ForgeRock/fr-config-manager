@@ -1,6 +1,6 @@
 const fs = require("fs");
 const path = require("path");
-const fidcRequest = require("../helpers/fidc-request");
+const { restPut } = require("../../../fr-config-common/src/restClient");
 
 const {
   replaceEnvSpecificValues,
@@ -41,7 +41,7 @@ const updateServiceObjects = async (argv, token) => {
         removeProperty(objectAttributes, "_refProperties");
 
         const resourceUrl = `${TENANT_BASE_URL}/openidm/managed/${objectType}/${objectAttributes._id}`;
-        await fidcRequest(`${resourceUrl}`, objectAttributes, token);
+        await restPut(`${resourceUrl}`, objectAttributes, token);
       }
     }
   } catch (error) {

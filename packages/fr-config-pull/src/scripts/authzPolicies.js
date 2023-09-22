@@ -1,11 +1,11 @@
 const utils = require("../helpers/utils.js");
 const fs = require("fs");
-const axios = require("axios");
 const { saveJsonToFile } = utils;
 const { logPullError } = utils;
 const constants = require("../../../fr-config-common/src/constants.js");
 const { AuthzTypes } = constants;
 const EXPORT_SUBDIR = "authorization";
+const { restGet } = require("../../../fr-config-common/src/restClient.js");
 
 async function saveResourceType(
   exportDir,
@@ -22,13 +22,7 @@ async function saveResourceType(
 
     const amEndpoint = `${tenantUrl}/am/json/realms/root/realms/${realm}/resourcetypes/${resourceTypeUuid}`;
 
-    const response = await axios({
-      method: "get",
-      url: amEndpoint,
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
+    const response = await restGet(amEndpoint, null, token);
 
     const resourceType = response.data;
 
@@ -55,16 +49,13 @@ async function exportPolicies(
 
     const amEndpoint = `${tenantUrl}/am/json/realms/root/realms/${realm}/policies`;
 
-    const response = await axios({
-      method: "get",
-      url: amEndpoint,
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-      params: {
+    const response = await restGet(
+      amEndpoint,
+      {
         _queryFilter: `applicationName eq "${policySet}"`,
       },
-    });
+      token
+    );
 
     response.data.result.forEach((policy) => {
       const fileName = `${policyDir}/${policy.name}.json`;
@@ -89,13 +80,7 @@ async function exportConfig(exportDir, policySetsConfigFile, tenantUrl, token) {
       for (const policySet of policySets[realm]) {
         const amEndpoint = `${tenantUrl}/am/json/realms/root/realms/${realm}/applications/${policySet}`;
 
-        const response = await axios({
-          method: "get",
-          url: amEndpoint,
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
+        const response = await restGet(amEndpoint, null, token);
 
         const config = response.data;
 

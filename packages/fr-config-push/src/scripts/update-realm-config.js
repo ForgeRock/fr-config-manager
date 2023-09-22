@@ -1,8 +1,7 @@
 const fs = require("fs");
 const { readFile } = require("fs/promises");
 const path = require("path");
-const fidcRequest = require("../helpers/fidc-request");
-const fidcGet = require("../helpers/fidc-get");
+const { restPut } = require("../../../fr-config-common/src/restClient");
 
 const updateRealmConfig = async (argv, configName, token) => {
   console.log("Updating realm config", configName);
@@ -24,7 +23,7 @@ const updateRealmConfig = async (argv, configName, token) => {
       delete fileContent._rev;
       const requestUrl = `${TENANT_BASE_URL}/am/json/realms/root/realms/${realm}/realm-config/${configName}`;
 
-      await fidcRequest(requestUrl, fileContent, token);
+      await restPut(requestUrl, fileContent, token);
     }
   } catch (error) {
     console.error(error.message);

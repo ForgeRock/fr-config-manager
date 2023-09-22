@@ -1,6 +1,6 @@
 const fs = require("fs");
 const path = require("path");
-const fidcRequest = require("../helpers/fidc-request");
+const { restPut } = require("../../../fr-config-common/src/restClient");
 const cliUtils = require("../helpers/cli-options");
 const { OPTION } = cliUtils;
 
@@ -37,7 +37,7 @@ const updateLocales = async (argv, token) => {
         continue;
       }
       const requestUrl = `${TENANT_BASE_URL}/openidm/config/${localeObject._id}`;
-      await fidcRequest(requestUrl, localeObject, token);
+      await restPut(requestUrl, localeObject, token);
     }
   } catch (error) {
     console.error(error.message);

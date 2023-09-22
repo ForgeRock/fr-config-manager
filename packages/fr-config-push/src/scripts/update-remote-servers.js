@@ -1,6 +1,6 @@
 const path = require("path");
 const { readFile } = require("fs/promises");
-const fidcRequest = require("../helpers/fidc-request");
+const { restPut } = require("../../../fr-config-common/src/restClient");
 const { existsSync } = require("fs");
 
 const updateRemoteServers = async (argv, token) => {
@@ -18,7 +18,7 @@ const updateRemoteServers = async (argv, token) => {
 
       const requestUrl = `${TENANT_BASE_URL}/openidm/config/provisioner.openicf.connectorinfoprovider`;
 
-      await fidcRequest(requestUrl, fileContent, token);
+      await restPut(requestUrl, fileContent, token);
     } catch (error) {
       console.error(error.message);
       process.exit(1);

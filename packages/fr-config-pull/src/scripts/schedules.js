@@ -1,6 +1,6 @@
 const utils = require("../helpers/utils.js");
 const fs = require("fs");
-const axios = require("axios");
+const { restGet } = require("../../../fr-config-common/src/restClient.js");
 const { saveJsonToFile } = utils;
 
 const SCHEDULE_SUBDIR = "schedules";
@@ -56,14 +56,11 @@ async function exportSchedules(exportDir, tenantUrl, name, token) {
   try {
     const idmEndpoint = `${tenantUrl}/openidm/config`;
 
-    const response = await axios({
-      method: "get",
-      url: idmEndpoint,
-      params: { _queryFilter: '_id sw "schedule/"' },
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
+    const response = await restGet(
+      idmEndpoint,
+      { _queryFilter: '_id sw "schedule/"' },
+      token
+    );
 
     const schedules = response.data.result;
 

@@ -1,6 +1,6 @@
 const utils = require("../helpers/utils.js");
 const fs = require("fs");
-const axios = require("axios");
+const { restGet } = require("../../../fr-config-common/src/restClient.js");
 const { saveJsonToFile } = utils;
 const constants = require("../../../fr-config-common/src/constants.js");
 const { AuthzTypes } = constants;
@@ -11,13 +11,7 @@ async function exportConfig(exportDir, realms, configName, tenantUrl, token) {
     for (const realm of realms) {
       const amEndpoint = `${tenantUrl}/am/json/realms/root/realms/${realm}/realm-config/${configName}`;
 
-      const response = await axios({
-        method: "get",
-        url: amEndpoint,
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const response = await restGet(amEndpoint, null, token);
 
       const config = response.data;
 

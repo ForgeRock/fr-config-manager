@@ -1,6 +1,6 @@
 const fs = require("fs");
 const path = require("path");
-const fidcRequest = require("../helpers/fidc-request");
+const { restPut } = require("../../../fr-config-common/src/restClient");
 
 const updateEmailProvider = async (argv, token) => {
   console.log("Updating email provider settings");
@@ -17,8 +17,7 @@ const updateEmailProvider = async (argv, token) => {
     );
     const requestUrl = `${TENANT_BASE_URL}/openidm/config/external.email`;
 
-    await fidcRequest(requestUrl, fileContent, token);
-
+    await restPut(requestUrl, fileContent, token);
   } catch (error) {
     console.error(error.message);
     process.exit(1);

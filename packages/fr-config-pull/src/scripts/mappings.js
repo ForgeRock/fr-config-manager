@@ -1,6 +1,6 @@
 const utils = require("../helpers/utils.js");
 const fs = require("fs");
-const axios = require("axios");
+const { restGet } = require("../../../fr-config-common/src/restClient.js");
 const { saveJsonToFile } = utils;
 
 const EXPORT_SUBDIR = "sync/mappings";
@@ -49,13 +49,7 @@ async function exportMappings(exportDir, tenantUrl, name, token) {
     let response = null;
 
     try {
-      response = await axios({
-        method: "get",
-        url: idmEndpoint,
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      response = await restGet(idmEndpoint, null, token);
     } catch (e) {
       if (e.response.status === 404) {
         console.error(`Warning: no sync mapping config`);

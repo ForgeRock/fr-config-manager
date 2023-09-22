@@ -1,6 +1,6 @@
 const path = require("path");
 const fs = require("fs");
-const fidcRequest = require("../helpers/fidc-request");
+const { restPut } = require("../../../fr-config-common/src/restClient");
 const cliUtils = require("../helpers/cli-options");
 const { OPTION } = cliUtils;
 
@@ -85,7 +85,7 @@ const updateConnectorMappings = async (argv, token) => {
         mappings: mappings,
       };
 
-      await fidcRequest(requestUrl, requestBody, token);
+      await restPut(requestUrl, requestBody, token);
     } else {
       console.log("Warning: No Connector mappings");
     }

@@ -1,6 +1,6 @@
 const fs = require("fs");
 const path = require("path");
-const fidcRequest = require("../helpers/fidc-request");
+const { restPut } = require("../../../fr-config-common/src/restClient");
 const glob = require("glob");
 const { readFile } = require("fs/promises");
 const { pushScriptById } = require("./update-scripts");
@@ -68,7 +68,7 @@ function pushNode(baseUrl, node, token) {
   return new Promise((resolve, reject) => {
     const nodeRequestUrl = `${baseUrl}/nodes/${node._type._id}/${node._id}`;
     delete node._rev;
-    fidcRequest(nodeRequestUrl, node, token).then(resolve).catch(reject);
+    restPut(nodeRequestUrl, node, token).then(resolve).catch(reject);
   });
 }
 
@@ -76,7 +76,7 @@ function pushJourney(journey, baseUrl, token) {
   return new Promise((resolve, reject) => {
     delete journey._rev;
     const requestUrl = `${baseUrl}/trees/${journey._id}`;
-    fidcRequest(requestUrl, journey, token).then(resolve).catch(reject);
+    restPut(requestUrl, journey, token).then(resolve).catch(reject);
   });
 }
 

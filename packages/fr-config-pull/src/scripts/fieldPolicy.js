@@ -1,6 +1,6 @@
 const utils = require("../helpers/utils.js");
 const fs = require("fs");
-const axios = require("axios");
+const { restGet } = require("../../../fr-config-common/src/restClient.js");
 const { saveJsonToFile } = utils;
 
 const EXPORT_SUBDIR = "password-policy";
@@ -11,13 +11,7 @@ async function exportPasswordConfig(exportDir, realms, tenantUrl, token) {
       const objectName = `${realm}_user`;
       const idmEndpoint = `${tenantUrl}/openidm/config/fieldPolicy/${objectName}`;
 
-      const response = await axios({
-        method: "get",
-        url: idmEndpoint,
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const response = await restGet(idmEndpoint, null, token);
 
       const config = response.data;
 

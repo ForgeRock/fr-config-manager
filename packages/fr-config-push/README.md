@@ -51,6 +51,7 @@ Commands:
   fr-config-push service-objects        Update service objects
   fr-config-push services               Update authentication services
   fr-config-push terms-and-conditions   Update terms and conditions
+  fr-config-push test                   Test connection and authentication
   fr-config-push themes                 Update UI themes
   fr-config-push ui-config              Update UI configuration
   fr-config-push variables              Update environment specific variables
@@ -61,7 +62,8 @@ Options:
   -r, --realm              Specific realm (overrides environment)       [string]
   -d, --push-dependencies  Push dependencies                           [boolean]
   -f, --filenameFilter     Filename filter                              [string]
-  -m, --metadata           Configuration Metadata
+  -m, --metadata           Configuration metadata
+  -v, --version            Show version number                         [boolean]
 ```
 
 Notes on specific options:

@@ -1,6 +1,6 @@
 const fs = require("fs");
 const path = require("path");
-const fidcRequest = require("../helpers/fidc-request");
+const { restPut } = require("../../../fr-config-common/src/restClient");
 
 const updateManagedRoles = async (argv, token) => {
   console.log("Updating managed roles");
@@ -25,7 +25,7 @@ const updateManagedRoles = async (argv, token) => {
     await Promise.all(
       managedRolesFileContent.map(async (managedRoleFile) => {
         const requestUrl = `${TENANT_BASE_URL}/openidm/managed/${realm}_user/${managedRoleFile._id}`;
-        await fidcRequest(requestUrl, managedRoleFile, token);
+        await restPut(requestUrl, managedRoleFile, token);
         console.log(`${realm} role, ${managedRoleFile.name} updated`);
 
         return Promise.resolve();

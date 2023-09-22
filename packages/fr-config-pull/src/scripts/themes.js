@@ -1,6 +1,6 @@
 const utils = require("../helpers/utils.js");
 const fs = require("fs");
-const axios = require("axios");
+const { restGet } = require("../../../fr-config-common/src/restClient.js");
 const { saveJsonToFile } = utils;
 const path = require("path");
 
@@ -74,14 +74,11 @@ async function exportThemes(exportDir, realms, tenantUrl, name, token) {
     for (const realm of realms) {
       const idmEndpoint = `${tenantUrl}/openidm/config/ui/themerealm`;
 
-      const response = await axios({
-        method: "get",
-        url: idmEndpoint,
-        params: { _fields: `realm/${realm}` },
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const response = await restGet(
+        idmEndpoint,
+        { _fields: `realm/${realm}` },
+        token
+      );
 
       const themes = response.data.realm[realm];
 

@@ -1,6 +1,9 @@
 const utils = require("../helpers/utils.js");
 const fs = require("fs");
-const axios = require("axios");
+const {
+  restGet,
+  restPost,
+} = require("../../../fr-config-common/src/restClient.js");
 const { saveJsonToFile } = utils;
 const constants = require("../../../fr-config-common/src/constants.js");
 const { AuthzTypes } = constants;
@@ -14,40 +17,25 @@ async function exportCors(exportDir, tenantUrl, token) {
 
     const amEndpoint = `${tenantUrl}/am/json/global-config/services/CorsService`;
 
-    const corsConfigResponse = await axios({
-      method: "get",
-      url: amEndpoint,
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
+    const corsConfigResponse = await restGet(amEndpoint, null, token);
 
     corsConfig.corsServiceGlobal = corsConfigResponse.data;
 
-    const corsConfigsResponse = await axios({
-      method: "post",
-      url: amEndpoint,
-      params: {
+    const corsConfigsResponse = await restPost(
+      amEndpoint,
+      {
         _action: "nextdescendents",
       },
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Accept-API-Version": "protocol=2.0,resource=1.0",
-        "Content-Type": "application/json",
-      },
-    });
+      null,
+      token,
+      "protocol=2.0,resource=1.0"
+    );
 
     corsConfig.corsServices = corsConfigsResponse.data.result;
 
     const idmEndpoint = `${tenantUrl}/openidm/config/servletfilter/cors`;
 
-    const idmResponse = await axios({
-      method: "get",
-      url: idmEndpoint,
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
+    const idmResponse = await restGet(idmEndpoint, null, token);
 
     corsConfig.idmCorsConfig = idmResponse.data;
 

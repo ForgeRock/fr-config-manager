@@ -1,7 +1,7 @@
 const fs = require("fs");
 const { readFile } = require("fs/promises");
 const path = require("path");
-const fidcRequest = require("../helpers/fidc-request");
+const { restPut } = require("../../../fr-config-common/src/restClient");
 
 const updateAccessConfig = async (argv, token) => {
   console.log("Updating IDM access config");
@@ -18,8 +18,7 @@ const updateAccessConfig = async (argv, token) => {
     );
     const requestUrl = `${TENANT_BASE_URL}/openidm/config/access`;
 
-    await fidcRequest(requestUrl, fileContent, token);
-
+    await restPut(requestUrl, fileContent, token);
   } catch (error) {
     console.error(error.message);
     process.exit(1);

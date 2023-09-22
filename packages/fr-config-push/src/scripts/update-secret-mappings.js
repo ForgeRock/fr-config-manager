@@ -1,9 +1,8 @@
 const fs = require("fs");
 const { readFile } = require("fs/promises");
 const path = require("path");
-const fidcRequest = require("../helpers/fidc-request");
+const { restPut } = require("../../../fr-config-common/src/restClient");
 const cliUtils = require("../helpers/cli-options");
-const { request } = require("http");
 const { OPTION } = cliUtils;
 
 const updateSecretMappings = async (argv, token) => {
@@ -56,7 +55,7 @@ const updateSecretMappings = async (argv, token) => {
           delete fileContent._rev;
 
           const requestUrl = `${TENANT_BASE_URL}/am/json/realms/root/realms/${realm}/realm-config/secrets/stores/GoogleSecretManagerSecretStoreProvider/ESV/mappings/${mappingName}`;
-          await fidcRequest(requestUrl, fileContent, token);
+          await restPut(requestUrl, fileContent, token);
 
           return Promise.resolve();
         })

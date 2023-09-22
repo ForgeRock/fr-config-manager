@@ -1,13 +1,14 @@
 const fs = require("fs");
 const path = require("path");
-const fidcRequest = require("../helpers/fidc-request");
+const {
+  restPut,
+  restGet,
+} = require("../../../fr-config-common/src/restClient");
 const cliUtils = require("../helpers/cli-options");
-const { request } = require("http");
 const { OPTION } = cliUtils;
-const fidcGet = require("../helpers/fidc-get");
 
 async function mergeExistingObjects(newManagedObject, resourceUrl, token) {
-  const result = await fidcGet(resourceUrl, token, true);
+  const result = await restGet(resourceUrl, null, token);
   const existingObjects = result.objects;
 
   const existingObjectIndex = existingObjects.findIndex((el) => {
@@ -112,7 +113,7 @@ const updateManagedObjects = async (argv, token) => {
       objects: managedObjects,
     };
 
-    await fidcRequest(requestUrl, requestBody, token);
+    await restPut(requestUrl, requestBody, token);
   } catch (error) {
     console.error(error.message);
     process.exit(1);

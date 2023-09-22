@@ -1,6 +1,6 @@
 const fs = require("fs");
 const path = require("path");
-const fidcRequest = require("../helpers/fidc-request");
+const { restPut } = require("../../../fr-config-common/src/restClient");
 const cliUtils = require("../helpers/cli-options");
 const { OPTION } = cliUtils;
 
@@ -51,7 +51,7 @@ const updateServices = async (argv, token) => {
           delete serviceFile._rev;
 
           const requestUrl = `${TENANT_BASE_URL}/am/json/realms/root/realms/${realm}/realm-config/services/${serviceName}`;
-          await fidcRequest(requestUrl, serviceFile, token);
+          await restPut(requestUrl, serviceFile, token);
           // Descendents
           const descendentsDir = `${dir}/${serviceName}`;
           if (
@@ -75,7 +75,7 @@ const updateServices = async (argv, token) => {
               const descendentId = descendentFile._id;
               const descendentType = descendentFile._type._id;
               const descendentRequestUrl = `${TENANT_BASE_URL}/am/json/realms/root/realms/${realm}/realm-config/services/${serviceName}/${descendentType}/${descendentId}`;
-              await fidcRequest(descendentRequestUrl, descendentFile, token);
+              await restPut(descendentRequestUrl, descendentFile, token);
             });
           }
           return Promise.resolve();

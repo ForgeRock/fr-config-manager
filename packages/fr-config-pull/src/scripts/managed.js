@@ -1,6 +1,6 @@
 const utils = require("../helpers/utils.js");
 const fs = require("fs");
-const axios = require("axios");
+const { restGet } = require("../../../fr-config-common/src/restClient.js");
 const { saveJsonToFile } = utils;
 
 const EXPORT_SUBDIR = "managed-objects";
@@ -62,13 +62,7 @@ async function exportManagedObjects(exportDir, tenantUrl, name, token) {
   try {
     const idmEndpoint = `${tenantUrl}/openidm/config/managed`;
 
-    const response = await axios({
-      method: "get",
-      url: idmEndpoint,
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
+    const response = await restGet(idmEndpoint, null, token);
 
     const managedObjects = response.data.objects;
 

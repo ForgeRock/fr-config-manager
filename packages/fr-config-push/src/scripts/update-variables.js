@@ -1,8 +1,7 @@
 const fs = require("fs");
 const path = require("path");
-const fidcRequest = require("../helpers/fidc-request");
-const replaceEnvSpecificValues =
-  require("../helpers/config-process").replaceEnvSpecificValues;
+const { restPut } = require("../../../fr-config-common/src/restClient");
+const { replaceEnvSpecificValues } = require("../helpers/config-process");
 const cliUtils = require("../helpers/cli-options");
 const { OPTION } = cliUtils;
 
@@ -53,7 +52,7 @@ const updateVariables = async (argv, token) => {
       }
 
       const requestUrl = `${TENANT_BASE_URL}/environment/variables/${variableObject._id}`;
-      await fidcRequest(requestUrl, variableObject, token);
+      await restPut(requestUrl, variableObject, token);
     }
   } catch (error) {
     console.error(error.message);

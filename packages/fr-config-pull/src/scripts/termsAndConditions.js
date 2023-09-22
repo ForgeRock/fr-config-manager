@@ -1,6 +1,6 @@
 const utils = require("../helpers/utils.js");
 const fs = require("fs");
-const axios = require("axios");
+const { restGet } = require("../../../fr-config-common/src/restClient.js");
 const { saveJsonToFile } = utils;
 
 const EXPORT_SUB_DIR = "terms-conditions";
@@ -42,13 +42,7 @@ async function exportTerms(exportDir, tenantUrl, name, token) {
   try {
     const idmEndpoint = `${tenantUrl}/openidm/config/selfservice.terms`;
 
-    const response = await axios({
-      method: "get",
-      url: idmEndpoint,
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
+    const response = await restGet(idmEndpoint, null, token);
 
     const terms = response.data;
 

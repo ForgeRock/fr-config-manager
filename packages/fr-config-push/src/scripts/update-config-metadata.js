@@ -1,7 +1,7 @@
 const { existsSync } = require("fs");
 const { readFile } = require("fs/promises");
 const path = require("path");
-const fidcRequest = require("../helpers/fidc-request");
+const { restPut } = require("../../../fr-config-common/src/restClient");
 
 const updateConfigMetadata = async (argv, token) => {
   const { TENANT_BASE_URL, CONFIG_DIR } = process.env;
@@ -9,7 +9,7 @@ const updateConfigMetadata = async (argv, token) => {
     if (argv.metadata) {
       console.log("Updating config metadata");
       const requestUrl = `${TENANT_BASE_URL}/openidm/config/custom-config.metadata`;
-      await fidcRequest(requestUrl, argv.metadata, token);
+      await restPut(requestUrl, argv.metadata, token);
     } else {
       console.log("No config metadata provided");
     }

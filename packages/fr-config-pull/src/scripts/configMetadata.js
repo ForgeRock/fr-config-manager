@@ -1,4 +1,4 @@
-const axios = require("axios");
+const { restGet } = require("../../../fr-config-common/src/restClient");
 
 async function showConfigMetadata(tenantUrl, token) {
   try {
@@ -7,13 +7,7 @@ async function showConfigMetadata(tenantUrl, token) {
     var response;
 
     try {
-      response = await axios({
-        method: "get",
-        url: idmEndpoint,
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      response = await restGet(idmEndpoint, null, token);
     } catch (e) {
       if (e.response.status === 404) {
         console.error(`Warning: no config metadata available`);

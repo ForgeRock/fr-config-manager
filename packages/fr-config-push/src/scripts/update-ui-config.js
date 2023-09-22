@@ -1,6 +1,6 @@
 const path = require("path");
 const { readFile } = require("fs/promises");
-const fidcRequest = require("../helpers/fidc-request");
+const { restPut } = require("../../../fr-config-common/src/restClient");
 const fs = require("fs");
 
 const updateUiConfig = async (argv, token) => {
@@ -20,7 +20,7 @@ const updateUiConfig = async (argv, token) => {
     );
 
     const requestUrl = `${TENANT_BASE_URL}/openidm/config/ui/configuration`;
-    await fidcRequest(requestUrl, fileContent, token);
+    await restPut(requestUrl, fileContent, token);
     return Promise.resolve();
   } catch (error) {
     console.error(error.message);

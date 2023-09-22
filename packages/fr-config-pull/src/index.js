@@ -65,6 +65,7 @@ const COMMAND = {
   AUDIT: "audit",
   CONFIG_METADATA: "config-metadata",
   VERSION: "version",
+  TEST: "test",
 };
 
 function matchCommand(argv, command) {
@@ -113,6 +114,11 @@ async function getConfig(argv) {
   };
 
   const token = await authenticate.getToken(tenantUrl, clientConfig);
+
+  if (argv._.includes(COMMAND.TEST)) {
+    console.log("Authenticated successfully");
+    return;
+  }
 
   const REALM_SUB_DIR = "realms";
   const RCS_SUB_DIR = "sync/rcs";
@@ -598,6 +604,12 @@ yargs
     command: COMMAND.TERMS_AND_CONDITIONS,
     desc: "Get terms and conditions",
     builder: cliOptions([OPTION.NAME]),
+    handler: (argv) => getConfig(argv),
+  })
+  .command({
+    command: COMMAND.TEST,
+    desc: "Test connection and authentication",
+    builder: cliOptions([]),
     handler: (argv) => getConfig(argv),
   })
   .command({

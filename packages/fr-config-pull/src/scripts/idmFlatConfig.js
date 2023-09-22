@@ -1,6 +1,6 @@
 const utils = require("../helpers/utils.js");
 const fs = require("fs");
-const axios = require("axios");
+const { restGet } = require("../../../fr-config-common/src/restClient.js");
 const { saveJsonToFile } = utils;
 
 async function exportConfig(name, exportDir, exportSubDir, tenantUrl, token) {
@@ -10,13 +10,7 @@ async function exportConfig(name, exportDir, exportSubDir, tenantUrl, token) {
     var response;
 
     try {
-      response = await axios({
-        method: "get",
-        url: idmEndpoint,
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      response = await restGet(idmEndpoint, null, token);
     } catch (e) {
       if (e.response.status === 404) {
         console.error(`Warning: no config for ${name}`);

@@ -95,8 +95,13 @@ async function httpRequest(
     request.httpsAgent = new HttpsProxyAgent(proxyUrl);
   }
 
-  // console.log(JSON.stringify(request, null, 2));
-  return await axios(request);
+  const response = await axios(request).catch(function (error) {
+    console.error(`Exception processing request to ${requestUrl}`);
+    console.error(error.toJSON());
+    process.exit(1);
+  });
+
+  return response;
 }
 
 function restGet(requestUrl, requestParameters, token, apiVersion) {

@@ -38,6 +38,7 @@ const updateAgents = async (argv, token) => {
           delete agentObject._rev;
           const requestUrl = `${TENANT_BASE_URL}/am/json/realms/root/realms/${realm}/realm-config/agents/${agentType}/${agentObject._id}`;
           console.log("Pushing OAuth2 agent", agentObject._id);
+
           await restPut(
             requestUrl,
             agentObject,

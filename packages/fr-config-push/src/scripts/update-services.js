@@ -51,7 +51,12 @@ const updateServices = async (argv, token) => {
           delete serviceFile._rev;
 
           const requestUrl = `${TENANT_BASE_URL}/am/json/realms/root/realms/${realm}/realm-config/services/${serviceName}`;
-          await restPut(requestUrl, serviceFile, token);
+          await restPut(
+            requestUrl,
+            serviceFile,
+            token,
+            "protocol=1.0,resource=1.0"
+          );
           // Descendents
           const descendentsDir = `${dir}/${serviceName}`;
           if (
@@ -75,7 +80,12 @@ const updateServices = async (argv, token) => {
               const descendentId = descendentFile._id;
               const descendentType = descendentFile._type._id;
               const descendentRequestUrl = `${TENANT_BASE_URL}/am/json/realms/root/realms/${realm}/realm-config/services/${serviceName}/${descendentType}/${descendentId}`;
-              await restPut(descendentRequestUrl, descendentFile, token);
+              await restPut(
+                descendentRequestUrl,
+                descendentFile,
+                token,
+                "protocol=1.0,resource=1.0"
+              );
             });
           }
           return Promise.resolve();

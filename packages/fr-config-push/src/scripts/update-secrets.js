@@ -47,11 +47,14 @@ const updateSecrets = async (argv, token) => {
       }
 
       const resourceUrl = `${TENANT_BASE_URL}/environment/secrets/${secretObject._id}`;
-      const currentVersions = await restGet(
+      const response = await restGet(
         `${resourceUrl}/versions`,
         null,
-        token
+        token,
+        "protocol=1.0,resource=1.0"
       );
+
+      const currentVersions = response.data;
 
       const versions = secretObject.versions.sort((a, b) =>
         Number(a.version) > Number(b.version) ? 1 : -1
@@ -63,7 +66,12 @@ const updateSecrets = async (argv, token) => {
         if (i === 0 && !currentVersions) {
           console.log("Creating secret", secretObject._id);
           secretObject.valueBase64 = versions[i].valueBase64;
-          secretResponse = await restPut(resourceUrl, secretObject, token);
+          secretResponse = await restPut(
+            resourceUrl,
+            secretObject,
+            token,
+            "protocol=1.0,resource=1.0"
+          );
           continue;
         }
 
@@ -72,7 +80,8 @@ const updateSecrets = async (argv, token) => {
           versionResourceUrl,
           { _action: "create" },
           { valueBase64: versions[i].valueBase64 },
-          token
+          token,
+          "protocol=1.0,resource=1.0"
         );
 
         if (!versionResponse) {

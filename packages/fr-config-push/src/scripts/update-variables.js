@@ -52,7 +52,12 @@ const updateVariables = async (argv, token) => {
       }
 
       const requestUrl = `${TENANT_BASE_URL}/environment/variables/${variableObject._id}`;
-      await restPut(requestUrl, variableObject, token);
+      await restPut(
+        requestUrl,
+        variableObject,
+        token,
+        "protocol=1.0,resource=1.0"
+      );
     }
   } catch (error) {
     console.error(error.message);

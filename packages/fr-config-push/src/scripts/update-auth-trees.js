@@ -68,7 +68,9 @@ function pushNode(baseUrl, node, token) {
   return new Promise((resolve, reject) => {
     const nodeRequestUrl = `${baseUrl}/nodes/${node._type._id}/${node._id}`;
     delete node._rev;
-    restPut(nodeRequestUrl, node, token).then(resolve).catch(reject);
+    restPut(nodeRequestUrl, node, token, "protocol=2.1,resource=1.0")
+      .then(resolve)
+      .catch(reject);
   });
 }
 
@@ -76,7 +78,9 @@ function pushJourney(journey, baseUrl, token) {
   return new Promise((resolve, reject) => {
     delete journey._rev;
     const requestUrl = `${baseUrl}/trees/${journey._id}`;
-    restPut(requestUrl, journey, token).then(resolve).catch(reject);
+    restPut(requestUrl, journey, token, "protocol=2.1,resource=1.0")
+      .then(resolve)
+      .catch(reject);
   });
 }
 

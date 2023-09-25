@@ -16,16 +16,6 @@ async function exportConfig(exportDir, tenantUrl, name, token) {
       token,
       "protocol=1.0,resource=1.0"
     );
-    /*
-     axios({
-      method: "get",
-      url: envEndpoint,
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Accept-API-Version": "protocol=1.0,resource=1.0",
-      },
-    });
-*/
 
     const secrets = response.data.result;
 
@@ -46,17 +36,6 @@ async function exportConfig(exportDir, tenantUrl, name, token) {
         token,
         "protocol=1.0,resource=1.0"
       );
-
-      /*
-      axios({
-        method: "get",
-        url: versionsEndpoint,
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Accept-API-Version": "protocol=1.0,resource=1.0",
-        },
-      });
-      */
 
       const versions = versionsResponse.data.filter(function (version) {
         return version.status !== "DESTROYED";

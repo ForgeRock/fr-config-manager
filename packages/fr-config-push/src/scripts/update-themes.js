@@ -13,7 +13,9 @@ const {
 } = require("../../../fr-config-common/src/constants.js");
 
 async function mergeExistingThemes(newTheme, realm, resourceUrl, token) {
-  const themes = await restGet(resourceUrl, null, token, true);
+  const response = await restGet(resourceUrl, null, token);
+
+  const themes = response.data;
 
   const existingThemeIndex = themes.realm[realm].findIndex((el) => {
     return el.name === newTheme.name;

@@ -9,7 +9,7 @@ const { OPTION } = cliUtils;
 
 async function mergeExistingObjects(newManagedObject, resourceUrl, token) {
   const result = await restGet(resourceUrl, null, token);
-  const existingObjects = result.objects;
+  const existingObjects = result.data.objects;
 
   const existingObjectIndex = existingObjects.findIndex((el) => {
     return el.name === newManagedObject.name;

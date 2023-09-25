@@ -34,10 +34,10 @@ async function upsertResource(
   const requestUrl = `${path}/${encodeURIComponent(resourceName)}`;
 
   if (await alreadyExists(requestUrl, token)) {
-    console.log("Updating resource");
+    console.log("Updating", resourceName);
     await restPut(requestUrl, resourceObject, token, apiVersion);
   } else {
-    console.log("Creating resource");
+    console.log("Creating", resourceName);
     await restPost(
       requestUrl,
       { _action: "create" },

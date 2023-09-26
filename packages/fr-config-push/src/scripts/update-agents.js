@@ -1,14 +1,13 @@
 const fs = require("fs");
 const path = require("path");
-const fidcRequest = require("../helpers/fidc-request");
-const replaceEnvSpecificValues = require("../helpers/config-process").replaceEnvSpecificValues;
+const { restPut } = require("../../../fr-config-common/src/restClient");
+const replaceEnvSpecificValues =
+  require("../helpers/config-process").replaceEnvSpecificValues;
 
 const updateAgents = async (argv, token) => {
   console.log("Updating agents");
   const { REALMS, TENANT_BASE_URL, CONFIG_DIR } = process.env;
   for (const realm of JSON.parse(REALMS)) {
-   
-
     try {
       // Read agent JSON files
       const baseDir = path.join(
@@ -16,7 +15,7 @@ const updateAgents = async (argv, token) => {
         `/realms/${realm}/realm-config/agents`
       );
       if (!fs.existsSync(baseDir)) {
-        console.log("Warning: no agents config defined");
+        console.log("Warning: no agents config present for realm", realm);
         return;
       }
 
@@ -38,7 +37,14 @@ const updateAgents = async (argv, token) => {
           const agentObject = JSON.parse(resolvedAgentFileContents);
           delete agentObject._rev;
           const requestUrl = `${TENANT_BASE_URL}/am/json/realms/root/realms/${realm}/realm-config/agents/${agentType}/${agentObject._id}`;
-          await fidcRequest(requestUrl, agentObject, token);
+          console.log("Pushing OAuth2 agent", agentObject._id);
+
+          await restPut(
+            requestUrl,
+            agentObject,
+            token,
+            "protocol=2.0,resource=1.0"
+          );
         }
       }
     } catch (error) {

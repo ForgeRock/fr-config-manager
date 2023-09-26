@@ -1,6 +1,6 @@
 const utils = require("../helpers/utils.js");
 const fs = require("fs");
-const axios = require("axios");
+const { restGet } = require("../../../fr-config-common/src/restClient.js");
 const { saveJsonToFile, esvToEnv } = utils;
 
 const EXPORT_SUBDIR = "esvs/variables";
@@ -9,14 +9,12 @@ async function exportConfig(exportDir, tenantUrl, name, token) {
   try {
     const envEndpoint = `${tenantUrl}/environment/variables`;
 
-    const response = await axios({
-      method: "get",
-      url: envEndpoint,
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Accept-API-Version": "protocol=1.0,resource=1.0",
-      },
-    });
+    const response = await restGet(
+      envEndpoint,
+      null,
+      token,
+      "protocol=1.0,resource=1.0"
+    );
 
     const targetDir = `${exportDir}/${EXPORT_SUBDIR}`;
     if (!fs.existsSync(targetDir)) {

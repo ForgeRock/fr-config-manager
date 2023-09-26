@@ -1,6 +1,6 @@
 const path = require("path");
 const { readFile } = require("fs/promises");
-const fidcRequest = require("../helpers/fidc-request");
+const { restPut } = require("../../../fr-config-common/src/restClient");
 const replaceSensitiveValues = require("../helpers/replace-sensitive-values");
 const fs = require("fs");
 const cliUtils = require("../helpers/cli-options");
@@ -45,7 +45,7 @@ const updateTermsAndConditions = async (argv, token) => {
 
     await updateTranslations(fileContent, dir);
     const requestUrl = `${TENANT_BASE_URL}/openidm/config/selfservice.terms`;
-    await fidcRequest(requestUrl, fileContent, token);
+    await restPut(requestUrl, fileContent, token);
 
     return Promise.resolve();
   } catch (error) {

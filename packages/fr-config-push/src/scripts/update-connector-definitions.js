@@ -1,6 +1,6 @@
 const path = require("path");
 const fs = require("fs");
-const fidcRequest = require("../helpers/fidc-request");
+const { restPut } = require("../../../fr-config-common/src/restClient");
 const cliUtils = require("../helpers/cli-options");
 const { OPTION } = cliUtils;
 
@@ -34,7 +34,7 @@ const updateConnectorDefinitions = async (argv, token) => {
           continue;
         }
         const requestUrl = `${TENANT_BASE_URL}/openidm/config/${connectorFile._id}`;
-        await fidcRequest(requestUrl, connectorFile, token);
+        await restPut(requestUrl, connectorFile, token);
         console.log(`${connectorFile._id} updated`);
       }
     } else {

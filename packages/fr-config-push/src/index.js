@@ -326,6 +326,15 @@ async function getCommands() {
         getAccessToken().then((token) => updateTermsAndConditions(argv, token)),
     })
     .command({
+      command: "test",
+      desc: "Test connection and authentication",
+      builder: cliOptions([]),
+      handler: (argv) =>
+        getAccessToken().then((token) =>
+          console.log("Connected and authenticated successfully")
+        ),
+    })
+    .command({
       command: "themes",
       desc: "Update UI themes",
       builder: cliOptions([OPTION.NAME, OPTION.REALM]),

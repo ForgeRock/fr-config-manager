@@ -1,5 +1,5 @@
 const path = require("path");
-const fidcRequest = require("../helpers/fidc-request");
+const { restPut } = require("../../../fr-config-common/src/restClient");
 const fileFilter = require("../helpers/file-filter");
 const glob = require("glob");
 const fs = require("fs");
@@ -12,7 +12,7 @@ async function handleEndpoint(dir, endpoint, baseUrl, token) {
   endpoint.source = data;
   delete endpoint.file;
   const requestUrl = `${baseUrl}/${endpoint._id}`;
-  await fidcRequest(requestUrl, endpoint, token);
+  await restPut(requestUrl, endpoint, token);
   console.log(`IDM endpoint updated: ${endpoint._id}`);
 }
 

@@ -1,6 +1,6 @@
 const utils = require("../helpers/utils.js");
 const fs = require("fs");
-const axios = require("axios");
+const { restGet } = require("../../../fr-config-common/src/restClient.js");
 const { saveJsonToFile } = utils;
 
 const LOCALES_SUBDIR = "locales";
@@ -16,13 +16,7 @@ function processLocales(locales, fileDir, tenantUrl, name, token) {
 
       const idmEndpoint = `${tenantUrl}/openidm/config/${locale._id}`;
 
-      axios({
-        method: "get",
-        url: idmEndpoint,
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }).then((response) => {
+      restGet(idmEndpoint, null, token).then((response) => {
         const localeData = response.data;
         const localeFilename = `${fileDir}/${localeName}.json`;
 
@@ -38,15 +32,11 @@ async function exportLocales(exportDir, tenantUrl, name, token) {
   try {
     const idmEndpoint = `${tenantUrl}/openidm/config`;
 
-    const response = await axios({
-      method: "get",
-      url: idmEndpoint,
-      params: { _queryFilter: '_id sw "uilocale/"' },
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-
+    const response = await restGet(
+      idmEndpoint,
+      { _queryFilter: '_id sw "uilocale/"' },
+      token
+    );
     const locales = response.data.result;
 
     const fileDir = `${exportDir}/${LOCALES_SUBDIR}`;

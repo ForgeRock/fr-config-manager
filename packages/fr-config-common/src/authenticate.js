@@ -3,6 +3,7 @@ const jose = require("node-jose");
 const uuid = require("uuid");
 const qs = require("qs");
 const constants = require("./constants");
+const { restForm } = require("./restClient");
 
 const { PrivateKeyFormat } = constants;
 
@@ -53,14 +54,7 @@ async function getToken(tenantUrl, clientConfig) {
       assertion: jwt,
     };
 
-    const response = await axios({
-      method: "post",
-      url: tokenEndpoint,
-      data: qs.stringify(formData),
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded",
-      },
-    });
+    const response = await restForm(tokenEndpoint, formData);
 
     return response.data.access_token;
   } catch (err) {

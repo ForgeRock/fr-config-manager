@@ -1,11 +1,13 @@
-const fidcRequest = require("../helpers/fidc-request");
-const fidcDelete = require("../helpers/fidc-delete");
+const {
+  restPut,
+  restGet,
+  restPost,
+  restDelete,
+} = require("../../../fr-config-common/src/restClient");
 const replaceEnvSpecificValues =
   require("../helpers/config-process").replaceEnvSpecificValues;
 const path = require("path");
 const fs = require("fs");
-const fidcGet = require("../helpers/fidc-get");
-const fidcPost = require("../helpers/fidc-post");
 const cliUtils = require("../helpers/cli-options");
 const { OPTION } = cliUtils;
 
@@ -45,11 +47,14 @@ const updateSecrets = async (argv, token) => {
       }
 
       const resourceUrl = `${TENANT_BASE_URL}/environment/secrets/${secretObject._id}`;
-      const currentVersions = await fidcGet(
+      const response = await restGet(
         `${resourceUrl}/versions`,
+        null,
         token,
-        true
+        "protocol=1.0,resource=1.0"
       );
+
+      const currentVersions = response.data;
 
       const versions = secretObject.versions.sort((a, b) =>
         Number(a.version) > Number(b.version) ? 1 : -1
@@ -57,21 +62,26 @@ const updateSecrets = async (argv, token) => {
 
       delete secretObject.versions;
 
-      // await fidcDelete(requestUrl, token);
-
       for (let i = 0; i < versions.length; i++) {
         if (i === 0 && !currentVersions) {
           console.log("Creating secret", secretObject._id);
           secretObject.valueBase64 = versions[i].valueBase64;
-          secretResponse = await fidcRequest(resourceUrl, secretObject, token);
+          secretResponse = await restPut(
+            resourceUrl,
+            secretObject,
+            token,
+            "protocol=1.0,resource=1.0"
+          );
           continue;
         }
 
-        const versionResourceUrl = `${resourceUrl}/versions?_action=create`;
-        const versionResponse = await fidcPost(
+        const versionResourceUrl = `${resourceUrl}/versions`;
+        const versionResponse = await restPost(
           versionResourceUrl,
+          { _action: "create" },
           { valueBase64: versions[i].valueBase64 },
-          token
+          token,
+          "protocol=1.0,resource=1.0"
         );
 
         if (!versionResponse) {
@@ -88,9 +98,10 @@ const updateSecrets = async (argv, token) => {
         if (currentVersion.status === "DESTROYED") {
           continue;
         }
-        await fidcDelete(
+        await restDelete(
           `${resourceUrl}/versions/${currentVersion.version}`,
-          token
+          token,
+          "protocol=2.1,resource=1.0"
         );
       }
     }

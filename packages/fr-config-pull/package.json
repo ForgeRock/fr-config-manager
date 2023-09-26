@@ -10,7 +10,8 @@
     "jsonwebtoken": "9.0.0",
     "uuid": "9.0.0",
     "yargs": "17.6.2",
-    "sanitize-filename": "1.6.3"
+    "sanitize-filename": "1.6.3",
+    "lodash": "4.17.21"
   },
   "bin": {
     "fr-config-pull": "src/index.js"

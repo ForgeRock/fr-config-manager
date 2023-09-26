@@ -1,7 +1,7 @@
 const utils = require("../helpers/utils.js");
 const constants = require("../../../fr-config-common/src/constants.js");
 const fs = require("fs");
-const axios = require("axios");
+const { restGet } = require("../../../fr-config-common/src/restClient.js");
 const { saveJsonToFile } = utils;
 const { AuthzTypes } = constants;
 const { safeFileName } = utils;
@@ -62,13 +62,7 @@ function processScripts(scripts, exportDir, name) {
 async function exportScriptById(exportDir, tenantUrl, realm, id, token) {
   const amEndpoint = `${tenantUrl}/am/json/${realm}/scripts/${id}`;
 
-  const response = await axios({
-    method: "get",
-    url: amEndpoint,
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
+  const response = await restGet(amEndpoint, null, token);
 
   const script = response.data;
 
@@ -107,13 +101,7 @@ async function exportScripts(
     try {
       const amEndpoint = `${tenantUrl}/am/json/${realm}/scripts?_queryFilter=${queryFilter}`;
 
-      const response = await axios({
-        method: "get",
-        url: amEndpoint,
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const response = await restGet(amEndpoint, null, token);
 
       const scripts = response.data.result;
 

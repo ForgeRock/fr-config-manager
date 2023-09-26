@@ -1,6 +1,6 @@
 const utils = require("../helpers/utils.js");
 const fs = require("fs");
-const axios = require("axios");
+const { restGet } = require("../../../fr-config-common/src/restClient.js");
 const { saveJsonToFile } = utils;
 
 const ENDPOINT_SUBDIR = "endpoints";
@@ -36,18 +36,14 @@ async function exportEndpoints(exportDir, tenantUrl, name, token) {
   try {
     const idmEndpoint = `${tenantUrl}/openidm/config`;
 
-    const endpointsResponse = await axios({
-      method: "get",
-      url: idmEndpoint,
-      // Query filter taken from UI
-      params: {
+    const endpointsResponse = await restGet(
+      idmEndpoint,
+      {
         _queryFilter:
           '!(file pr) and _id sw "endpoint" and !(context sw "util") and !(_id eq "endpoint/linkedView")',
       },
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
+      token
+    );
 
     const endpoints = endpointsResponse.data.result;
 

@@ -1,4 +1,4 @@
-const axios = require("axios");
+const { restGet } = require("../../../fr-config-common/src/restClient");
 const utils = require("../helpers/utils.js");
 const fs = require("fs");
 const process = require("process");
@@ -19,16 +19,13 @@ async function cacheNodesByType(nodeCache, nodeType, tenantUrl, realm, token) {
 
   const amEndpoint = `${tenantUrl}/am/json/realms/root/realms/${realm}/realm-config/authentication/authenticationtrees/nodes/${nodeType}`;
 
-  const response = await axios({
-    method: "get",
-    url: amEndpoint,
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-    params: {
+  const response = await restGet(
+    amEndpoint,
+    {
       _queryFilter: "true",
     },
-  });
+    token
+  );
 
   nodeCache[nodeType] = response.data.result;
 
@@ -149,13 +146,7 @@ async function exportJourneys(
     try {
       const amEndpoint = `${tenantUrl}/am/json/realms/root/realms/${realm}/realm-config/authentication/authenticationtrees/trees?_queryFilter=true`;
 
-      const response = await axios({
-        method: "get",
-        url: amEndpoint,
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const response = await restGet(amEndpoint, null, token);
 
       const journeys = response.data.result;
 

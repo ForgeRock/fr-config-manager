@@ -1,7 +1,7 @@
 const utils = require("../helpers/utils.js");
 const fs = require("fs");
-const axios = require("axios");
 const { saveJsonToFile } = utils;
+const { restGet } = require("../../../fr-config-common/src/restClient.js");
 
 const EMAIL_SUB_DIR = "email-templates";
 
@@ -56,14 +56,11 @@ async function exportEmailTemplates(exportDir, tenantUrl, name, token) {
   try {
     const idmEndpoint = `${tenantUrl}/openidm/config`;
 
-    const response = await axios({
-      method: "get",
-      url: idmEndpoint,
-      params: { _queryFilter: '_id sw "emailTemplate"' },
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
+    const response = await restGet(
+      idmEndpoint,
+      { _queryFilter: '_id sw "emailTemplate"' },
+      token
+    );
 
     // console.log(JSON.stringify(response.data.result));
     const templates = response.data.result;

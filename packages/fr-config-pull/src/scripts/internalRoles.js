@@ -1,6 +1,6 @@
 const utils = require("../helpers/utils.js");
 const fs = require("fs");
-const axios = require("axios");
+const { restGet } = require("../../../fr-config-common/src/restClient.js");
 const { saveJsonToFile } = utils;
 
 const EXPORT_SUBDIR = "internal-roles";
@@ -10,16 +10,13 @@ async function exportConfig(exportDir, tenantUrl, name, token) {
   try {
     const idmEndpoint = `${tenantUrl}/openidm/internal/role`;
 
-    const response = await axios({
-      method: "get",
-      url: idmEndpoint,
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-      params: {
+    const response = await restGet(
+      idmEndpoint,
+      {
         _queryFilter: "true",
       },
-    });
+      token
+    );
 
     const roles = response.data.result;
     var customerRoles = [];

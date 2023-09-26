@@ -51,6 +51,7 @@ Commands:
   fr-config-pull services               Get authentication services
   fr-config-pull themes                 Get UI themes
   fr-config-pull terms-and-conditions   Get terms and conditions
+  fr-config-pull test                   Test connection and authentication
   fr-config-pull ui-config              Get UI configuration
   fr-config-pull variables              Get environment specific variables
 
@@ -59,6 +60,7 @@ Options:
   -n, --name               Specific configuration item                  [string]
   -r, --realm              Specific realm (overrides environment)       [string]
   -d, --pull-dependencies  Pull dependencies                           [boolean]
+  -v, --version            Show version number                         [boolean]
 ```
 
 Notes on specific options:

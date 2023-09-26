@@ -1,6 +1,6 @@
 const fs = require("fs");
 const path = require("path");
-const fidcRequest = require("../helpers/fidc-request");
+const { restPut } = require("../../../fr-config-common/src/restClient");
 const cliUtils = require("../helpers/cli-options");
 const { OPTION } = cliUtils;
 
@@ -50,7 +50,7 @@ const updateInternalRoles = async (argv, token) => {
 
       console.log(`Updating role ${roleObject.name}`);
       const requestUrl = `${TENANT_BASE_URL}/openidm/internal/role/${roleObject._id}`;
-      await fidcRequest(requestUrl, roleObject, token);
+      await restPut(requestUrl, roleObject, token);
     }
   } catch (error) {
     console.error(error.message);

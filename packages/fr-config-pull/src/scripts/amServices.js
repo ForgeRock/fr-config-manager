@@ -1,6 +1,9 @@
 const utils = require("../helpers/utils.js");
 const fs = require("fs");
-const axios = require("axios");
+const {
+  restPost,
+  restGet,
+} = require("../../../fr-config-common/src/restClient.js");
 const { saveJsonToFile } = utils;
 const EXPORT_SUB_DIR = "services";
 
@@ -10,18 +13,15 @@ const SOCIAL_IDENTITY_PROVIDER_SERVICE = "SocialIdentityProviders";
 async function saveDescendents(targetDir, amEndpoint, serviceName, token) {
   const descendentsEndpoint = `${amEndpoint}/${serviceName}`;
 
-  const response = await axios({
-    method: "post",
-    url: descendentsEndpoint,
-    headers: {
-      Authorization: `Bearer ${token}`,
-      "Accept-API-Version": "protocol=1.0,resource=1.0",
-      "Content-Type": "application/json",
-    },
-    params: {
+  const response = await restPost(
+    descendentsEndpoint,
+    {
       _action: "nextdescendents",
     },
-  });
+    null,
+    token,
+    "protocol=1.0,resource=1.0"
+  );
 
   const descendents = response.data.result;
   const serviceDir = `${targetDir}/${serviceName}`;
@@ -45,16 +45,13 @@ async function exportConfig(exportDir, realms, tenantUrl, name, token) {
 
       const amEndpoint = `${tenantUrl}/am/json/realms/root/realms/${realm}/realm-config/services`;
 
-      const response = await axios({
-        method: "get",
-        url: amEndpoint,
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-        params: {
+      const response = await restGet(
+        amEndpoint,
+        {
           _queryFilter: "true",
         },
-      });
+        token
+      );
 
       const services = response.data.result;
 
@@ -67,13 +64,12 @@ async function exportConfig(exportDir, realms, tenantUrl, name, token) {
           continue;
         }
 
-        const serviceResponse = await axios({
-          method: "get",
-          url: `${amEndpoint}/${serviceName}`,
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
+        const serviceResponse = await restGet(
+          `${amEndpoint}/${serviceName}`,
+          null,
+          token
+        );
+
         const fileName = `${targetDir}/${serviceName}.json`;
         saveJsonToFile(serviceResponse.data, fileName);
 

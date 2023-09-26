@@ -1,6 +1,6 @@
 const fs = require("fs");
 const path = require("path");
-const fidcRequest = require("../helpers/fidc-request");
+const { restPut } = require("../../../fr-config-common/src/restClient");
 const fileFilter = require("../helpers/file-filter");
 const uglifyJS = require("uglify-js");
 
@@ -58,7 +58,7 @@ async function pushScript(
   const baseUrl = `${tenantBaseUrl}/am/json/realms/root/realms/${realm}`;
   const requestUrl = `${baseUrl}/scripts/${script._id}`;
 
-  await fidcRequest(requestUrl, script, token);
+  await restPut(requestUrl, script, token, "protocol=1.0,resource=1.0");
 }
 
 function lintWithWarnings(scriptName, mergedScript, lintingWarnedScripts) {

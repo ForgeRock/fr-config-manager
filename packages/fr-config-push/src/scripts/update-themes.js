@@ -1,9 +1,11 @@
 const fs = require("fs");
 const path = require("path");
-const fidcRequest = require("../helpers/fidc-request");
+const {
+  restPut,
+  restGet,
+} = require("../../../fr-config-common/src/restClient");
 const cliUtils = require("../helpers/cli-options");
 const { OPTION } = cliUtils;
-const fidcGet = require("../helpers/fidc-get");
 
 const EXPORT_SUB_DIR = "themes";
 const {
@@ -11,7 +13,9 @@ const {
 } = require("../../../fr-config-common/src/constants.js");
 
 async function mergeExistingThemes(newTheme, realm, resourceUrl, token) {
-  const themes = await fidcGet(resourceUrl, token, true);
+  const response = await restGet(resourceUrl, null, token);
+
+  const themes = response.data;
 
   const existingThemeIndex = themes.realm[realm].findIndex((el) => {
     return el.name === newTheme.name;
@@ -111,7 +115,7 @@ const updateThemes = async (argv, token) => {
         token
       );
     }
-    await fidcRequest(requestUrl, themerealm, token);
+    await restPut(requestUrl, themerealm, token);
   } catch (error) {
     console.error(error.message);
     process.exit(1);

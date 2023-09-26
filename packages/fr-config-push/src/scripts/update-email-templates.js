@@ -1,6 +1,6 @@
 const fs = require("fs");
 const path = require("path");
-const fidcRequest = require("../helpers/fidc-request");
+const { restPut } = require("../../../fr-config-common/src/restClient");
 const cliUtils = require("../helpers/cli-options");
 const { OPTION } = cliUtils;
 
@@ -64,7 +64,7 @@ const updateEmailTemplates = async (argv, token) => {
         template.styles = mergeFileContent(template.styles, emailTemplatePath);
       }
       const requestUrl = `${TENANT_BASE_URL}/openidm/config/${template._id}`;
-      await fidcRequest(requestUrl, template, token);
+      await restPut(requestUrl, template, token);
     }
   } catch (error) {
     console.error(error.message);

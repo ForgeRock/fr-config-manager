@@ -1,7 +1,7 @@
 const path = require("path");
 const fs = require("fs");
 const { readFile } = require("fs/promises");
-const fidcRequest = require("../helpers/fidc-request");
+const { restPut } = require("../../../fr-config-common/src/restClient");
 
 const updatePasswordPolicy = async (argv, token) => {
   console.log("Updating password policy");
@@ -10,9 +10,7 @@ const updatePasswordPolicy = async (argv, token) => {
     const realms = JSON.parse(REALMS);
     // Combine managed object JSON files
     for (const realm of realms) {
-      const dir = path.join(
-        CONFIG_DIR,
-        `/realms/${realm}/password-policy`);
+      const dir = path.join(CONFIG_DIR, `/realms/${realm}/password-policy`);
 
       if (!fs.existsSync(dir)) {
         console.log("Warning: no password policy config defined");
@@ -20,16 +18,11 @@ const updatePasswordPolicy = async (argv, token) => {
       }
 
       const fileContent = JSON.parse(
-        await readFile(
-          path.join(
-            dir,
-            `${realm}_user-password-policy.json`
-          )
-        )
+        await readFile(path.join(dir, `${realm}_user-password-policy.json`))
       );
 
       const requestUrl = `${TENANT_BASE_URL}/openidm/config/${fileContent._id}`;
-      await fidcRequest(requestUrl, fileContent, token);
+      await restPut(requestUrl, fileContent, token);
     }
   } catch (error) {
     console.error(error.message);

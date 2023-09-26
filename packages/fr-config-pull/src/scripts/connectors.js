@@ -1,7 +1,7 @@
 const utils = require("../helpers/utils.js");
 const fs = require("fs");
-const axios = require("axios");
 const { saveJsonToFile } = utils;
+const { restGet } = require("../../../fr-config-common/src/restClient.js");
 
 const CONNECTORS_SUBDIR = "sync/connectors";
 
@@ -28,14 +28,11 @@ async function exportConnectors(exportDir, tenantUrl, name, token) {
   try {
     const idmEndpoint = `${tenantUrl}/openidm/config`;
 
-    const response = await axios({
-      method: "get",
-      url: idmEndpoint,
-      params: { _queryFilter: '_id sw "provisioner.openicf/"' },
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
+    const response = await restGet(
+      idmEndpoint,
+      { _queryFilter: '_id sw "provisioner.openicf/"' },
+      token
+    );
 
     const connectors = response.data.result;
 

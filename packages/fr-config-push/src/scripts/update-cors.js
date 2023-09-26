@@ -1,7 +1,7 @@
 const { readFile } = require("fs/promises");
 const fs = require("fs");
 const path = require("path");
-const fidcRequest = require("../helpers/fidc-request");
+const { restPut } = require("../../../fr-config-common/src/restClient");
 
 const updateCors = async (argv, token) => {
   console.log("Updating CORS config");
@@ -20,15 +20,31 @@ const updateCors = async (argv, token) => {
     const idmUrl = `${TENANT_BASE_URL}/openidm/config/servletfilter/cors`;
 
     delete fileContent.corsServiceGlobal._rev;
-    // Update AM CORS settings
 
-    await fidcRequest(serviceUrl, fileContent.corsServiceGlobal, token);
-    await fidcRequest(idmUrl, fileContent.idmCorsConfig, token);
+    // Update Global AM CORS settings
+
+    await restPut(
+      serviceUrl,
+      fileContent.corsServiceGlobal,
+      token,
+      "protocol=2.0,resource=1.0"
+    );
+
+    // Update IDM CORS settings
+
+    await restPut(idmUrl, fileContent.idmCorsConfig, token);
     await Promise.all(
+      // Update individual AM CORS settings
+
       fileContent.corsServices.map(async (corsConfigFile) => {
         const serviceConfigUrl = `${serviceUrl}/configuration/${corsConfigFile._id}`;
 
-        await fidcRequest(serviceConfigUrl, corsConfigFile, token);
+        await restPut(
+          serviceConfigUrl,
+          corsConfigFile,
+          token,
+          "protocol=2.0,resource=1.0"
+        );
 
         return Promise.resolve();
       })

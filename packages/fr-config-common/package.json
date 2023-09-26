@@ -11,6 +11,7 @@
     "node-jose": "^2.1.1",
     "slugify": "1.6.5",
     "uuid": "9.0.0",
-    "yargs": "17.6.2"
+    "yargs": "17.6.2",
+    "https-proxy-agent": "7.0.2"
   }
 }

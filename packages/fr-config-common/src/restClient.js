@@ -16,7 +16,8 @@ async function httpRequest(
   requestType,
   body,
   token,
-  apiVersion
+  apiVersion,
+  ignoreNotFound = false
 ) {
   let request = null;
 
@@ -96,22 +97,33 @@ async function httpRequest(
   }
 
   const response = await axios(request).catch(function (error) {
-    console.error(`Exception processing request to ${requestUrl}`);
-    console.error(error.toJSON());
-    process.exit(1);
+    if (error.response.status === 404 && ignoreNotFound) {
+      return null;
+    } else {
+      console.error(`Exception processing request to ${requestUrl}`);
+      console.error(error.toJSON());
+      process.exit(1);
+    }
   });
 
   return response;
 }
 
-function restGet(requestUrl, requestParameters, token, apiVersion) {
+function restGet(
+  requestUrl,
+  requestParameters,
+  token,
+  apiVersion,
+  ignoreNotFound = false
+) {
   return httpRequest(
     requestUrl,
     requestParameters,
     REQUEST_TYPE.GET,
     null,
     token,
-    apiVersion
+    apiVersion,
+    ignoreNotFound
   );
 }
 

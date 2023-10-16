@@ -51,10 +51,11 @@ const updateSecrets = async (argv, token) => {
         `${resourceUrl}/versions`,
         null,
         token,
-        "protocol=1.0,resource=1.0"
+        "protocol=1.0,resource=1.0",
+        true
       );
 
-      const currentVersions = response.data;
+      const currentVersions = response ? response.data : null;
 
       const versions = secretObject.versions.sort((a, b) =>
         Number(a.version) > Number(b.version) ? 1 : -1

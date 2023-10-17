@@ -1,8 +1,10 @@
 const fs = require("fs");
 const path = require("path");
 const { restPut } = require("../../../fr-config-common/src/restClient");
-const replaceEnvSpecificValues =
-  require("../helpers/config-process").replaceEnvSpecificValues;
+const {
+  replaceEnvSpecificValues,
+  unescapePlaceholders,
+} = require("../helpers/config-process");
 
 const updateAgents = async (argv, token) => {
   console.log("Updating agents");
@@ -32,8 +34,9 @@ const updateAgents = async (argv, token) => {
             path.join(subDir, agentFile),
             "utf8"
           );
-          var resolvedAgentFileContents =
-            replaceEnvSpecificValues(agentFileContents);
+          var resolvedAgentFileContents = unescapePlaceholders(
+            replaceEnvSpecificValues(agentFileContents)
+          );
           const agentObject = JSON.parse(resolvedAgentFileContents);
           delete agentObject._rev;
           const requestUrl = `${TENANT_BASE_URL}/am/json/realms/root/realms/${realm}/realm-config/agents/${agentType}/${agentObject._id}`;

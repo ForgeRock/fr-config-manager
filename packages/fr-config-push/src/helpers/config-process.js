@@ -1,13 +1,16 @@
 function replaceEnvSpecificValues(content, base64Encode = false) {
   let newContent = content;
 
-  const placeholders = content.match(/\${.*?}/g);
+  const placeholders = content.match(/\\*?\${.*?}/g);
 
   if (!placeholders) {
     return newContent;
   }
 
   for (const placeholder of placeholders) {
+    if (placeholder.startsWith("\\\\")) {
+      continue;
+    }
     const placeholderName = placeholder.replace(/\${(.*)}/, "$1");
 
     let value = process.env[placeholderName];
@@ -26,6 +29,10 @@ function replaceEnvSpecificValues(content, base64Encode = false) {
   return newContent;
 }
 
+function unescapePlaceholders(content) {
+  return content.replace(/\\\\\${/g, "${");
+}
+
 function removeProperty(obj, propertyName) {
   for (prop in obj) {
     if (prop === propertyName) {
@@ -38,3 +45,4 @@ function removeProperty(obj, propertyName) {
 
 module.exports.replaceEnvSpecificValues = replaceEnvSpecificValues;
 module.exports.removeProperty = removeProperty;
+module.exports.unescapePlaceholders = unescapePlaceholders;

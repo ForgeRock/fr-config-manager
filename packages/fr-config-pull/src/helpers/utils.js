@@ -89,6 +89,10 @@ function esvToEnv(esv) {
   return esv.toUpperCase().replace(/-/g, "_");
 }
 
+function escapePlaceholders(data) {
+  return JSON.parse(JSON.stringify(data).replace(/\$\{/g, "\\\\${"));
+}
+
 function logPullError(error) {
   console.error("Exception:", error.name);
   if (error.name === "AxiosError") {
@@ -105,3 +109,4 @@ module.exports.safeFileName = safeFileName;
 module.exports.esvToEnv = esvToEnv;
 module.exports.logPullError = logPullError;
 module.exports.deepMerge = deepMerge;
+module.exports.escapePlaceholders = escapePlaceholders;

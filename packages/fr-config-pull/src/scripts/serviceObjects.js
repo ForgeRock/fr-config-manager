@@ -1,10 +1,11 @@
-const utils = require("../helpers/utils.js");
 const fs = require("fs");
 const { restGet } = require("../../../fr-config-common/src/restClient.js");
-const { saveJsonToFile } = utils;
-const { logPullError } = utils;
-const constants = require("../../../fr-config-common/src/constants.js");
-const { AuthzTypes } = constants;
+const {
+  saveJsonToFile,
+  escapePlaceholders,
+  logPullError,
+} = require("../helpers/utils.js");
+const { AuthzTypes } = require("../../../fr-config-common/src/constants.js");
 const EXPORT_SUBDIR = "service-objects";
 const _ = require("lodash");
 
@@ -30,7 +31,7 @@ async function exportConfig(exportDir, objectsConfigFile, tenantUrl, token) {
           );
           process.exit(1);
         }
-        let attributes = response.data.result[0];
+        let attributes = escapePlaceholders(response.data.result[0]);
 
         const mergedAttributes = _.merge(attributes, systemObject.overrides);
         const targetDir = `${exportDir}/${EXPORT_SUBDIR}/${objectType}`;

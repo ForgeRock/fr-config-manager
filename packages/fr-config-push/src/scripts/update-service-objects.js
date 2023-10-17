@@ -1,10 +1,10 @@
 const fs = require("fs");
 const path = require("path");
 const { restPut } = require("../../../fr-config-common/src/restClient");
-
 const {
   replaceEnvSpecificValues,
   removeProperty,
+  unescapePlaceholders,
 } = require("../helpers/config-process");
 
 const updateServiceObjects = async (argv, token) => {
@@ -31,9 +31,8 @@ const updateServiceObjects = async (argv, token) => {
           path.join(subDir, objectFile),
           "utf8"
         );
-        var resolvedobjectFileContents = replaceEnvSpecificValues(
-          objectFileContents,
-          false
+        var resolvedobjectFileContents = unescapePlaceholders(
+          replaceEnvSpecificValues(objectFileContents, false)
         );
         const objectAttributes = JSON.parse(resolvedobjectFileContents);
 

@@ -1,4 +1,8 @@
-const { logPullError, saveJsonToFile } = require("../helpers/utils.js");
+const {
+  logPullError,
+  saveJsonToFile,
+  escapePlaceholders,
+} = require("../helpers/utils.js");
 const fs = require("fs");
 const { restGet } = require("../../../fr-config-common/src/restClient.js");
 const constants = require("../../../fr-config-common/src/constants.js");
@@ -17,7 +21,7 @@ async function exportConfig(exportDir, agentsConfigFile, tenantUrl, token) {
 
           const response = await restGet(amEndpoint, null, token);
 
-          let config = response.data;
+          let config = escapePlaceholders(response.data);
           const mergedConfig = _.merge(config, agent.overrides);
 
           const targetDir = `${exportDir}/realms/${realm}/${EXPORT_SUBDIR}/${agentType}`;

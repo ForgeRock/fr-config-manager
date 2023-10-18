@@ -1,11 +1,11 @@
-const utils = require("../helpers/utils.js");
 const fs = require("fs");
-const { saveJsonToFile } = utils;
-const { logPullError } = utils;
-const constants = require("../../../fr-config-common/src/constants.js");
-const { AuthzTypes } = constants;
+const { saveJsonToFile } = require("../../../fr-config-common/src/utils.js");
+const { AuthzTypes } = require("../../../fr-config-common/src/constants.js");
+const {
+  restGet,
+  logRestError,
+} = require("../../../fr-config-common/src/restClient.js");
 const EXPORT_SUBDIR = "authorization";
-const { restGet } = require("../../../fr-config-common/src/restClient.js");
 
 async function saveResourceType(
   exportDir,
@@ -29,7 +29,7 @@ async function saveResourceType(
     const fileName = `${resourceTypeDir}/${resourceType.name}.json`;
     saveJsonToFile(resourceType, fileName);
   } catch (err) {
-    logPullError(err);
+    logRestError(err);
   }
 }
 
@@ -69,7 +69,7 @@ async function exportPolicies(
       );
     });
   } catch (err) {
-    logPullError(err);
+    logRestError(err);
   }
 }
 
@@ -102,7 +102,7 @@ async function exportConfig(exportDir, policySetsConfigFile, tenantUrl, token) {
       }
     }
   } catch (err) {
-    logPullError(err);
+    logRestError(err);
   }
 }
 

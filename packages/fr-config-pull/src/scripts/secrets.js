@@ -5,7 +5,7 @@ const {
   saveJsonToFile,
   esvToEnv,
   escapePlaceholders,
-} = require("../helpers/utils.js");
+} = require("../../../fr-config-common/src/utils.js");
 
 const EXPORT_SUBDIR = "esvs/secrets";
 

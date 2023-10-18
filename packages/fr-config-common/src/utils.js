@@ -89,24 +89,17 @@ function esvToEnv(esv) {
   return esv.toUpperCase().replace(/-/g, "_");
 }
 
-function escapePlaceholders(data) {
-  return JSON.parse(JSON.stringify(data).replace(/\$\{/g, "\\\\${"));
+function escapePlaceholders(content) {
+  return JSON.parse(JSON.stringify(content).replace(/\$\{/g, "\\\\${"));
 }
 
-function logPullError(error) {
-  console.error("Exception:", error.name);
-  if (error.name === "AxiosError") {
-    console.error("HTTP error", error.message);
-    console.error("URL: ", error.response?.config?.url);
-    console.error("Response:", error.response?.data);
-  } else {
-    console.error(error.message);
-  }
+function unescapePlaceholders(content) {
+  return content.replace(/\\\\\${/g, "${");
 }
 
 module.exports.saveJsonToFile = saveJsonToFile;
 module.exports.safeFileName = safeFileName;
 module.exports.esvToEnv = esvToEnv;
-module.exports.logPullError = logPullError;
 module.exports.deepMerge = deepMerge;
 module.exports.escapePlaceholders = escapePlaceholders;
+module.exports.unescapePlaceholders = unescapePlaceholders;

@@ -1,3 +1,7 @@
+const {
+  unescapePlaceholders,
+} = require("../../../fr-config-common/src/utils.js");
+
 function replaceEnvSpecificValues(content, base64Encode = false) {
   let newContent = content;
 
@@ -27,10 +31,6 @@ function replaceEnvSpecificValues(content, base64Encode = false) {
   }
 
   return unescapePlaceholders(newContent);
-}
-
-function unescapePlaceholders(content) {
-  return content.replace(/\\\\\${/g, "${");
 }
 
 function removeProperty(obj, propertyName) {

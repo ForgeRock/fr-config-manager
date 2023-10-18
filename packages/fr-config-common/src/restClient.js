@@ -164,8 +164,20 @@ function restDelete(requestUrl, token, apiVersion) {
   );
 }
 
+function logRestError(error) {
+  console.error("Exception:", error.name);
+  if (error.name === "AxiosError") {
+    console.error("HTTP error", error.message);
+    console.error("URL: ", error.response?.config?.url);
+    console.error("Response:", error.response?.data);
+  } else {
+    console.error(error.message);
+  }
+}
+
 module.exports.restGet = restGet;
 module.exports.restForm = restForm;
 module.exports.restPost = restPost;
 module.exports.restPut = restPut;
 module.exports.restDelete = restDelete;
+module.exports.logRestError = logRestError;

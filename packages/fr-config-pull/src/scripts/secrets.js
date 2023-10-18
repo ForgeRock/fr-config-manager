@@ -1,8 +1,11 @@
-const utils = require("../helpers/utils.js");
 const fs = require("fs");
 const { restGet } = require("../../../fr-config-common/src/restClient.js");
 const { env } = require("process");
-const { saveJsonToFile, esvToEnv } = utils;
+const {
+  saveJsonToFile,
+  esvToEnv,
+  escapePlaceholders,
+} = require("../helpers/utils.js");
 
 const EXPORT_SUBDIR = "esvs/secrets";
 
@@ -56,7 +59,7 @@ async function exportConfig(exportDir, tenantUrl, name, token) {
         _id: secret._id,
         encoding: secret.encoding,
         useInPlaceholders: secret.useInPlaceholders,
-        description: secret.description,
+        description: escapePlaceholders(secret.description),
         versions: versionInfo,
       };
       const fileName = `${targetDir}/${secret._id}.json`;

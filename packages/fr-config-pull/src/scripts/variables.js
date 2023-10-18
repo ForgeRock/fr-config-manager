@@ -1,7 +1,10 @@
-const utils = require("../helpers/utils.js");
 const fs = require("fs");
 const { restGet } = require("../../../fr-config-common/src/restClient.js");
-const { saveJsonToFile, esvToEnv } = utils;
+const {
+  saveJsonToFile,
+  esvToEnv,
+  escapePlaceholders,
+} = require("../helpers/utils.js");
 
 const EXPORT_SUBDIR = "esvs/variables";
 
@@ -30,7 +33,7 @@ async function exportConfig(exportDir, tenantUrl, name, token) {
       const variableObject = {
         _id: variable._id,
         expressionType: variable.expressionType,
-        description: variable.description,
+        description: escapePlaceholders(variable.description),
         valueBase64: "${" + esvToEnv(variable._id) + "}",
       };
       const fileName = `${targetDir}/${variable._id}.json`;

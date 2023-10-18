@@ -26,7 +26,7 @@ function replaceEnvSpecificValues(content, base64Encode = false) {
     newContent = newContent.replaceAll(placeholder, value);
   }
 
-  return newContent;
+  return unescapePlaceholders(newContent);
 }
 
 function unescapePlaceholders(content) {
@@ -45,4 +45,3 @@ function removeProperty(obj, propertyName) {
 
 module.exports.replaceEnvSpecificValues = replaceEnvSpecificValues;
 module.exports.removeProperty = removeProperty;
-module.exports.unescapePlaceholders = unescapePlaceholders;

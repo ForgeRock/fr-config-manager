@@ -1,5 +1,5 @@
 const { restGet } = require("../../../fr-config-common/src/restClient");
-const utils = require("../helpers/utils.js");
+const utils = require("../../../fr-config-common/src/utils.js");
 const fs = require("fs");
 const process = require("process");
 const constants = require("../../../fr-config-common/src/constants.js");

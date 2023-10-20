@@ -1,6 +1,12 @@
-const { logPullError, saveJsonToFile } = require("../helpers/utils.js");
+const {
+  saveJsonToFile,
+  escapePlaceholders,
+} = require("../../../fr-config-common/src/utils.js");
 const fs = require("fs");
-const { restGet } = require("../../../fr-config-common/src/restClient.js");
+const {
+  restGet,
+  logRestError,
+} = require("../../../fr-config-common/src/restClient.js");
 const constants = require("../../../fr-config-common/src/constants.js");
 const { AuthzTypes } = constants;
 const EXPORT_SUBDIR = "realm-config/agents";
@@ -17,7 +23,7 @@ async function exportConfig(exportDir, agentsConfigFile, tenantUrl, token) {
 
           const response = await restGet(amEndpoint, null, token);
 
-          let config = response.data;
+          let config = escapePlaceholders(response.data);
           const mergedConfig = _.merge(config, agent.overrides);
 
           const targetDir = `${exportDir}/realms/${realm}/${EXPORT_SUBDIR}/${agentType}`;
@@ -30,7 +36,7 @@ async function exportConfig(exportDir, agentsConfigFile, tenantUrl, token) {
       }
     }
   } catch (err) {
-    logPullError(err);
+    logRestError(err);
   }
 }
 

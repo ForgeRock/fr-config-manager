@@ -1,7 +1,6 @@
 const fs = require("fs");
 const path = require("path");
 const { restPut } = require("../../../fr-config-common/src/restClient");
-
 const {
   replaceEnvSpecificValues,
   removeProperty,
@@ -35,6 +34,7 @@ const updateServiceObjects = async (argv, token) => {
           objectFileContents,
           false
         );
+
         const objectAttributes = JSON.parse(resolvedobjectFileContents);
 
         delete objectAttributes._rev;

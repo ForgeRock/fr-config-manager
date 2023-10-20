@@ -1,4 +1,4 @@
-const utils = require("../helpers/utils.js");
+const utils = require("../../../fr-config-common/src/utils.js");
 const fs = require("fs");
 const {
   restPost,

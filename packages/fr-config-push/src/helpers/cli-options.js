@@ -6,33 +6,38 @@ const OPTION = {
   METADATA: "metadata",
 };
 
-const cliOptions = (requestedOptions) => {
-  const options = {
-    realm: {
-      alias: "r",
-      demandOption: false,
-      describe: "ForgeRock Realm",
-    },
-    name: {
-      alias: "n",
-      demandOption: false,
-      describe: "Push specific name",
-    },
-    metadata: {
-      alias: "m",
-      demandOption: false,
-      describe: "Config metadata",
-    },
-    filenameFilter: {
-      alias: "ff",
-      demandOption: false,
-      describe:
-        "Filename Filter (combine multiples using comma, use ~ prefix on entry for wildcard match)",
-    },
-  };
+const CLI_OPTIONS = {
+  realm: {
+    alias: "r",
+    demandOption: false,
+    describe: "ForgeRock Realm",
+  },
+  name: {
+    alias: "n",
+    demandOption: false,
+    describe: "Push specific name",
+  },
+  metadata: {
+    alias: "m",
+    demandOption: false,
+    describe: "Configuration metadata",
+  },
+  filenameFilter: {
+    alias: "ff",
+    demandOption: false,
+    describe:
+      "Filename Filter (combine multiples using comma, use ~ prefix on entry for wildcard match)",
+  },
+  "push-dependencies": {
+    alias: "d",
+    describe: "Push dependencies",
+    type: "boolean",
+  },
+};
 
+const cliOptions = (requestedOptions) => {
   return requestedOptions.reduce(
-    (acc, curr) => ({ ...acc, [curr]: options[curr] }),
+    (acc, curr) => ({ ...acc, [curr]: CLI_OPTIONS[curr] }),
     {}
   );
 };

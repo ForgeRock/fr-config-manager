@@ -355,31 +355,6 @@ async function getCommands() {
       handler: (argv) =>
         getAccessToken().then((token) => updateVariables(argv, token)),
     })
-    .option(OPTION.NAME, {
-      alias: "n",
-      describe: "Specific configuration",
-      type: "string",
-    })
-    .option(OPTION.REALM, {
-      alias: "r",
-      describe: "Specific realm (overrides environment)",
-      type: "string",
-    })
-    .option(OPTION.PUSH_DEPENDENCIES, {
-      alias: "d",
-      describe: "Push dependencies",
-      type: "boolean",
-    })
-    .option(OPTION.FILENAME_FILTER, {
-      alias: "f",
-      describe: "Filename filter",
-      type: "string",
-    })
-    .option(OPTION.METADATA, {
-      alias: "m",
-      describe: "Configuration metadata",
-      type: "object",
-    })
     .demandCommand()
     .parse();
 }

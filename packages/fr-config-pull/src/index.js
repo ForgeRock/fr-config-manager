@@ -21,8 +21,7 @@ const secrets = require("./scripts/secrets.js");
 const variables = require("./scripts/variables.js");
 const secretMappings = require("./scripts/secretMappings.js");
 const constants = require("../../fr-config-common/src/constants");
-const cliUtils = require("./helpers/cli-options");
-const { cliOptions, OPTION } = cliUtils;
+const { cliOptions, OPTION } = require("./helpers/cli-options");
 const oauth2Agents = require("./scripts/oauth2Agents.js");
 const authzPolicies = require("./scripts/authzPolicies.js");
 const systemUsers = require("./scripts/serviceObjects");
@@ -432,12 +431,11 @@ async function getConfig(argv) {
 
 yargs
   .usage("Usage: $0 [arguments]")
-  .version(false)
+  .version()
   .help("h")
   .alias("h", "help")
   .alias("v", "version")
   .strict()
-  .version()
   .command({
     command: COMMAND.ALL,
     desc: "Get all configuration",
@@ -519,7 +517,7 @@ yargs
   .command({
     command: COMMAND.AUTH_TREE,
     desc: "Get journeys",
-    builder: cliOptions([OPTION.NAME, OPTION.REALM]),
+    builder: cliOptions([OPTION.NAME, OPTION.REALM, OPTION.PULL_DEPENDENCIES]),
     handler: (argv) => getConfig(argv),
   })
   .command({
@@ -623,21 +621,6 @@ yargs
     desc: "Get environment specific variables",
     builder: cliOptions([OPTION.NAME]),
     handler: (argv) => getConfig(argv),
-  })
-  .option(OPTION.NAME, {
-    alias: "n",
-    describe: "Specific configuration item",
-    type: "string",
-  })
-  .option(OPTION.REALM, {
-    alias: "r",
-    describe: "Specific realm (overrides environment)",
-    type: "string",
-  })
-  .option(OPTION.PULL_DEPENDENCIES, {
-    alias: "d",
-    describe: "Pull dependencies",
-    type: "boolean",
   })
   .demandCommand()
   .parse();

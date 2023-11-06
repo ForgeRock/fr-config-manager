@@ -97,7 +97,7 @@ async function httpRequest(
   }
 
   const response = await axios(request).catch(function (error) {
-    if (error.response.status === 404 && ignoreNotFound) {
+    if (error.response && error.response.status === 404 && ignoreNotFound) {
       return null;
     } else {
       console.error(`Exception processing request to ${requestUrl}`);

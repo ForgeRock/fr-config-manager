@@ -4,32 +4,30 @@ const OPTION = {
   PULL_DEPENDENCIES: "pull-dependencies",
 };
 
-const cliOptions = (requestedOptions) => {
-  const options = {
-    realm: {
-      alias: "realm",
-      demandOption: false,
-      describe: "ForgeRock Realm",
-    },
-    versionNumber: {
-      alias: "version",
-      demandOption: true,
-      describe: "FIDC Config Version Number",
-    },
-    configDir: {
-      alias: "configdir",
-      demandOption: true,
-      describe: "Path to the config directory. E.g. /tmp/config",
-    },
-    name: {
-      alias: "name",
-      demandOption: false,
-      describe: "Pull specific name",
-    },
-  };
+const CLI_OPTIONS = {
+  name: {
+    alias: "n",
+    demandOption: false,
+    describe: "Only for specific name",
+    type: "string",
+  },
+  realm: {
+    alias: "r",
+    demandOption: false,
+    describe: "Specific realm (overrides environment)",
+    type: "string",
+  },
+  "pull-dependencies": {
+    alias: "d",
+    demandOption: false,
+    describe: "Pull dependencies",
+    type: "string",
+  },
+};
 
+const cliOptions = (requestedOptions) => {
   return requestedOptions.reduce(
-    (acc, curr) => ({ ...acc, [curr]: options[curr] }),
+    (acc, curr) => ({ ...acc, [curr]: CLI_OPTIONS[curr] }),
     {}
   );
 };

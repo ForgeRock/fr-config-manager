@@ -43,6 +43,8 @@ function processScripts(scripts, exportDir, name) {
       fs.mkdirSync(exportDir, { recursive: true });
     }
 
+    let scriptNotFound = true;
+
     scripts.forEach((script) => {
       if (script.language !== "JAVASCRIPT") {
         return;
@@ -52,8 +54,14 @@ function processScripts(scripts, exportDir, name) {
         return;
       }
 
+      scriptNotFound = false;
+
       saveScriptToFile(script, exportDir);
     });
+
+    if (name && scriptNotFound) {
+      console.warn("Script not found (check SCRIPT_PREFIXES)");
+    }
   } catch (err) {
     console.error(err);
   }

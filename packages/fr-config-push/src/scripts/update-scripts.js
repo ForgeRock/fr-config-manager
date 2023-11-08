@@ -3,6 +3,7 @@ const path = require("path");
 const { restPut } = require("../../../fr-config-common/src/restClient");
 const fileFilter = require("../helpers/file-filter");
 const uglifyJS = require("uglify-js");
+const { OPTION } = require("../helpers/cli-options");
 
 function regexIndexOf(text, re, i) {
   const indexInSuffix = text.slice(i).search(re);
@@ -92,9 +93,24 @@ function lintWithWarnings(scriptName, mergedScript, lintingWarnedScripts) {
 const updateScripts = async (argv, token) => {
   const { REALMS, TENANT_BASE_URL, CONFIG_DIR, filenameFilter } = process.env;
 
-  console.log("Updating scripts");
+  const scriptName = argv[OPTION.NAME];
+  const realms = argv[OPTION.REALM] ? [argv[OPTION.REALM]] : JSON.parse(REALMS);
+  let scriptNotFound = false;
+
+  if (scriptName) {
+    if (realms.length !== 1) {
+      console.error("Error: for a named script, specify a single realm");
+      process.exit(1);
+    } else {
+      scriptNotFound = true;
+      console.log(`Updating script ${scriptName}`);
+    }
+  } else {
+    console.log("Updating scripts");
+  }
+
   try {
-    for (const realm of JSON.parse(REALMS)) {
+    for (const realm of realms) {
       const baseDir = path.join(CONFIG_DIR, `/realms/${realm}/scripts`);
       const configDir = path.join(baseDir, "scripts-config");
 
@@ -130,6 +146,12 @@ const updateScripts = async (argv, token) => {
           );
         }
 
+        if (scriptName && script.name !== scriptName) {
+          continue;
+        }
+
+        scriptNotFound = false;
+
         pushScript(
           script,
           baseDir,
@@ -144,6 +166,9 @@ const updateScripts = async (argv, token) => {
           "\n** Linting warnings for scripts : " + lintingWarnedScripts + "\n"
         );
       }
+    }
+    if (scriptName && scriptNotFound) {
+      console.warn("Script not found");
     }
   } catch (error) {
     console.error(error.message);

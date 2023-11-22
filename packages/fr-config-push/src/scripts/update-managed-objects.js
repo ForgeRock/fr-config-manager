@@ -24,6 +24,19 @@ async function mergeExistingObjects(newManagedObject, resourceUrl, token) {
   return existingObjects;
 }
 
+function mergeScriptFile(value, managedObjectPath) {
+  if (value.type && value.type === "text/javascript" && value.file) {
+    const scriptFilePath = `${managedObjectPath}/${value.file}`;
+    if (fs.existsSync(scriptFilePath)) {
+      const source = fs.readFileSync(scriptFilePath, {
+        encoding: "utf-8",
+      });
+      delete value.file;
+      value.source = source;
+    }
+  }
+}
+
 const updateManagedObjects = async (argv, token) => {
   const { TENANT_BASE_URL, CONFIG_DIR } = process.env;
   const SCRIPT_HOOKS = ["onStore", "onRetrieve", "onValidate"];
@@ -65,17 +78,16 @@ const updateManagedObjects = async (argv, token) => {
 
       // Update the Event scripts if we have been supplied them in the config
       Object.entries(managedObject).forEach(([key, value]) => {
-        if (value.type && value.type === "text/javascript" && value.file) {
-          const scriptFilePath = `${managedObjectPath}/${managedObject.name}.${key}.js`;
-          if (fs.existsSync(scriptFilePath)) {
-            const source = fs.readFileSync(scriptFilePath, {
-              encoding: "utf-8",
-            });
-            delete value.file;
-            value.source = source;
-          }
-        }
+        mergeScriptFile(value, managedObjectPath);
       });
+
+      // Update action scripts if any
+      if (managedObject.actions) {
+        Object.entries(managedObject.actions).forEach(([key, value]) => {
+          mergeScriptFile(value, managedObjectPath);
+        });
+      }
+
       //Update event hook scripts
       Object.entries(managedObject.schema.properties).forEach(
         ([key, value]) => {

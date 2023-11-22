@@ -30,6 +30,17 @@ function processManagedObjects(managedObjects, targetDir, name) {
         }
       });
 
+      if (managedObject.actions) {
+        Object.entries(managedObject.actions).forEach(([key, value]) => {
+          if (value.type && value.type === "text/javascript" && value.source) {
+            const scriptFilename = `${managedObject.name}.actions.${key}.js`;
+            value.file = scriptFilename;
+            fs.writeFileSync(`${objectPath}/${scriptFilename}`, value.source);
+            delete value.source;
+          }
+        });
+      }
+
       Object.entries(managedObject.schema.properties).forEach(
         ([key, value]) => {
           SCRIPT_HOOKS.forEach((hook) => {

@@ -101,6 +101,7 @@ async function httpRequest(
       return null;
     } else {
       console.error(`Exception processing request to ${requestUrl}`);
+      console.error(error.response?.data);
       console.error(error.toJSON());
       process.exit(1);
     }

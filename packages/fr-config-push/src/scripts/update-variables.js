@@ -33,16 +33,17 @@ const updateVariables = async (argv, token) => {
         "utf8"
       );
 
+      if (requestedVariableName) {
+        const variableId = JSON.parse(variableFileContents)._id;
+
+        if (variableId !== requestedVariableName) {
+          continue;
+        }
+      }
+
       const variableObject = JSON.parse(
         replaceEnvSpecificValues(variableFileContents, true)
       );
-
-      if (
-        requestedVariableName &&
-        requestedVariableName !== variableObject._id
-      ) {
-        continue;
-      }
 
       if (
         !variableObject.expressionType ||
@@ -52,6 +53,7 @@ const updateVariables = async (argv, token) => {
       }
 
       const requestUrl = `${TENANT_BASE_URL}/environment/variables/${variableObject._id}`;
+
       await restPut(
         requestUrl,
         variableObject,

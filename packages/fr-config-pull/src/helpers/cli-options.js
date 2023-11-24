@@ -2,6 +2,7 @@ const OPTION = {
   NAME: "name",
   REALM: "realm",
   PULL_DEPENDENCIES: "pull-dependencies",
+  DUMP: "dump",
 };
 
 const CLI_OPTIONS = {
@@ -21,7 +22,13 @@ const CLI_OPTIONS = {
     alias: "d",
     demandOption: false,
     describe: "Pull dependencies",
-    type: "string",
+    type: "boolean",
+  },
+  dump: {
+    alias: "u",
+    demandOption: false,
+    describe: "Dump values",
+    type: "boolean",
   },
 };
 

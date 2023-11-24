@@ -343,8 +343,13 @@ async function getConfig(argv) {
   }
 
   if (matchCommand(argv, COMMAND.ESVS)) {
-    console.log("Getting variables");
-    variables.exportConfig(configDir, tenantUrl, argv[OPTION.NAME], token);
+    variables.exportConfig(
+      configDir,
+      tenantUrl,
+      argv[OPTION.NAME],
+      argv[OPTION.DUMP],
+      token
+    );
   }
 
   if (matchCommand(argv, COMMAND.SECRET_MAPPINGS)) {
@@ -619,7 +624,7 @@ yargs
   .command({
     command: COMMAND.ESVS,
     desc: "Get environment specific variables",
-    builder: cliOptions([OPTION.NAME]),
+    builder: cliOptions([OPTION.NAME, OPTION.DUMP]),
     handler: (argv) => getConfig(argv),
   })
   .demandCommand()

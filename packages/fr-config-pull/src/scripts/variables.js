@@ -8,7 +8,7 @@ const {
 
 const EXPORT_SUBDIR = "esvs/variables";
 
-async function exportConfig(exportDir, tenantUrl, name, token) {
+async function exportConfig(exportDir, tenantUrl, name, dump, token) {
   try {
     const envEndpoint = `${tenantUrl}/environment/variables`;
 
@@ -30,14 +30,19 @@ async function exportConfig(exportDir, tenantUrl, name, token) {
       if (name && name !== variable._id) {
         return;
       }
+      const envVariable = esvToEnv(variable._id);
       const variableObject = {
         _id: variable._id,
         expressionType: variable.expressionType,
         description: escapePlaceholders(variable.description),
-        valueBase64: "${" + esvToEnv(variable._id) + "}",
+        valueBase64: "${" + envVariable + "}",
       };
       const fileName = `${targetDir}/${variable._id}.json`;
       saveJsonToFile(variableObject, fileName);
+      if (dump) {
+        const value = atob(variable.valueBase64);
+        console.log(`${envVariable}='${value}'`);
+      }
     });
   } catch (err) {
     console.log(err);

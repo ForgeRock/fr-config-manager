@@ -1,8 +1,28 @@
 const path = require("path");
 const fs = require("fs");
-const { restPut } = require("../../../fr-config-common/src/restClient");
+const {
+  restPut,
+  restGet,
+} = require("../../../fr-config-common/src/restClient");
 const cliUtils = require("../helpers/cli-options");
 const { OPTION } = cliUtils;
+
+async function mergeExistingMappings(newMapping, resourceUrl, token) {
+  const result = await restGet(resourceUrl, null, token);
+  const existingMappings = result.data.mappings;
+
+  const existingMappingIndex = existingMappings.findIndex((el) => {
+    return el.name === newMapping.name;
+  });
+
+  if (existingMappingIndex >= 0) {
+    existingMappings.splice(existingMappingIndex, 1);
+  }
+
+  existingMappings.push(newMapping);
+
+  return existingMappings;
+}
 
 const updateConnectorMappings = async (argv, token) => {
   const { TENANT_BASE_URL, CONFIG_DIR } = process.env;
@@ -81,6 +101,11 @@ const updateConnectorMappings = async (argv, token) => {
         }
         mappings.push(mappingObject);
       }
+
+      if (requestedMappingName) {
+        mappings = await mergeExistingMappings(mappings[0], requestUrl, token);
+      }
+
       const requestBody = {
         mappings: mappings,
       };

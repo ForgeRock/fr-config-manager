@@ -54,51 +54,31 @@ const updateConnectorMappings = async (argv, token) => {
           fs.readFileSync(path.join(mappingPath, `${mappingname}.json`))
         );
         // Update the Event scripts if we have been supplied them in the config
-        for (const eventName of ["onCreate", "onUpdate", "onError"]) {
-          const eventScriptName = mappingObject.name + "_" + eventName + ".js";
+        for (const eventName of [
+          "onCreate",
+          "onUpdate",
+          "onDelete",
+          "onLink",
+          "onUnlink",
+        ]) {
+          const eventTrigger = mappingObject[eventName];
+          if (!eventTrigger || !eventTrigger.file) {
+            continue;
+          }
 
-          const fileEventScript = path.join(
-            CONFIG_DIR,
-            "sync/mappings/event-scripts/" + eventScriptName
-          );
+          const fileEventScript = path.join(mappingPath, eventTrigger.file);
+
           if (fs.existsSync(fileEventScript)) {
-            if (!mappingObject[eventName]) {
-              mappingObject[eventName] = {};
-            }
             mappingObject[eventName].source = fs.readFileSync(fileEventScript, {
               encoding: "utf8",
             });
             if (!mappingObject[eventName].type) {
               mappingObject[eventName].type = "text/javascript";
             }
+            delete mappingObject[eventName].file;
           }
         }
 
-        // Update the Properties Transform scripts if we have been supplied them in the config
-
-        if (mappingObject.name && mappingObject.properties) {
-          for (const property of mappingObject.properties) {
-            if (property.target && property.transform) {
-              const propertyTransformScript = path.join(
-                CONFIG_DIR,
-                "/connectors/mappings/properties-transform-scripts/" +
-                  mappingObject.name +
-                  "/" +
-                  property.target +
-                  ".js"
-              );
-              if (fs.existsSync(propertyTransformScript)) {
-                property.transform.source = fs.readFileSync(
-                  propertyTransformScript,
-                  { encoding: "utf8" }
-                );
-                if (!property.transform.type) {
-                  property.transform.type = "text/javascript";
-                }
-              }
-            }
-          }
-        }
         mappings.push(mappingObject);
       }
 

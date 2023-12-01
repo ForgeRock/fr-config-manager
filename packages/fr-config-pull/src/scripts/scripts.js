@@ -11,6 +11,23 @@ const SCRIPT_CONFIG_FILE = "scripts-config.json";
 const SCRIPTS_CONTENT_DIR = "scripts-content";
 const SCRIPTS_CONFIG_DIR = "scripts-config";
 
+function checkForDuplicates(scripts) {
+  duplicatesFound = false;
+  let scriptNames = [];
+
+  scripts.forEach((script) => {
+    if (scriptNames.includes(script.name)) {
+      console.error("Duplicate script name:", script.name);
+      duplicatesFound = true;
+      return;
+    }
+
+    scriptNames.push(script.name);
+  });
+
+  return duplicatesFound;
+}
+
 function saveScriptToFile(script, exportDir) {
   const scriptContentRelativePath = `${SCRIPTS_CONTENT_DIR}/${script.context}`;
   const scriptContentPath = `${exportDir}/${scriptContentRelativePath}`;
@@ -112,6 +129,11 @@ async function exportScripts(
       const response = await restGet(amEndpoint, null, token);
 
       const scripts = response.data.result;
+
+      if (checkForDuplicates(scripts)) {
+        console.error("Error: duplicate scripts detected");
+        process.exit(1);
+      }
 
       const fileDir = `${exportDir}/${realm}/${SCRIPT_SUB_DIR}`;
       processScripts(scripts, fileDir, name);

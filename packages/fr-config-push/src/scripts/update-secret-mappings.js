@@ -55,7 +55,12 @@ const updateSecretMappings = async (argv, token) => {
           delete fileContent._rev;
 
           const requestUrl = `${TENANT_BASE_URL}/am/json/realms/root/realms/${realm}/realm-config/secrets/stores/GoogleSecretManagerSecretStoreProvider/ESV/mappings/${mappingName}`;
-          await restPut(requestUrl, fileContent, token);
+          await restPut(
+            requestUrl,
+            fileContent,
+            token,
+            "protocol=2.0,resource=1.0"
+          );
 
           return Promise.resolve();
         })

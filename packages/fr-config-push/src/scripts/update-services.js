@@ -84,7 +84,7 @@ const updateServices = async (argv, token) => {
                 descendentRequestUrl,
                 descendentFile,
                 token,
-                "protocol=1.0,resource=1.0"
+                "protocol=2.0,resource=1.0"
               );
             });
           }

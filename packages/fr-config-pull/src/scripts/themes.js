@@ -9,6 +9,10 @@ const {
   THEME_HTML_FIELDS,
 } = require("../../../fr-config-common/src/constants.js");
 
+function decodeOrNot(input, encoded) {
+  return encoded ? atob(input) : input;
+}
+
 function processThemes(themes, fileDir, name) {
   try {
     themes.forEach((theme) => {
@@ -22,30 +26,40 @@ function processThemes(themes, fileDir, name) {
       }
 
       for (const field of THEME_HTML_FIELDS) {
-        switch (typeof theme[field]) {
+        if (!theme[field.name]) {
+          continue;
+        }
+
+        switch (typeof theme[field.name]) {
           case "string":
             {
-              const fieldFilename = `${field}.html`;
+              const fieldFilename = `${field.name}.html`;
               const breakoutFile = path.join(themePath, fieldFilename);
-              fs.writeFileSync(breakoutFile, theme[field]);
-              theme[field] = {
+              fs.writeFileSync(
+                breakoutFile,
+                decodeOrNot(theme[field.name], field.encoded)
+              );
+              theme[field.name] = {
                 file: fieldFilename,
               };
             }
             break;
 
           case "object":
-            const fieldPath = path.join(themePath, field);
+            const fieldPath = path.join(themePath, field.name);
             if (!fs.existsSync(fieldPath)) {
               fs.mkdirSync(fieldPath, { recursive: true });
             }
 
-            Object.keys(theme[field]).forEach((locale) => {
+            Object.keys(theme[field.name]).forEach((locale) => {
               {
-                const localeFilename = path.join(field, `${locale}.html`);
+                const localeFilename = path.join(field.name, `${locale}.html`);
                 const breakoutFile = path.join(themePath, localeFilename);
-                fs.writeFileSync(breakoutFile, theme[field][locale]);
-                theme[field][locale] = {
+                fs.writeFileSync(
+                  breakoutFile,
+                  decodeOrNot(theme[field.name][locale], field.encoded)
+                );
+                theme[field.name][locale] = {
                   file: localeFilename,
                 };
               }
@@ -54,8 +68,11 @@ function processThemes(themes, fileDir, name) {
 
           default:
             console.error(
-              "Unexpected locale type in theme",
-              typeof theme[field]
+              `Error processing theme ${
+                theme.name
+              } - unexpected data type for ${field.name}: ${typeof theme[
+                field.name
+              ]}`
             );
             process.exit(1);
         }

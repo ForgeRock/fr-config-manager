@@ -4,10 +4,11 @@ const PrivateKeyFormat = {
 };
 
 const THEME_HTML_FIELDS = [
-  "accountFooter",
-  "journeyFooter",
-  "journeyHeader",
-  "journeyJustifiedContent",
+  { name: "accountFooter", encoded: false },
+  { name: "journeyFooter", encoded: false },
+  { name: "journeyHeader", encoded: false },
+  { name: "journeyJustifiedContent", encoded: false },
+  { name: "journeyFooterScriptTag", encoded: true },
 ];
 
 module.exports.PrivateKeyFormat = PrivateKeyFormat;

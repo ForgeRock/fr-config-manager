@@ -30,27 +30,44 @@ async function mergeExistingThemes(newTheme, realm, resourceUrl, token) {
   return themes;
 }
 
+function encodeOrNot(input, encoded) {
+  return encoded ? btoa(input) : input;
+}
+
 function processThemes(theme, themePath) {
   try {
     for (const field of THEME_HTML_FIELDS) {
-      if (theme[field].file) {
-        const breakoutFile = path.join(themePath, theme[field].file);
-        const fieldValue = fs.readFileSync(breakoutFile, "utf-8");
-        theme[field] = fieldValue;
+      if (!theme[field.name]) {
         continue;
       }
 
-      if (typeof theme[field] !== "object") {
+      if (typeof theme[field.name] === "string") {
+        continue;
+      }
+
+      if (theme[field.name].file) {
+        const breakoutFile = path.join(themePath, theme[field.name].file);
+        const fieldValue = fs.readFileSync(breakoutFile, "utf-8");
+        theme[field.name] = encodeOrNot(fieldValue, field.encoded);
+        continue;
+      }
+
+      if (typeof theme[field.name] !== "object") {
         console.error(
-          `Unexpected object type for ${field} in theme ${theme.name}`
+          `Unexpected object type for ${field.name} in theme ${
+            theme.name
+          }: ${typeof theme[field.name]}`
         );
         process.exit(1);
       }
 
-      Object.keys(theme[field]).forEach((locale) => {
-        const breakoutFile = path.join(themePath, theme[field][locale].file);
+      Object.keys(theme[field.name]).forEach((locale) => {
+        const breakoutFile = path.join(
+          themePath,
+          theme[field.name][locale].file
+        );
         const fieldValue = fs.readFileSync(breakoutFile, "utf-8");
-        theme[field][locale] = fieldValue;
+        theme[field.name][locale] = encodeOrNot(fieldValue, field.encoded);
       });
     }
     return theme;

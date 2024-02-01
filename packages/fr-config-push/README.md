@@ -32,6 +32,7 @@ Commands:
   fr-config-push connector-definitions  Update connector definitions
   fr-config-push connector-mappings     Update connector mappings
   fr-config-push cors                   Update CORS configuration
+  fr-config-push csp                    Update content security policy configuration
   fr-config-push email-provider         Update email provider settings
   fr-config-push email-templates        Update email templates
   fr-config-push endpoints              Update custom endpoints
@@ -107,3 +108,11 @@ Example metadata produced by the command above is as follows
 ```
 
 Metadata options may also be provided with the `fr-config-push all-static` command
+
+`fr-config-push csp`
+
+The CSP configuration endpoint requires an access token with the scope `fr:idc:content-security-policy:*`,
+which is not permitted for Identity Cloud service accounts as of this version of `fr-config-manager`.
+
+Therefore, for managing CSP configuration specifically, you need to set the environment variable
+`TENANT_ACCESS_TOKEN` with an access token with this scope - for example from the admin UI.

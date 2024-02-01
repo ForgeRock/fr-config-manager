@@ -33,6 +33,7 @@ const {
   updateLocales,
   updateAudit,
   updateConfigMetadata,
+  updateCsp,
 } = require("./scripts");
 
 require("dotenv").config();
@@ -187,6 +188,13 @@ async function getCommands() {
       builder: cliOptions([]),
       handler: (argv) =>
         getAccessToken().then((token) => updateCors(argv, token)),
+    })
+    .command({
+      command: "csp",
+      desc: "Update content security policy",
+      builder: cliOptions([OPTION.NAME]),
+      handler: (argv) =>
+        getAccessToken().then((token) => updateCsp(argv, token)),
     })
     .command({
       command: "email-provider",

@@ -26,6 +26,7 @@ const oauth2Agents = require("./scripts/oauth2Agents.js");
 const authzPolicies = require("./scripts/authzPolicies.js");
 const systemUsers = require("./scripts/serviceObjects");
 const locales = require("./scripts/locales");
+const csp = require("./scripts/csp.js");
 
 const yargs = require("yargs");
 const { showConfigMetadata } = require("./scripts/configMetadata.js");
@@ -34,10 +35,12 @@ require("dotenv").config();
 
 const COMMAND = {
   ALL: "all",
+  ALL_STATIC: "all-static",
   AUTH_TREE: "journeys",
   CONNECTOR_DEFINITIONS: "connector-definitions",
   CONNECTOR_MAPPINGS: "connector-mappings",
   CORS: "cors",
+  CSP: "csp",
   MANAGED_OBJECTS: "managed-objects",
   EMAIL_TEMPLATES: "email-templates",
   EMAIL_PROVIDER: "email-provider",
@@ -67,8 +70,69 @@ const COMMAND = {
   TEST: "test",
 };
 
+const COMMAND_MAP = {
+  all: [
+    COMMAND.AUTH_TREE,
+    COMMAND.CONNECTOR_DEFINITIONS,
+    COMMAND.CONNECTOR_MAPPINGS,
+    COMMAND.CORS,
+    COMMAND.MANAGED_OBJECTS,
+    COMMAND.EMAIL_TEMPLATES,
+    COMMAND.EMAIL_PROVIDER,
+    COMMAND.THEMES,
+    COMMAND.REMOTE_SERVERS,
+    COMMAND.SCRIPTS,
+    COMMAND.SERVICES,
+    COMMAND.AUTHENTICATION,
+    COMMAND.TERMS_AND_CONDITIONS,
+    COMMAND.PASSWORD_POLICY,
+    COMMAND.UI_CONFIG,
+    COMMAND.IDM_ENDPOINTS,
+    COMMAND.IDM_SCHEDULES,
+    COMMAND.IDM_ACCESS_CONFIG,
+    COMMAND.KBA,
+    COMMAND.INTERNAL_ROLES,
+    COMMAND.SECRETS,
+    COMMAND.ESVS,
+    COMMAND.SECRET_MAPPINGS,
+    COMMAND.OAUTH2_AGENTS,
+    COMMAND.AUTHZ_POLICIES,
+    COMMAND.SERVICE_OBJECTS,
+    COMMAND.LOCALES,
+    COMMAND.AUDIT,
+  ],
+  "all-static": [
+    COMMAND.AUTH_TREE,
+    COMMAND.CONNECTOR_DEFINITIONS,
+    COMMAND.CONNECTOR_MAPPINGS,
+    COMMAND.CORS,
+    COMMAND.MANAGED_OBJECTS,
+    COMMAND.EMAIL_TEMPLATES,
+    COMMAND.EMAIL_PROVIDER,
+    COMMAND.THEMES,
+    COMMAND.REMOTE_SERVERS,
+    COMMAND.SCRIPTS,
+    COMMAND.SERVICES,
+    COMMAND.AUTHENTICATION,
+    COMMAND.TERMS_AND_CONDITIONS,
+    COMMAND.PASSWORD_POLICY,
+    COMMAND.UI_CONFIG,
+    COMMAND.IDM_ENDPOINTS,
+    COMMAND.IDM_SCHEDULES,
+    COMMAND.IDM_ACCESS_CONFIG,
+    COMMAND.KBA,
+    COMMAND.LOCALES,
+    COMMAND.AUDIT,
+  ],
+};
+
 function matchCommand(argv, command) {
-  return argv._.includes(command) || argv._.includes(COMMAND.ALL);
+  const requestedCommand = argv._[0];
+  return (
+    requestedCommand === command ||
+    (COMMAND_MAP[requestedCommand] &&
+      COMMAND_MAP[requestedCommand].includes(command))
+  );
 }
 
 const REQUIRED_CONFIG = [
@@ -429,6 +493,17 @@ async function getConfig(argv) {
     }
   }
 
+  if (matchCommand(argv, COMMAND.CSP)) {
+    console.log("Getting CSP config");
+    csp.exportCsp(
+      configDir,
+      process.env.CSP_OVERRIDES,
+      tenantUrl,
+      argv[OPTION.NAME],
+      token
+    );
+  }
+
   if (argv._.includes(COMMAND.CONFIG_METADATA)) {
     showConfigMetadata(tenantUrl, token);
   }
@@ -444,6 +519,12 @@ yargs
   .command({
     command: COMMAND.ALL,
     desc: "Get all configuration",
+    builder: cliOptions([OPTION.REALM]),
+    handler: (argv) => getConfig(argv),
+  })
+  .command({
+    command: COMMAND.ALL_STATIC,
+    desc: "Get all static configuration",
     builder: cliOptions([OPTION.REALM]),
     handler: (argv) => getConfig(argv),
   })
@@ -493,6 +574,12 @@ yargs
     command: COMMAND.CORS,
     desc: "Get CORS configuration",
     builder: cliOptions([]),
+    handler: (argv) => getConfig(argv),
+  })
+  .command({
+    command: COMMAND.CSP,
+    desc: "Get content security policy",
+    builder: cliOptions([OPTION.NAME]),
     handler: (argv) => getConfig(argv),
   })
   .command({

@@ -5,7 +5,7 @@ const qs = require("qs");
 const constants = require("./constants");
 const { restForm } = require("./restClient");
 
-const { PrivateKeyFormat } = constants;
+const { PrivateKeyFormat, ACCESS_TOKEN_ENV_VAR } = constants;
 
 const JWT_VALIDITY_SECONDS = 180;
 
@@ -16,6 +16,13 @@ function getPrivateKeyFormat(privateKey) {
 }
 
 async function getToken(tenantUrl, clientConfig) {
+  const envToken = process.env[ACCESS_TOKEN_ENV_VAR];
+
+  if (envToken) {
+    console.log("Using access token from environment");
+    return envToken;
+  }
+
   const tokenEndpoint = `${tenantUrl}/am/oauth2/access_token`;
   try {
     const payload = {

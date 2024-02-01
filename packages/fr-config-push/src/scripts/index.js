@@ -30,6 +30,7 @@ const updateAudit = require("./update-audit");
 const updateConfigMetadata = require("./update-config-metadata");
 const scriptUtils = require("./update-scripts");
 const { updateScripts } = scriptUtils;
+const updateCsp = require("./update-csp");
 
 module.exports = {
   updateAgents,
@@ -63,4 +64,5 @@ module.exports = {
   updateLocales,
   updateAudit,
   updateConfigMetadata,
+  updateCsp,
 };

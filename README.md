@@ -85,14 +85,14 @@ To get started, create a baseline repo with your initial Identity Cloud configur
 - Use `fr-config-pull` to populate the local clone of the configuration repository
 - Merge the baseline configuration to the main branch in the repo
 
-### Clone the config manager repository and build the pull tool
+### Clone the config manager repository, checkout the latest version and build the pull tool
 
 ```
 mkdir ~/identity-cloud
 cd ~/identity-cloud
 git clone https://github.com/ForgeRock/fr-config-manager.git
 cd fr-config-manager
-git checkout v1.0.0
+git checkout `git describe --abbrev=0` # latest release tag
 npm install --ws
 cd packages/fr-config-pull
 npm link
@@ -123,7 +123,7 @@ Edit the `.env` file as per instructions above, using the cloned repo as the con
 cd ~/identity-cloud/identity-cloud-config
 git checkout -b initial-config
 cd ~/identity-cloud
-fr-config-pull
+fr-config-pull all-static
 cd ~/identity-cloud/identity-cloud-config
 git add .
 git commit -m "Initial config"

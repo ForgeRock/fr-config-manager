@@ -38,6 +38,7 @@ const {
 
 require("dotenv").config();
 const authenticate = require("../../fr-config-common/src/authenticate.js");
+const { all } = require("axios");
 
 async function updateStatic(argv, token) {
   await updateScripts(argv, token);
@@ -87,6 +88,34 @@ function checkConfig() {
 async function getCommands() {
   if (process.env.TENANT_READONLY && process.env.TENANT_READONLY === "true") {
     console.error("Environment set to readonly - no push permitted");
+    process.exit(1);
+  }
+
+  const command = process.argv.length > 2 ? process.argv[2] : null;
+  const allowedCommands = process.env.ALLOWED_PUSH_COMMANDS;
+
+  try {
+    if (
+      command &&
+      allowedCommands &&
+      !JSON.parse(allowedCommands).includes(command)
+    ) {
+      console.error("Command", command, "not permitted by configuration");
+      process.exit(1);
+    }
+  } catch (e) {
+    console.error("Error in allowed commands configuration");
+    process.exit(1);
+  }
+
+  if (
+    command &&
+    process.env.PUSH_NAMED_ONLY &&
+    process.env.PUSH_NAMED_ONLY === "true" &&
+    !process.argv.includes("--name") &&
+    !process.argv.includes("-n")
+  ) {
+    console.error("Push only permitted by name");
     process.exit(1);
   }
 

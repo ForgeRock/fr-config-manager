@@ -44,6 +44,8 @@ The tools are configured via the environment, either using a `.env` file in the 
 
 Refer to the [configuration README](docs/environment.md) for more details.
 
+The `.env` file includes references to additional (optional) configuration files for managing various types of dynamic configuration - i.e. configuration which differs per inidividual environment (as opposed to static configuration which is promoted as-is to all environments). Generally speaking, these configuration files inform the `fr-config-pull` tool which entities to pull, and how to templatise their config with placeholders so that the `fr-config-push` tool can create these entities in each environment. As part of the push, the placeholders are subsituted with corresponding environment variables in the `fr-config-push` working environment.
+
 ### Oauth2 agent configuration file
 
 The OAuth2 agent configuration file contains a list of agents to pull from the Identity Cloud tenant, for subsequent push to each target environment.
@@ -67,6 +69,14 @@ The service objects configuration file contains a list of managed objects to pul
 The path to this file is configured in the `.env` file (or environment directly) as the `SERVICE_OBJECTS_CONFIG` value.
 
 Refer to the [configuration README](docs/service-objects.md) for more details.
+
+### CSP overrides file
+
+The Content Security Policy configuration file contains a JSON encoded partial CSP configuration which is merged with the full tenant configuration on pull. This enables the use of local environment variables to create a different CSP to be pushed to each environment - e.g. report-only in dev, but enforced in higher environments.
+
+The path to this file is configured in the `.env` file (or environment directly) as the `CSP_OVERRIDES` value.
+
+Refer to the [configuration README](docs/csp.md) for more details.
 
 ## Exported configuration
 
@@ -92,7 +102,7 @@ mkdir ~/identity-cloud
 cd ~/identity-cloud
 git clone https://github.com/ForgeRock/fr-config-manager.git
 cd fr-config-manager
-git checkout `git describe --abbrev=0` # latest release tag
+git checkout `git describe --abbrev=0`
 npm install --ws
 cd packages/fr-config-pull
 npm link
@@ -106,14 +116,16 @@ git clone https://github.com/my-org/identity-cloud-config
 
 ```
 
-### Configure tenant access
+### Configure
+
+Copy the sample configuration `.env` file to your working directory.
 
 ```
 cd ~/identity-cloud
 cp ~/fr-config-manager/.env.sample ./.env
 ```
 
-Edit the `.env` file as per instructions above, using the cloned repo as the config target directory - i.e. in your `.env` file:
+Edit the basic configuration section of the `.env` file, as per the [configuration README](docs/environment.md). For the `CONFIG_DIR` option, use the relative path of your cloned config repo - e.g. in your `.env` file:
 
 `CONFIG_DIR=fr-config-manager`
 

@@ -127,7 +127,7 @@ cp ~/fr-config-manager/.env.sample ./.env
 
 Edit the basic configuration section of the `.env` file, as per the [configuration README](docs/environment.md). For the `CONFIG_DIR` option, use the relative path of your cloned config repo - e.g. in your `.env` file:
 
-`CONFIG_DIR=fr-config-manager`
+`CONFIG_DIR=identity-cloud-config`
 
 ### Pull config, commit and push
 

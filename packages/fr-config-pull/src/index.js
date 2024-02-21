@@ -403,7 +403,13 @@ async function getConfig(argv) {
       console.log("Getting secrets");
     }
 
-    secrets.exportConfig(configDir, tenantUrl, argv[OPTION.NAME], token);
+    secrets.exportConfig(
+      configDir,
+      tenantUrl,
+      argv[OPTION.NAME],
+      argv[OPTION.ACTIVE_ONLY],
+      token
+    );
   }
 
   if (matchCommand(argv, COMMAND.ESVS)) {
@@ -663,7 +669,7 @@ yargs
   .command({
     command: COMMAND.SECRETS,
     desc: "Get secrets",
-    builder: cliOptions([OPTION.NAME]),
+    builder: cliOptions([OPTION.NAME, OPTION.ACTIVE_ONLY]),
     handler: (argv) => getConfig(argv),
   })
   .command({

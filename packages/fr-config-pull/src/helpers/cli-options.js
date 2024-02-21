@@ -3,6 +3,7 @@ const OPTION = {
   REALM: "realm",
   PULL_DEPENDENCIES: "pull-dependencies",
   DUMP: "dump",
+  ACTIVE_ONLY: "active-only",
 };
 
 const CLI_OPTIONS = {
@@ -28,6 +29,12 @@ const CLI_OPTIONS = {
     alias: "u",
     demandOption: false,
     describe: "Dump values",
+    type: "boolean",
+  },
+  "active-only": {
+    alias: "a",
+    demandOption: false,
+    describe: "Active only",
     type: "boolean",
   },
 };

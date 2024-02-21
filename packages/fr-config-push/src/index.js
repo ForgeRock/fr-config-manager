@@ -388,7 +388,7 @@ async function getCommands() {
     .command({
       command: "variables",
       desc: "Update environment specific variables",
-      builder: cliOptions([OPTION.NAME]),
+      builder: cliOptions([OPTION.NAME, OPTION.FORCE]),
       handler: (argv) =>
         getAccessToken().then((token) => updateVariables(argv, token)),
     })

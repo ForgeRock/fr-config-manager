@@ -86,6 +86,10 @@ The `fr-config-push` tool imports ForgeRock configuration from the local filesys
 
 Refer to the [export contents README](docs/contents.md) for more details of the configuration structure.
 
+## Managing ESVs
+
+Environment specific variables and secrets may be pushed via the `fr-config-push variables` and `fr-config-push secrets` option. The typical approach is to build a local configuration file for each ESV, with a placeholder for the value. The configuration file may be built automatically using the `fr-config-pull` command. On push, the value is then substituted with a local environment variable - e.g. a github secret. Refer to the [ESV README](docs/esvs.md) for more details.
+
 ## Quickstart
 
 To get started, create a baseline repo with your initial Identity Cloud configuration as a baseline, with the following steps

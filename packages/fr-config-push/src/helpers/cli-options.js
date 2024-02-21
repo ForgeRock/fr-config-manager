@@ -4,6 +4,7 @@ const OPTION = {
   PUSH_DEPENDENCIES: "push-dependencies",
   FILENAME_FILTER: "filenameFilter",
   METADATA: "metadata",
+  FORCE: "force",
 };
 
 const CLI_OPTIONS = {
@@ -31,6 +32,11 @@ const CLI_OPTIONS = {
   "push-dependencies": {
     alias: "d",
     describe: "Push dependencies",
+    type: "boolean",
+  },
+  force: {
+    alias: "f",
+    describe: "Force",
     type: "boolean",
   },
 };

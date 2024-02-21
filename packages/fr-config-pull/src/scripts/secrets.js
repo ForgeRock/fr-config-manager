@@ -9,7 +9,7 @@ const {
 
 const EXPORT_SUBDIR = "esvs/secrets";
 
-async function exportConfig(exportDir, tenantUrl, name, token) {
+async function exportConfig(exportDir, tenantUrl, name, activeOnly, token) {
   try {
     const envEndpoint = `${tenantUrl}/environment/secrets`;
 
@@ -31,37 +31,44 @@ async function exportConfig(exportDir, tenantUrl, name, token) {
       if (name && name !== secret._id) {
         return;
       }
-      const versionsEndpoint = `${tenantUrl}/environment/secrets/${secret._id}/versions`;
 
-      const versionsResponse = await restGet(
-        versionsEndpoint,
-        null,
-        token,
-        "protocol=1.0,resource=1.0"
-      );
-
-      const versions = versionsResponse.data.filter(function (version) {
-        return version.status !== "DESTROYED";
-      });
-
-      let versionInfo = [];
-
-      for (let i = 0; i < versions.length; i++) {
-        const version = (i + 1).toString();
-        versionInfo.push({
-          version: version,
-          status: version.status,
-          valueBase64: "${" + esvToEnv(`${secret._id}_${version}`) + "}",
-        });
-      }
-
-      const secretObject = {
+      let secretObject = {
         _id: secret._id,
         encoding: secret.encoding,
         useInPlaceholders: secret.useInPlaceholders,
         description: escapePlaceholders(secret.description),
-        versions: versionInfo,
       };
+
+      if (activeOnly) {
+        secretObject.valueBase64 = "${" + esvToEnv(`${secret._id}`) + "}";
+      } else {
+        const versionsEndpoint = `${tenantUrl}/environment/secrets/${secret._id}/versions`;
+
+        const versionsResponse = await restGet(
+          versionsEndpoint,
+          null,
+          token,
+          "protocol=1.0,resource=1.0"
+        );
+
+        const versions = versionsResponse.data.filter(function (version) {
+          return version.status !== "DESTROYED";
+        });
+
+        let versionInfo = [];
+
+        for (let i = 0; i < versions.length; i++) {
+          const version = (i + 1).toString();
+          versionInfo.push({
+            version: version,
+            status: version.status,
+            valueBase64: "${" + esvToEnv(`${secret._id}_${version}`) + "}",
+          });
+        }
+
+        secretObject.versions = versionInfo;
+      }
+
       const fileName = `${targetDir}/${secret._id}.json`;
       saveJsonToFile(secretObject, fileName);
     }

@@ -1,6 +1,9 @@
 const fs = require("fs");
 const path = require("path");
-const { restPut } = require("../../../fr-config-common/src/restClient");
+const {
+  restPut,
+  restGet,
+} = require("../../../fr-config-common/src/restClient");
 const { replaceEnvSpecificValues } = require("../helpers/config-process");
 const cliUtils = require("../helpers/cli-options");
 const { OPTION } = cliUtils;
@@ -10,12 +13,15 @@ const updateVariables = async (argv, token) => {
   const { CONFIG_DIR } = process.env;
 
   const requestedVariableName = argv[OPTION.NAME];
+  const force = argv[OPTION.FORCE];
 
   if (requestedVariableName) {
     console.log("Updating variable", requestedVariableName);
   } else {
     console.log("Updating variables");
   }
+
+  let updatesMade = false;
 
   try {
     const dir = path.join(CONFIG_DIR, "esvs/variables");
@@ -54,6 +60,26 @@ const updateVariables = async (argv, token) => {
 
       const requestUrl = `${TENANT_BASE_URL}/environment/variables/${variableObject._id}`;
 
+      if (!force) {
+        const response = await restGet(
+          requestUrl,
+          null,
+          token,
+          "protocol=1.0,resource=1.0",
+          true
+        );
+        const currentVariable = response.data;
+        if (
+          currentVariable &&
+          currentVariable.valueBase64 === variableObject.valueBase64
+        ) {
+          console.log(`Variable ${variableObject._id} unchanged`);
+          continue;
+        }
+      }
+
+      updatesMade = true;
+
       await restPut(
         requestUrl,
         variableObject,
@@ -65,6 +91,8 @@ const updateVariables = async (argv, token) => {
     console.error(error.message);
     process.exit(1);
   }
+
+  console.log(updatesMade ? "Changes made to variables" : "No changes");
 };
 
 module.exports = updateVariables;

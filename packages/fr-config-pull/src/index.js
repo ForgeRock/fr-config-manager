@@ -372,7 +372,8 @@ async function getConfig(argv) {
       configDir,
       RCS_SUB_DIR,
       tenantUrl,
-      token
+      token,
+      true
     );
   }
 

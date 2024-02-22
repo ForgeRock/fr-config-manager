@@ -3,20 +3,28 @@ const fs = require("fs");
 const { restGet } = require("../../../fr-config-common/src/restClient.js");
 const { saveJsonToFile } = utils;
 
-async function exportConfig(name, exportDir, exportSubDir, tenantUrl, token) {
+async function exportConfig(
+  name,
+  exportDir,
+  exportSubDir,
+  tenantUrl,
+  token,
+  ignoreNotFound = false
+) {
   try {
     const idmEndpoint = `${tenantUrl}/openidm/config/${name}`;
 
     var response;
 
     try {
-      response = await restGet(idmEndpoint, null, token);
+      response = await restGet(idmEndpoint, null, token, null, ignoreNotFound);
     } catch (e) {
-      if (e.response.status === 404) {
-        console.error(`Warning: no config for ${name}`);
-        return;
-      }
       console.error(`Bad response for ${name} status ${e.response.status}`);
+      return;
+    }
+
+    if (!response) {
+      console.error(`Warning: no config for ${name}`);
       return;
     }
 

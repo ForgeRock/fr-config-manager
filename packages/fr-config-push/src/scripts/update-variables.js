@@ -68,13 +68,15 @@ const updateVariables = async (argv, token) => {
           "protocol=1.0,resource=1.0",
           true
         );
-        const currentVariable = response.data;
-        if (
-          currentVariable &&
-          currentVariable.valueBase64 === variableObject.valueBase64
-        ) {
-          console.log(`Variable ${variableObject._id} unchanged`);
-          continue;
+        if (response) {
+          const currentVariable = response.data;
+          if (
+            currentVariable &&
+            currentVariable.valueBase64 === variableObject.valueBase64
+          ) {
+            console.log(`Variable ${variableObject._id} unchanged`);
+            continue;
+          }
         }
       }
 

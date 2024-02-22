@@ -49,14 +49,15 @@ async function exportMappings(exportDir, tenantUrl, name, token) {
     let response = null;
 
     try {
-      response = await restGet(idmEndpoint, null, token);
+      response = await restGet(idmEndpoint, null, token, null, true);
     } catch (e) {
-      if (e.response.status === 404) {
-        console.error(`Warning: no sync mapping config`);
-        return;
-      }
       console.error(`Bad response ${e.response.status}`);
       process.exit(1);
+    }
+
+    if (!response) {
+      console.error(`Warning: no sync mapping config`);
+      return;
     }
 
     const mappings = response.data.mappings;

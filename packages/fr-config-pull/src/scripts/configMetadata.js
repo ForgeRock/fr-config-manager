@@ -7,15 +7,16 @@ async function showConfigMetadata(tenantUrl, token) {
     var response;
 
     try {
-      response = await restGet(idmEndpoint, null, token);
+      response = await restGet(idmEndpoint, null, token, null, true);
     } catch (e) {
-      if (e.response.status === 404) {
-        console.error(`Warning: no config metadata available`);
-        return;
-      }
       console.error(
         `Bad response for config metadata: status ${e.response.status}`
       );
+      return;
+    }
+
+    if (!response) {
+      console.error(`Warning: no config metadata available`);
       return;
     }
 

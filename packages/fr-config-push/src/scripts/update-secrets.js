@@ -135,7 +135,7 @@ const updateSecrets = async (argv, token) => {
       // Multiple versions pushed (legacy) - we are going to rebuild
       // the secrets in cloud to match the number of local versions
 
-      let updatesMade = true;
+      updatesMade = true;
 
       const versions = secretObject.versions.sort((a, b) =>
         Number(a.version) > Number(b.version) ? 1 : -1

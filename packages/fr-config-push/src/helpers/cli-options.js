@@ -5,6 +5,9 @@ const OPTION = {
   FILENAME_FILTER: "filenameFilter",
   METADATA: "metadata",
   FORCE: "force",
+  CHECK: "check",
+  WAIT: "wait",
+  STATUS: "status",
 };
 
 const CLI_OPTIONS = {
@@ -37,6 +40,21 @@ const CLI_OPTIONS = {
   force: {
     alias: "f",
     describe: "Force",
+    type: "boolean",
+  },
+  check: {
+    alias: "c",
+    describe: "Force",
+    type: "boolean",
+  },
+  wait: {
+    alias: "w",
+    describe: "Wait",
+    type: "boolean",
+  },
+  status: {
+    alias: "s",
+    describe: "Status",
     type: "boolean",
   },
 };

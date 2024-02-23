@@ -309,7 +309,7 @@ async function getCommands() {
     .command({
       command: "restart",
       desc: "Restart tenant",
-      builder: cliOptions([]),
+      builder: cliOptions([OPTION.CHECK, OPTION.WAIT, OPTION.STATUS]),
       handler: (argv) =>
         getAccessToken().then((token) => restartFidc(argv, token)),
     })

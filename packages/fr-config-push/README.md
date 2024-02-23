@@ -64,6 +64,9 @@ Options:
   -d, --push-dependencies  Push dependencies                           [boolean]
   -f, --filenameFilter     Filename filter                              [string]
   -m, --metadata           Configuration metadata
+  -c, --check              Check for changes
+  -w, --wait               Wait for completion
+  -s, --status             Check status
   -v, --version            Show version number                         [boolean]
 ```
 
@@ -116,3 +119,13 @@ which is not permitted for Identity Cloud service accounts as of this version of
 
 Therefore, for managing CSP configuration specifically, you need to set the environment variable
 `TENANT_ACCESS_TOKEN` with an access token with this scope - for example from the admin UI.
+
+`fr-config-push restart`
+
+When running this command with no options, the environment is always restarted (unless it is alrady restarting).
+
+With the `--status` option, the command returns the current status without restarting the environment. Status may be `ready` or `restarting`.
+
+With the `--check` option, the environment is only restarted if there are unloaded changes to one or more ESVs. If there are no changes, the environment is not restarted.
+
+With the `--wait` option, the command will wait for the environment to get back to status `ready`, polling the status every 10 seconds.

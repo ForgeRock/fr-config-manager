@@ -18,8 +18,8 @@ function clearOperationalAttributes(obj) {
 async function alreadyExists(requestUrl, accessToken) {
   var exists = false;
   try {
-    const response = await restGet(requestUrl, null, accessToken);
-    exists = true;
+    const response = await restGet(requestUrl, null, accessToken, null, true);
+    exists = response !== null;
   } catch (e) {}
   return exists;
 }
@@ -37,9 +37,9 @@ async function upsertResource(
     console.log("Updating", resourceName);
     await restPut(requestUrl, resourceObject, token, apiVersion);
   } else {
-    console.log("Creating", resourceName);
+    console.log("Creating", resourceName, requestUrl);
     await restPost(
-      requestUrl,
+      path,
       { _action: "create" },
       resourceObject,
       token,

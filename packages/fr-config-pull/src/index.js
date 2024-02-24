@@ -404,11 +404,14 @@ async function getConfig(argv) {
       console.log("Getting secrets");
     }
 
+    var activeOnly =
+      argv[OPTION.ACTIVE_ONLY] || process.env.ACTIVE_ONLY_SECRETS === "true";
+
     secrets.exportConfig(
       configDir,
       tenantUrl,
       argv[OPTION.NAME],
-      argv[OPTION.ACTIVE_ONLY],
+      activeOnly,
       token
     );
   }

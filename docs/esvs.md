@@ -45,6 +45,8 @@ If using the option `fr-config-pull secrets --active-only` the configuration fil
 }
 ```
 
+The `--active-only` option is the default behaviour if the configuration environment variable `ACTIVE_ONLY_SECRETS` is set to `true`.
+
 On push, the placeholder is replaced with the value of the corresponding local environment variable. This may be defined in the `.env` file, or in an environment variable such as a git secret or other pipeline framework. The value is expected to be unencoded - i.e. not base64 encoded. The value is automatically encoded during the push.
 
 The push checks whether the current value of the secret in the tenant matches the value value of the local variable, and only updates the secret in the tenant if it is different. On update, this creates a new version of the secret, which is then set as the active version. This means that versions will build up over time as they are changed.
@@ -78,6 +80,8 @@ This allows absolute versions to be set at push - e.g. where multiple certificat
 
 ### Recommendations
 
-For simplicity, it is recommended that secrets are pulled with the `--active-only` option to avoid unnecessary updates to secrets. If necessary - e.g. during a key rollover window - individual secrets can be pulled without the `--active-only` option to create multiple versions on the next push.
+For simplicity, it is recommended that secrets are pulled with the `--active-only` option to avoid unnecessary updates to secrets. This can be set as the default by setting the `ACTIVE_ONLY_SECRETS` configuration variable to `true` as per the sample `.env` file.
+
+If necessary - e.g. during a key rollover window - individual secrets can be pulled without the `--active-only` option to create multiple versions on the next push.
 
 The `--active-only` option is not the default for reasons of backwards compatibility with behaviour prior to the introduction of this option.

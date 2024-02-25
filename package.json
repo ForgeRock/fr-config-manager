@@ -1,6 +1,6 @@
 {
   "name": "fr-config-packages",
-  "version": "1.1.6",
+  "version": "1.2.0",
   "description": "The cloud success config manager repository",
   "devDependencies": {
     "prettier": "2.8.2"

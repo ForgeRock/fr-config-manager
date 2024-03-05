@@ -99,6 +99,8 @@ const updateSecrets = async (argv, token) => {
 
       // If simple single value, then just update with that
 
+      const paddedSecretName = secretObject._id.padEnd(30);
+
       if (secretObject.valueBase64) {
         if (!currentVersions) {
           secretResponse = await restPut(
@@ -107,6 +109,7 @@ const updateSecrets = async (argv, token) => {
             token,
             "protocol=1.0,resource=1.0"
           );
+          console.log(`Secret ${paddedSecretName} created`);
 
           updatesMade = true;
         } else if (
@@ -117,7 +120,7 @@ const updateSecrets = async (argv, token) => {
             secretObject.valueBase64
           )
         ) {
-          console.log(`Secret ${secretObject._id} unchanged`);
+          console.log(`Secret ${paddedSecretName} unchanged`);
         } else {
           const createUrl = `${secretBaseUrl}/versions`;
           secretResponse = await restPost(
@@ -127,6 +130,7 @@ const updateSecrets = async (argv, token) => {
             token,
             "protocol=1.0,resource=1.0"
           );
+          console.log(`Secret ${paddedSecretName} updated`);
           updatesMade = true;
         }
         continue;

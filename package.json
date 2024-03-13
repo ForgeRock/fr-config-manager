@@ -17,7 +17,8 @@
     "./packages/fr-config-pull",
     "./packages/fr-config-push",
     "./packages/fr-config-watch",
-    "./packages/fr-config-common"
+    "./packages/fr-config-common",
+    "./packages/fr-config-promote"
   ],
   "contributors": [
     {

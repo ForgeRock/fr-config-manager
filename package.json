@@ -31,6 +31,10 @@
     {
       "name": "Adam Crockett",
       "email": "adam.crockett@forgerock.com"
+    },
+    {
+      "name": "Jelle Verbraak",
+      "email": "jelle.verbraak@pingidentity.com"
     }
   ],
   "license": "ISC"

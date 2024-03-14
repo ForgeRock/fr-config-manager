@@ -2,6 +2,8 @@ const {
   unescapePlaceholders,
 } = require("../../../fr-config-common/src/utils.js");
 
+const BASE64_PRE_ENCODED_PREFIX = "BASE64:";
+
 function replaceEnvSpecificValues(content, base64Encode = false) {
   let newContent = content;
 
@@ -15,7 +17,14 @@ function replaceEnvSpecificValues(content, base64Encode = false) {
     if (placeholder.startsWith("\\\\")) {
       continue;
     }
-    const placeholderName = placeholder.replace(/\${(.*)}/, "$1");
+    let placeholderName = placeholder.replace(/\${(.*)}/, "$1");
+
+    if (placeholderName.startsWith(BASE64_PRE_ENCODED_PREFIX)) {
+      base64Encode = false;
+      placeholderName = placeholderName.substring(
+        BASE64_PRE_ENCODED_PREFIX.length
+      );
+    }
 
     let value = process.env[placeholderName];
     if (!value) {

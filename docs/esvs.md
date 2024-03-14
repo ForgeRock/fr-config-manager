@@ -19,7 +19,17 @@ The `fr-config-pull variables` command reads the variables currently defined in 
 }
 ```
 
-The `fr-config-push variables` command will replace the placeholder with the value of the local environment variable. This may be defined in the `.env` file, or in environment variables such as a git variable or other pipeline framework. Note that the value of the local variable is assumed to be unencoded - i.e. not base64 encoded. The value is encoded automatically during the push.
+The `fr-config-push variables` command will replace the placeholder with the value of the local environment variable. This may be defined in the `.env` file, or in environment variables such as a git variable or other pipeline framework. Note that the value of the local variable is assumed to be unencoded - i.e. not base64 encoded. The value is encoded automatically during the push. This behaviour may be overidden by adding the prefix `BASE64:` to the placeholder name. This may be useful for pipeline frameworks where complex values such as PEM encoded certificates cause issues with environment secrets. For example, the following configuration will upload the value without performing base64 encoding:
+
+```
+{
+  "_id": "esv-oidc-signer",
+  "description": "OIDC token signing certificate and private key",
+  "encoding": "pem",
+  "useInPlaceholders": true,
+  "valueBase64": "${BASE64:ESV_OIDC_SIGNER}"
+}
+```
 
 If there is no corresponding local environment variable, the push command fails.
 

@@ -22,7 +22,7 @@ async function listAllReports(token) {
           "protocol=1.0,resource=1.0"
       );
 
-      console.log(response.data);
+      console.log(JSON.stringify(response.data,null,4));
 
   } catch (error) {
       console.error(error.message);
@@ -44,7 +44,7 @@ async function listLastReport(token) {
           "protocol=1.0,resource=1.0"
       );
 
-      console.log(response.data);
+      console.log(JSON.stringify(response.data,null,4));
 
   } catch (error) {
       console.error(error.message);
@@ -65,7 +65,7 @@ async function listReportID(id, token) {
           "protocol=1.0,resource=1.0"
       );
 
-      console.log(response.data);
+      console.log(JSON.stringify(response.data,null,4));
 
   } catch (error) {
       console.error(error.message);
@@ -75,7 +75,7 @@ async function listReportID(id, token) {
 const checkPromotionReports = async (argv, token) => {
 
   const listReports = argv[OPTION.LIST];
-  const reportID = argv[OPTION.ID];
+  const reportID = argv[OPTION.REPORTID];
   if (reportID) {
       listReportID(reportID, token);
   } else if (listReports) {

@@ -37,12 +37,13 @@ Options:
   -h, --help               Show help                                   [boolean]
   -l, --list               list                                        [string]
   -i, --id                 id                                          [string]
+  -r, --reportid           Report id                                   [string]
   -v, --version            Show version number                         [boolean]
 ```
 
 Notes on specific options:
 
-`fr-config-push journeys`
+`fr-config-promote check-promotion-reports`
 
 The `--list` option can be used with the `check-promotion-reports` command to list all the promotion reports. 
 
@@ -50,7 +51,7 @@ The `--list` option can be used with the `check-promotion-reports` command to li
 fr-config-promote check-promotion-reports --list 
 ```
 
-The `--id` option can be used with the `check-promotion-reports` command to view a specific report.
+The `--reportID` option can be used with the `check-promotion-reports` command to view a specific report.
 
 ```
 fr-config-promote check-promotion-reports --id "bb96cada-aeca-4c75-bede-5e1e3258b5bb"

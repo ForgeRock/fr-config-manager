@@ -76,6 +76,7 @@ async function getCommands() {
         .usage("Usage: $0 [arguments]")
         .strict()
         .version()
+        .wrap(null)
         .alias("v", "version")
         .parserConfiguration({
             "parse-numbers": false,
@@ -86,7 +87,7 @@ async function getCommands() {
         .command({
             command: "check-locked-status",
             desc: "Checks tenants to see if it is locked",
-            builder: cliOptions([OPTION.METADATA]),
+            builder: cliOptions([]),
             handler: (argv) =>
                 getAccessToken(tenantUpperUrl, upperClientConfig, ).then((token) => checkTenantsLocked(argv, token)),
         })
@@ -128,7 +129,7 @@ async function getCommands() {
         .command({
             command: "check-promotion-reports",
             desc: "Check promotion reports",
-            builder: cliOptions([OPTION.LIST, OPTION.ID]),
+            builder: cliOptions([OPTION.LIST, OPTION.REPORTID]),
             handler: (argv) =>
                 getAccessToken(tenantUpperUrl, upperClientConfig, ).then((token) => checkPromotionReports(argv, token)),
         })

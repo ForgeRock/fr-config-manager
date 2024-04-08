@@ -1,25 +1,17 @@
 const OPTION = {
-  NAME: "name",
-  REALM: "realm",
+
   ID: "id",
   PROMOTE_DEPENDENCIES: "promote-dependencies",
-  METADATA: "metadata",
-  DRYRUN: "dryrun",
   LIST: "list",
+  REPORTID: "reportID",
 };
 
 const CLI_OPTIONS = {
   id: {
     alias: "i",
     describe: "ID",
-    type: "string",
-    
-  },
-  dryrun: {
-    alias: "d",
-    describe: "DryRun",
-    type: "boolean",
-
+    type: "string", 
+    demandOption: true,
   },
   list: {
     alias: "l",
@@ -27,6 +19,11 @@ const CLI_OPTIONS = {
     type: "boolean",
 
   },
+  reportID: {
+    alias: "r",
+    describe: "Report ID",
+    type: "string", 
+    },
 };
 
 const cliOptions = (requestedOptions) => {

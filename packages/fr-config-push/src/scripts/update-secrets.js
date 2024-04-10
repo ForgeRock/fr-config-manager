@@ -78,13 +78,13 @@ const updateSecrets = async (argv, token) => {
         "utf8"
       );
 
-      if (requestedSecretName && requestedSecretName !== secretObject._id) {
-        continue;
-      }
-
       let secretObject = JSON.parse(
         replaceEnvSpecificValues(secretFileContents, true)
       );
+
+      if (requestedSecretName && requestedSecretName !== secretObject._id) {
+        continue;
+      }
 
       const secretBaseUrl = `${TENANT_BASE_URL}/environment/secrets/${secretObject._id}`;
       const response = await restGet(

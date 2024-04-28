@@ -32,7 +32,7 @@ Commands:
   fr-config-push connector-definitions  Update connector definitions
   fr-config-push connector-mappings     Update connector mappings
   fr-config-push cors                   Update CORS configuration
-  fr-config-push csp                    Update content security policy configuration
+  fr-config-push csp                    Update content security policy
   fr-config-push email-provider         Update email provider settings
   fr-config-push email-templates        Update email templates
   fr-config-push endpoints              Update custom endpoints
@@ -42,6 +42,7 @@ Commands:
   fr-config-push locales                Update locales
   fr-config-push managed-objects        Update managed objects
   fr-config-push oauth2-agents          Update OAuth2 agents
+  fr-config-push org-privileges         Update org privileges
   fr-config-push password-policy        Update password policy
   fr-config-push remote-servers         Update remote connector servers
   fr-config-push restart                Restart tenant
@@ -129,3 +130,11 @@ With the `--status` option, the command returns the current status without resta
 With the `--check` option, the environment is only restarted if there are unloaded changes to one or more ESVs. If there are no changes, the environment is not restarted.
 
 With the `--wait` option, the command will wait for the environment to get back to status `ready`, polling the status every 10 seconds.
+
+`fr-config-push org-privileges`
+
+The `--name` option can be used with the `org-privileges` command to push a specific config: the valid config names are
+
+- `alphaOrgPrivileges`
+- `bravoOrgPrivileges`
+- `privilegeAssignments`

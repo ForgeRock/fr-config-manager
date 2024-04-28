@@ -90,3 +90,11 @@ which is not permitted for Identity Cloud service accounts as of this version of
 Therefore, for managing CSP configuration specifically, you need to set the environment variable
 `TENANT_ACCESS_TOKEN` with an access token with this scope - for example from the admin UI. Therefore
 the `csp` command is not included by default for `fr-config-pull all`.
+
+`fr-config-pull org-privileges`
+
+The `--name` option can be used with the `org-privileges` command to pull a specific config: the valid config names are
+
+- `alphaOrgPrivileges`
+- `bravoOrgPrivileges`
+- `privilegeAssignments`

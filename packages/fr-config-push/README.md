@@ -130,3 +130,11 @@ With the `--status` option, the command returns the current status without resta
 With the `--check` option, the environment is only restarted if there are unloaded changes to one or more ESVs. If there are no changes, the environment is not restarted.
 
 With the `--wait` option, the command will wait for the environment to get back to status `ready`, polling the status every 10 seconds.
+
+`fr-config-push org-privileges`
+
+The `--name` option can be used with the `org-privileges` command to push a specific config: the valid config names are
+
+- `alphaOrgPrivileges`
+- `bravoOrgPrivileges`
+- `privilegeAssignments`

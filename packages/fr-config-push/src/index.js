@@ -34,6 +34,7 @@ const {
   updateAudit,
   updateConfigMetadata,
   updateCsp,
+  updateOrgPrivileges,
 } = require("./scripts");
 
 require("dotenv").config();
@@ -62,6 +63,7 @@ async function updateStatic(argv, token) {
   await updateLocales(argv, token);
   await updateAudit(argv, token);
   await updateConfigMetadata(argv, token);
+  await updateOrgPrivileges(argv, token);
 }
 
 const REQUIRED_CONFIG = [
@@ -291,6 +293,13 @@ async function getCommands() {
       builder: cliOptions([]),
       handler: (argv) =>
         getAccessToken().then((token) => updateAgents(argv, token)),
+    })
+    .command({
+      command: "org-privileges",
+      desc: "Update org privileges",
+      builder: cliOptions([OPTION.NAME]),
+      handler: (argv) =>
+        getAccessToken().then((token) => updateOrgPrivileges(argv, token)),
     })
     .command({
       command: "password-policy",

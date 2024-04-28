@@ -20,13 +20,16 @@ const internalRoles = require("./scripts/internalRoles.js");
 const secrets = require("./scripts/secrets.js");
 const variables = require("./scripts/variables.js");
 const secretMappings = require("./scripts/secretMappings.js");
-const constants = require("../../fr-config-common/src/constants");
+const {
+  ORG_PRIVILEGES_CONFIG,
+} = require("../../fr-config-common/src/constants");
 const { cliOptions, OPTION } = require("./helpers/cli-options");
 const oauth2Agents = require("./scripts/oauth2Agents.js");
 const authzPolicies = require("./scripts/authzPolicies.js");
 const systemUsers = require("./scripts/serviceObjects");
 const locales = require("./scripts/locales");
 const csp = require("./scripts/csp.js");
+const orgPrivileges = require("./scripts/orgPrivileges.js");
 
 const yargs = require("yargs");
 const { showConfigMetadata } = require("./scripts/configMetadata.js");
@@ -68,6 +71,7 @@ const COMMAND = {
   CONFIG_METADATA: "config-metadata",
   VERSION: "version",
   TEST: "test",
+  ORG_PRIVILEGES: "org-privileges",
 };
 
 const COMMAND_MAP = {
@@ -100,6 +104,7 @@ const COMMAND_MAP = {
     COMMAND.SERVICE_OBJECTS,
     COMMAND.LOCALES,
     COMMAND.AUDIT,
+    COMMAND.ORG_PRIVILEGES,
   ],
   "all-static": [
     COMMAND.AUTH_TREE,
@@ -123,6 +128,7 @@ const COMMAND_MAP = {
     COMMAND.KBA,
     COMMAND.LOCALES,
     COMMAND.AUDIT,
+    COMMAND.ORG_PRIVILEGES,
   ],
 };
 
@@ -514,6 +520,20 @@ async function getConfig(argv) {
     );
   }
 
+  if (matchCommand(argv, COMMAND.ORG_PRIVILEGES)) {
+    const name = argv.name;
+    if (name) {
+      if (!ORG_PRIVILEGES_CONFIG.includes(argv.name)) {
+        console.log("Unrecognised org privileges config:", name);
+        process.exit(1);
+      }
+      console.log("Getting org privileges config:", name);
+    } else {
+      console.log("Getting org privileges config");
+    }
+    orgPrivileges.exportOrgPrivileges(configDir, tenantUrl, name, token);
+  }
+
   if (argv._.includes(COMMAND.CONFIG_METADATA)) {
     showConfigMetadata(tenantUrl, token);
   }
@@ -644,6 +664,12 @@ yargs
     command: COMMAND.OAUTH2_AGENTS,
     desc: "Get OAuth2 agents",
     builder: cliOptions([]),
+    handler: (argv) => getConfig(argv),
+  })
+  .command({
+    command: COMMAND.ORG_PRIVILEGES,
+    desc: "Get organization privileges config",
+    builder: cliOptions([OPTION.NAME]),
     handler: (argv) => getConfig(argv),
   })
   .command({

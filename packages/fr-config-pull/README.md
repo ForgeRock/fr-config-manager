@@ -24,7 +24,7 @@ Usage: fr-config-pull [arguments]
 
 Commands:
   fr-config-pull all                    Get all configuration
-  fr-config-pull all-static             Get static configuration
+  fr-config-pull all-static             Get all static configuration
   fr-config-pull access-config          Get access configuration
   fr-config-pull audit                  Get audit configuration
   fr-config-pull authentication         Get authentication configuration
@@ -33,8 +33,8 @@ Commands:
   fr-config-pull connector-definitions  Get connector cefinitions
   fr-config-pull connector-mappings     Get connector mappings
   fr-config-pull cors                   Get CORS configuration
+  fr-config-pull csp                    Get content security policy
   fr-config-pull email-provider         Get email provider configuration
-  fr-config-pull csp                    Get content security policy configuration
   fr-config-pull email-templates        Get email templates
   fr-config-pull endpoints              Get custom endpoints
   fr-config-pull internal-roles         Get internal roles
@@ -43,6 +43,7 @@ Commands:
   fr-config-pull locales                Get locales
   fr-config-pull managed-objects        Get managed objects
   fr-config-pull oauth2-agents          Get OAuth2 agents
+  fr-config-pull org-privileges         Get organization privileges config
   fr-config-pull password-policy        Get password policy
   fr-config-pull remote-servers         Get remote connector servers
   fr-config-pull schedules              Get schedules

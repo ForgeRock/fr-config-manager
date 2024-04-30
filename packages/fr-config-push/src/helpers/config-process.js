@@ -52,5 +52,16 @@ function removeProperty(obj, propertyName) {
   }
 }
 
+function clearOperationalAttributes(obj) {
+  delete obj._id;
+  delete obj._rev;
+  delete obj._pushApiVersion;
+  delete obj.createdBy;
+  delete obj.creationDate;
+  delete obj.lastModifiedBy;
+  delete obj.lastModifiedDate;
+}
+
 module.exports.replaceEnvSpecificValues = replaceEnvSpecificValues;
 module.exports.removeProperty = removeProperty;
+module.exports.clearOperationalAttributes = clearOperationalAttributes;

@@ -30,6 +30,7 @@ const systemUsers = require("./scripts/serviceObjects");
 const locales = require("./scripts/locales");
 const csp = require("./scripts/csp.js");
 const orgPrivileges = require("./scripts/orgPrivileges.js");
+const raw = require("./scripts/raw.js");
 
 const yargs = require("yargs");
 const { showConfigMetadata } = require("./scripts/configMetadata.js");
@@ -72,6 +73,7 @@ const COMMAND = {
   VERSION: "version",
   TEST: "test",
   ORG_PRIVILEGES: "org-privileges",
+  RAW: "raw",
 };
 
 const COMMAND_MAP = {
@@ -534,8 +536,33 @@ async function getConfig(argv) {
     orgPrivileges.exportOrgPrivileges(configDir, tenantUrl, name, token);
   }
 
-  if (argv._.includes(COMMAND.CONFIG_METADATA)) {
-    showConfigMetadata(tenantUrl, token);
+  if (matchCommand(argv, COMMAND.RAW)) {
+    const path = argv.path;
+    const rawConfigFile = process.env.RAW_CONFIG;
+    if (!path && !rawConfigFile) {
+      console.error(
+        `${COMMAND.RAW} requires the --path option or a configured RAW_CONFIG file`
+      );
+      process.exit(1);
+    }
+
+    const apiVersion = argv[OPTION.PUSH_API_VERSION];
+
+    if (apiVersion && (!apiVersion.protocol || !apiVersion.resource)) {
+      console.error(
+        `${COMMAND.RAW} --${OPTION.PUSH_API_VERSION} requires resource and protocol versions`
+      );
+      process.exit(1);
+    }
+
+    raw.exportRawConfig(
+      configDir,
+      tenantUrl,
+      path,
+      apiVersion,
+      rawConfigFile,
+      token
+    );
   }
 }
 
@@ -545,6 +572,10 @@ yargs
   .help("h")
   .alias("h", "help")
   .alias("v", "version")
+  .parserConfiguration({
+    "parse-numbers": false,
+    "camel-case-expansion": false,
+  })
   .strict()
   .command({
     command: COMMAND.ALL,
@@ -676,6 +707,12 @@ yargs
     command: COMMAND.PASSWORD_POLICY,
     desc: "Get password policy",
     builder: cliOptions([OPTION.REALM]),
+    handler: (argv) => getConfig(argv),
+  })
+  .command({
+    command: COMMAND.RAW,
+    desc: "Get raw config",
+    builder: cliOptions([OPTION.PATH, OPTION.PUSH_API_VERSION]),
     handler: (argv) => getConfig(argv),
   })
   .command({

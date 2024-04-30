@@ -79,6 +79,12 @@ The path to this file is configured in the `.env` file (or environment directly)
 
 Refer to the [configuration README](docs/csp.md) for more details.
 
+### Raw config file
+
+The raw configuration file contains a list of individual configuration paths to pull, and is intended for pulling arbitrary configuration which is not covered by existing commands. The path to this file is configured in the `.env` file (or environment directly) as the `RAW_CONFIG` value.
+
+Refer to the [raw config README](docs/csp.md) for more details.
+
 ## Exported configuration
 
 The `fr-config-pull` tool exports ForgeRock configuration to the local filesystem as a set of json files in a directory structure that represents both global and realm specific configuration.

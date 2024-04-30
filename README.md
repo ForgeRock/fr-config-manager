@@ -83,7 +83,7 @@ Refer to the [configuration README](docs/csp.md) for more details.
 
 The raw configuration file contains a list of individual configuration paths to pull, and is intended for pulling arbitrary configuration which is not covered by existing commands. The path to this file is configured in the `.env` file (or environment directly) as the `RAW_CONFIG` value.
 
-Refer to the [raw config README](docs/csp.md) for more details.
+Refer to the [raw config README](docs/raw.md) for more details.
 
 ## Exported configuration
 

@@ -35,6 +35,7 @@ const {
   updateConfigMetadata,
   updateCsp,
   updateOrgPrivileges,
+  updateRawConfig,
 } = require("./scripts");
 
 require("dotenv").config();
@@ -314,6 +315,13 @@ async function getCommands() {
       builder: cliOptions([OPTION.NAME]),
       handler: (argv) =>
         getAccessToken().then((token) => updateRemoteServers(argv, token)),
+    })
+    .command({
+      command: "raw",
+      desc: "Update raw config",
+      builder: cliOptions([OPTION.PATH]),
+      handler: (argv) =>
+        getAccessToken().then((token) => updateRawConfig(argv, token)),
     })
     .command({
       command: "restart",

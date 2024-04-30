@@ -45,6 +45,7 @@ Commands:
   fr-config-pull oauth2-agents          Get OAuth2 agents
   fr-config-pull org-privileges         Get organization privileges config
   fr-config-pull password-policy        Get password policy
+  fr-config-pull raw                    Get raw config
   fr-config-pull remote-servers         Get remote connector servers
   fr-config-pull schedules              Get schedules
   fr-config-pull scripts                Get authentication scripts
@@ -63,6 +64,8 @@ Options:
   -n, --name               Specific configuration item                  [string]
   -r, --realm              Specific realm (overrides environment)       [string]
   -d, --pull-dependencies  Pull dependencies                           [boolean]
+  -p, --path               Configuration path                           [string]
+  -x, --push-api-version   Configuration push API version               [string]
   -v, --version            Show version number                         [boolean]
 ```
 
@@ -98,3 +101,19 @@ The `--name` option can be used with the `org-privileges` command to pull a spec
 - `alphaOrgPrivileges`
 - `bravoOrgPrivileges`
 - `privilegeAssignments`
+
+`fr-config-pull raw`
+
+The `--path` option can be used with the `raw` command to pull a specific configuration path. e.g.
+
+```
+fr-config-pull raw --path /openidm/config/authentication
+```
+
+The `--push-api-version` option is used in conjunction with the `--path` option to specify the protocol and resource versions to use for any subsequent push operations on this resource. This information is stored within the pulled config for consumption by the `fr-config-push raw` command. E.g.
+
+```
+fr-config-pull raw --path /am/json/realms/root/realms/alpha/realm-config/webhooks/test-webhook --push-api-version.protocol 2.0 --push-api-version.resource 1.0
+```
+
+If the `--path` option is not provided, then the tool pulls all config referenced in the file pointed to by the `RAW_CONFIG` environment setting.

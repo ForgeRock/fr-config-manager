@@ -45,6 +45,7 @@ Commands:
   fr-config-push org-privileges         Update org privileges
   fr-config-push password-policy        Update password policy
   fr-config-push remote-servers         Update remote connector servers
+  fr-config-push raw                    Update raw config
   fr-config-push restart                Restart tenant
   fr-config-push schedules              Update schedules
   fr-config-push scripts                Update authentication scripts
@@ -68,6 +69,7 @@ Options:
   -c, --check              Check for changes
   -w, --wait               Wait for completion
   -s, --status             Check status
+  -p, --path               Push specific configuration                 [string]
   -v, --version            Show version number                         [boolean]
 ```
 
@@ -138,3 +140,19 @@ The `--name` option can be used with the `org-privileges` command to push a spec
 - `alphaOrgPrivileges`
 - `bravoOrgPrivileges`
 - `privilegeAssignments`
+
+`fr-config-push raw`
+
+The `--path` option can be used to specify which conifguration options to push. All config including and below this path will be pushed. E.g. to push an individual config object
+
+```
+fr-config-push raw --path /openidm/config/authentication
+```
+
+Or to push all IDM config
+
+```
+fr-config-push raw --path /openidm/config
+```
+
+If no `--path` option is provided, then all config under the `/raw` directory is pushed.

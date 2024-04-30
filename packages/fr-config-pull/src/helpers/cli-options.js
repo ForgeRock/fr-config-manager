@@ -4,6 +4,8 @@ const OPTION = {
   PULL_DEPENDENCIES: "pull-dependencies",
   DUMP: "dump",
   ACTIVE_ONLY: "active-only",
+  PATH: "path",
+  PUSH_API_VERSION: "push-api-version",
 };
 
 const CLI_OPTIONS = {
@@ -36,6 +38,18 @@ const CLI_OPTIONS = {
     demandOption: false,
     describe: "Active only",
     type: "boolean",
+  },
+  path: {
+    alias: "p",
+    demandOption: false,
+    describe: "Configuration path",
+    type: "string",
+  },
+  "push-api-version": {
+    alias: "x",
+    demandOption: false,
+    describe: "Configuration push API version",
+    type: "string",
   },
 };
 

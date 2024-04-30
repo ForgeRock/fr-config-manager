@@ -8,6 +8,7 @@ const OPTION = {
   CHECK: "check",
   WAIT: "wait",
   STATUS: "status",
+  PATH: "path",
 };
 
 const CLI_OPTIONS = {
@@ -56,6 +57,12 @@ const CLI_OPTIONS = {
     alias: "s",
     describe: "Status",
     type: "boolean",
+  },
+  path: {
+    alias: "p",
+    demandOption: false,
+    describe: "Push specific configuration",
+    type: "string",
   },
 };
 

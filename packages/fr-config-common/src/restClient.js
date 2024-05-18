@@ -9,6 +9,8 @@ const REQUEST_TYPE = {
   FORM: "form",
   DELETE: "delete",
 };
+const { URL } = require("url");
+const path = require("path");
 
 async function httpRequest(
   requestUrl,
@@ -17,7 +19,8 @@ async function httpRequest(
   body,
   token,
   apiVersion,
-  ignoreNotFound = false
+  ignoreNotFound = false,
+  ifMatch = null
 ) {
   let request = null;
 
@@ -47,13 +50,17 @@ async function httpRequest(
       break;
 
     case REQUEST_TYPE.PUT:
+      let headers = {
+        "Content-Type": "application/json",
+      };
+      if (ifMatch) {
+        headers["If-Match"] = ifMatch;
+      }
       request = {
         method: "put",
         url: requestUrl,
         data: JSON.stringify(body),
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: headers,
       };
       break;
 
@@ -143,14 +150,23 @@ function restPost(requestUrl, requestParameters, body, token, apiVersion) {
   );
 }
 
-function restPut(requestUrl, body, token, apiVersion) {
+function restPut(
+  requestUrl,
+  body,
+  token,
+  apiVersion,
+  ignoreNotFound = false,
+  ifMatch = null
+) {
   return httpRequest(
     requestUrl,
     null,
     REQUEST_TYPE.PUT,
     body,
     token,
-    apiVersion
+    apiVersion,
+    ignoreNotFound,
+    ifMatch
   );
 }
 
@@ -163,6 +179,38 @@ function restDelete(requestUrl, token, apiVersion) {
     token,
     apiVersion
   );
+}
+
+async function restUpsert(requestUrl, body, token, apiVersion) {
+  var exists = false;
+  try {
+    const response = await restPut(
+      requestUrl,
+      body,
+      token,
+      apiVersion,
+      true,
+      "*"
+    );
+    if (response) {
+      return response;
+    }
+
+    const parsedUrl = new URL(requestUrl);
+    const resourceDir = `${parsedUrl.origin}${path.dirname(
+      parsedUrl.pathname
+    )}`;
+    return await restPost(
+      resourceDir,
+      { _action: "create" },
+      body,
+      token,
+      apiVersion
+    );
+  } catch (e) {
+    logRestError(e);
+    process.exit(1);
+  }
 }
 
 function logRestError(error) {
@@ -180,5 +228,6 @@ module.exports.restGet = restGet;
 module.exports.restForm = restForm;
 module.exports.restPost = restPost;
 module.exports.restPut = restPut;
+module.exports.restUpsert = restUpsert;
 module.exports.restDelete = restDelete;
 module.exports.logRestError = logRestError;

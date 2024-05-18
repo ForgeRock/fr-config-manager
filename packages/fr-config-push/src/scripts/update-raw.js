@@ -1,6 +1,6 @@
 const path = require("path");
 const fs = require("fs");
-const { restPut } = require("../../../fr-config-common/src/restClient");
+const { restUpsert } = require("../../../fr-config-common/src/restClient");
 const cliUtils = require("../helpers/cli-options");
 const { OPTION } = cliUtils;
 const DEFAULT_API_VERSION = {
@@ -65,12 +65,12 @@ const updateRawConfig = async (argv, token) => {
       if (!apiVersion) {
         apiVersion = DEFAULT_API_VERSION;
       }
-      apiVersionHeader = `protocol=${apiVersion.protocol}, resource=${apiVersion.resource}`;
+      apiVersionHeader = `protocol=${apiVersion.protocol},resource=${apiVersion.resource}`;
       clearOperationalAttributes(configObject);
 
       const requestUrl = `${TENANT_BASE_URL}${urlPath}`;
 
-      await restPut(requestUrl, configObject, token, apiVersionHeader);
+      await restUpsert(requestUrl, configObject, token, apiVersionHeader);
     }
   } catch (error) {
     console.error(error.message);

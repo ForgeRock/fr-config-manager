@@ -20,6 +20,11 @@
     "./packages/fr-config-common",
     "./packages/fr-config-promote"
   ],
+  "bin": {
+    "fr-config-pull": "./packages/fr-config-pull/src/index.js",
+    "fr-config-push": "./packages/fr-config-push/src/index.js",
+    "fr-config-promote": "./packages/fr-config-promote/src/index.js"
+  },
   "contributors": [
     {
       "name": "Christian Brindley",

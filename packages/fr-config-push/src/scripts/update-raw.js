@@ -14,7 +14,7 @@ const {
 const { clear } = require("console");
 
 async function listFiles(dir) {
-  const files = fs.readdirSync(dir, { withFileTypes: true, recursive: true });
+  const files = fs.readdirSync(dir, { withFileTypes: true, recursive: false });
 
   const filesAndDirs = await Promise.all(
     files.map(async (file) => {

@@ -20,7 +20,8 @@ async function httpRequest(
   token,
   apiVersion,
   ignoreNotFound = false,
-  ifMatch = null
+  ifMatch = null,
+  ifNoneMatch = null
 ) {
   let request = null;
 
@@ -55,6 +56,9 @@ async function httpRequest(
       };
       if (ifMatch) {
         headers["If-Match"] = ifMatch;
+      }
+      if (ifNoneMatch) {
+        headers["If-None-Match"] = ifMatch;
       }
       request = {
         method: "put",
@@ -156,7 +160,8 @@ function restPut(
   token,
   apiVersion,
   ignoreNotFound = false,
-  ifMatch = null
+  ifMatch = null,
+  ifNoneMatch = null
 ) {
   return httpRequest(
     requestUrl,
@@ -166,7 +171,8 @@ function restPut(
     token,
     apiVersion,
     ignoreNotFound,
-    ifMatch
+    ifMatch,
+    ifNoneMatch
   );
 }
 
@@ -182,31 +188,19 @@ function restDelete(requestUrl, token, apiVersion) {
 }
 
 async function restUpsert(requestUrl, body, token, apiVersion) {
-  var exists = false;
   try {
-    const response = await restPut(
+    var existingEntry = await restGet(
       requestUrl,
-      body,
+      null,
       token,
       apiVersion,
-      true,
-      "*"
+      true
     );
-    if (response) {
-      return response;
+    if (existingEntry) {
+      return await restPut(requestUrl, body, token, apiVersion, true, "*");
     }
 
-    const parsedUrl = new URL(requestUrl);
-    const resourceDir = `${parsedUrl.origin}${path.dirname(
-      parsedUrl.pathname
-    )}`;
-    return await restPost(
-      resourceDir,
-      { _action: "create" },
-      body,
-      token,
-      apiVersion
-    );
+    return await restPut(requestUrl, body, token, apiVersion, true, null, "*");
   } catch (e) {
     logRestError(e);
     process.exit(1);

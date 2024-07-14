@@ -347,7 +347,7 @@ async function getCommands() {
     .command({
       command: "secrets",
       desc: "Update secrets",
-      builder: cliOptions([OPTION.NAME]),
+      builder: cliOptions([OPTION.NAME, OPTION.PRUNE]),
       handler: (argv) =>
         getAccessToken().then((token) => updateSecrets(argv, token)),
     })

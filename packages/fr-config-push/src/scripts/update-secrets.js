@@ -86,23 +86,57 @@ const updateSecrets = async (argv, token) => {
         continue;
       }
 
+      const paddedSecretName = secretObject._id.padEnd(30);
+
       const secretBaseUrl = `${TENANT_BASE_URL}/environment/secrets/${secretObject._id}`;
-      const response = await restGet(
-        `${secretBaseUrl}/versions`,
+
+      const existingSecret = await restGet(
+        `${secretBaseUrl}`,
         null,
         token,
         "protocol=1.0,resource=1.0",
         true
       );
 
-      const currentVersions = response ? response.data : null;
+      const prune = argv[OPTION.PRUNE];
+
+      if (prune && existingSecret) {
+        const versionsResponse = await restGet(
+          `${secretBaseUrl}/versions`,
+          null,
+          token,
+          "protocol=1.0,resource=1.0",
+          true
+        );
+
+        if (!versionsResponse) {
+          continue;
+        }
+
+        const currentVersions = versionsResponse.data;
+
+        for (const version of currentVersions) {
+          if (
+            version.status === "ENABLED" &&
+            version.loaded === false &&
+            version.version !== existingSecret.data.activeVersion
+          ) {
+            await restDelete(
+              `${secretBaseUrl}/versions/${version.version}`,
+              token,
+              "protocol=2.1,resource=1.0"
+            );
+            console.log(
+              `Secret ${paddedSecretName} pruned version ${version.version}`
+            );
+          }
+        }
+      }
 
       // If simple single value, then just update with that
 
-      const paddedSecretName = secretObject._id.padEnd(30);
-
       if (secretObject.valueBase64) {
-        if (!currentVersions) {
+        if (!existingSecret) {
           secretResponse = await restPut(
             secretBaseUrl,
             secretObject,
@@ -112,15 +146,6 @@ const updateSecrets = async (argv, token) => {
           console.log(`Secret ${paddedSecretName} created`);
 
           updatesMade = true;
-        } else if (
-          await remoteSecretMatches(
-            TENANT_BASE_URL,
-            token,
-            secretObject._id,
-            secretObject.valueBase64
-          )
-        ) {
-          console.log(`Secret ${paddedSecretName} unchanged`);
         } else {
           const createUrl = `${secretBaseUrl}/versions`;
           secretResponse = await restPost(
@@ -130,16 +155,21 @@ const updateSecrets = async (argv, token) => {
             token,
             "protocol=1.0,resource=1.0"
           );
-          console.log(`Secret ${paddedSecretName} updated`);
-          updatesMade = true;
+          if (secretResponse.data.loaded) {
+            console.log(
+              `Secret ${paddedSecretName} unchanged version ${secretResponse.data.version}`
+            );
+          } else {
+            console.log(
+              `Secret ${paddedSecretName} created version ${secretResponse.data.version}`
+            );
+            updatesMade = true;
+          }
         }
         continue;
       }
 
-      // Multiple versions pushed (legacy) - we are going to rebuild
-      // the secrets in cloud to match the number of local versions
-
-      updatesMade = true;
+      // Multiple versions pushed (legacy) - push all versions
 
       const versions = secretObject.versions.sort((a, b) =>
         Number(a.version) > Number(b.version) ? 1 : -1
@@ -148,8 +178,7 @@ const updateSecrets = async (argv, token) => {
       delete secretObject.versions;
 
       for (let i = 0; i < versions.length; i++) {
-        if (i === 0 && !currentVersions) {
-          console.log("Creating secret", secretObject._id);
+        if (i === 0 && !existingSecret) {
           secretObject.valueBase64 = versions[i].valueBase64;
           secretResponse = await restPut(
             secretBaseUrl,
@@ -157,6 +186,8 @@ const updateSecrets = async (argv, token) => {
             token,
             "protocol=1.0,resource=1.0"
           );
+          console.log(`Secret ${paddedSecretName} created`);
+          updatesMade = true;
           continue;
         }
 
@@ -173,21 +204,17 @@ const updateSecrets = async (argv, token) => {
           console.error("No response from version creation");
           process.exit(1);
         }
-      }
 
-      if (!currentVersions) {
-        continue;
-      }
-
-      for (const currentVersion of currentVersions) {
-        if (currentVersion.status === "DESTROYED") {
-          continue;
+        if (versionResponse.data.loaded) {
+          console.log(
+            `Secret ${paddedSecretName} unchanged version ${versionResponse.data.version}`
+          );
+        } else {
+          console.log(
+            `Secret ${paddedSecretName} created version ${versionResponse.data.version}`
+          );
+          updatesMade = true;
         }
-        await restDelete(
-          `${secretBaseUrl}/versions/${currentVersion.version}`,
-          token,
-          "protocol=2.1,resource=1.0"
-        );
       }
     }
   } catch (error) {

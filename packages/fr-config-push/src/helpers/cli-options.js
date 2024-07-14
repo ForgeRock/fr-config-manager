@@ -9,6 +9,7 @@ const OPTION = {
   WAIT: "wait",
   STATUS: "status",
   PATH: "path",
+  PRUNE: "prune",
 };
 
 const CLI_OPTIONS = {
@@ -45,7 +46,7 @@ const CLI_OPTIONS = {
   },
   check: {
     alias: "c",
-    describe: "Force",
+    describe: "Check first if ESVs changed",
     type: "boolean",
   },
   wait: {
@@ -63,6 +64,12 @@ const CLI_OPTIONS = {
     demandOption: false,
     describe: "Push specific configuration",
     type: "string",
+  },
+  prune: {
+    alias: "x",
+    demandOption: false,
+    describe: "Prune old configuration",
+    type: "boolean",
   },
 };
 

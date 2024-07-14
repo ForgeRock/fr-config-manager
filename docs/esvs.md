@@ -41,6 +41,8 @@ The `fr-config-pull variables --dump` option will log all variables and their va
 
 The `fr-config-pull secrets` commands reads the secrets currently defined in the tenant, and creates a configuration file for each secret in the local directory `esvs/secrets`. The format of the configuration file is similar to the configuration file created for variables, but varies depending on the options used.
 
+TL;DR: add `ACTIVE_ONLY_SECRETS=true` to your .env file, and run `fr-config-pull secrets` to build your local secrets directory. For each file in the directory, check the placeholder in the `valueBase64` property and add a corresponding line to your .env to specify the value. You are now ready to set secrets by running `fr-config-push secrets` against each environment.
+
 ### Active only version
 
 If using the option `fr-config-pull secrets --active-only` the configuration file is built with a placeholder for a single value as per the variable configuration file - e.g.
@@ -84,9 +86,9 @@ If using `fr-config-pull secrets` without the `--active-only` flag, the configur
 }
 ```
 
-The `fr-config-push secrets` command removes all current versions of the secret in the tenant, and pushes new versions according the configuration file. The last version in the configuration file is then the active version of the secret in the tenant.
+This allows multiple versions to be set at push - e.g. where multiple token/SAML signing certificates and keys are required for key rollover. Note that the secret versions in the tenant will grow over time, and may need to be pruned periodically. Note that after pushing multiple versions, a restart will always be required.
 
-This allows absolute versions to be set at push - e.g. where multiple certificates and keys are required for a SAML signer for key rollover. Note that unlike with the `--active-only` option, there is no check of the current value, so secrets are always pushed and new versions created.
+If there is only one version configured in the file, and the value is the same as the current active version, no update will occur. If there are multiple versions, the last version in the configuration file is the active version of the secret in the tenant.
 
 ### Recommendations
 

@@ -13,7 +13,6 @@ const updateVariables = async (argv, token) => {
   const { CONFIG_DIR } = process.env;
 
   const requestedVariableName = argv[OPTION.NAME];
-  const force = argv[OPTION.FORCE];
 
   if (requestedVariableName) {
     console.log("Updating variable", requestedVariableName);
@@ -60,34 +59,19 @@ const updateVariables = async (argv, token) => {
 
       const requestUrl = `${TENANT_BASE_URL}/environment/variables/${variableObject._id}`;
 
-      if (!force) {
-        const response = await restGet(
-          requestUrl,
-          null,
-          token,
-          "protocol=1.0,resource=1.0",
-          true
-        );
-        if (response) {
-          const currentVariable = response.data;
-          if (
-            currentVariable &&
-            currentVariable.valueBase64 === variableObject.valueBase64
-          ) {
-            console.log(`Variable ${variableObject._id} unchanged`);
-            continue;
-          }
-        }
-      }
-
-      updatesMade = true;
-
-      await restPut(
+      const response = await restPut(
         requestUrl,
         variableObject,
         token,
         "protocol=1.0,resource=1.0"
       );
+      const paddedVariableName = variableObject._id.padEnd(30);
+      if (response.data.loaded) {
+        console.log(`Variable ${paddedVariableName} unchanged`);
+      } else {
+        console.log(`Variable ${paddedVariableName} updated`);
+        updatesMade = true;
+      }
     }
   } catch (error) {
     console.error(error.message);

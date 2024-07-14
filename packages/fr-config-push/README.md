@@ -70,7 +70,8 @@ Options:
   -w, --wait               Wait for completion
   -s, --status             Check status
   -p, --path               Push specific configuration                 [string]
-  -v, --version            Show version number                         [boolean]
+  -x, --prune              Prune configuration                        [boolean]
+  -v, --version            Show version number                        [boolean]
 ```
 
 Notes on specific options:
@@ -156,3 +157,7 @@ fr-config-push raw --path /openidm/config
 ```
 
 If no `--path` option is provided, then all config under the `/raw` directory is pushed.
+
+`fr-config-push secrets`
+
+The `--prune` option can be used with the `secrets` command to remove any unused versions of each secret being pushed. This will remove any versions that are not loaded (although note that because of the way the secrets API works, the latest version will not be removed, whether loaded or not).

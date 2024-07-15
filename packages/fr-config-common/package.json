@@ -1,6 +1,6 @@
 {
   "name": "fr-config-common",
-  "version": "1.4.0",
+  "version": "1.4.1-SNAPSHOT",
   "description": "Config tools for FIDC",
   "main": "src/index.js",
   "dependencies": {

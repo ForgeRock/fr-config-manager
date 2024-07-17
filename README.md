@@ -142,7 +142,7 @@ To get started, create a baseline repo with your initial Identity Cloud configur
 npm i -g @forgerock/fr-config-manager
 ```
 
-## Create a base directory and configuration file
+### Create a base directory and configuration file
 
 ```
 mkdir ~/identity-cloud
@@ -152,7 +152,7 @@ curl https://raw.githubusercontent.com/ForgeRock/fr-config-manager/main/.env.sam
 
 ### Configure
 
-Edit the basic configuration section of the `.env` file, as per the [configuration README](docs/environment.md). For the `CONFIG_DIR` option, use the relative path of your cloned config repo - e.g. in your `.env` file:
+Edit the basic configuration section of the `.env` file, as per the [configuration README](docs/environment.md). For the `CONFIG_DIR` option, use the default relative path in the `.env` file:
 
 `CONFIG_DIR=identity-cloud-config`
 

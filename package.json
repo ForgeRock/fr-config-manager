@@ -1,9 +1,28 @@
 {
-  "name": "fr-config-packages",
+  "name": "@forgerock/fr-config-manager",
   "version": "1.4.1-SNAPSHOT",
   "description": "The cloud success config manager repository",
   "devDependencies": {
     "prettier": "2.8.2"
+  },
+  "dependencies": {
+    "axios": "^1.2.1",
+    "dotenv": "^16.0.3",
+    "envsub": "^4.1.0",
+    "fs-extra": "^9.1.0",
+    "jsonwebtoken": "^9.0.0",
+    "node-fetch": "^2.6.1",
+    "replace-in-file": "^6.2.0",
+    "uglify-js": "^3.14.3",
+    "yargs": "17.7.2",
+    "qs": "^6.11.0",
+    "cli-table3": "^0.6.3",
+    "node-jose": "^2.1.1",
+    "slugify": "1.6.5",
+    "uuid": "9.0.0",
+    "https-proxy-agent": "7.0.2",
+    "sanitize-filename": "1.6.3",
+    "lodash": "4.17.21"
   },
   "scripts": {
     "test": "npm run test --workspaces",
@@ -16,7 +35,6 @@
   "workspaces": [
     "./packages/fr-config-pull",
     "./packages/fr-config-push",
-    "./packages/fr-config-watch",
     "./packages/fr-config-common",
     "./packages/fr-config-promote"
   ],

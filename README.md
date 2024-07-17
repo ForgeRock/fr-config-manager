@@ -19,6 +19,10 @@ In order to meet the requirements of managing ForgeRock config as code, the tool
 
 Note that these tools are not supported by ForgeRock: they are sample code to be adapted or used as-is as part of the customer owned configuration management tooling.
 
+If you encounter any issues or have any suggestions for improvement, please [raise an issue via the repo](issues) and it will be reviewed for addition to the backlog.
+
+If you would like to contribute to this project you can fork the repository, clone it to your machine and get started.
+
 ## Packages
 
 This repository provides the following packages
@@ -156,3 +160,7 @@ git push origin initial-config
 ### Merge
 
 You can now create a pull request for the `initial-config` branch in github and merge, and optionally tag.
+
+## Licence
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details

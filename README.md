@@ -43,6 +43,31 @@ The tools require the following:
 
 Refer to the Identity Cloud documentation for details on how to create a service account and obtain its ID and private key.
 
+## Installation
+
+The `fr-config-manager` packages may be installed from source or as an `npm` package.
+
+### Installing from source
+
+To install from source, clone the config manager repository, checkout the latest version and build the tools
+
+```
+mkdir ~/identity-cloud
+cd ~/identity-cloud
+git clone https://github.com/ForgeRock/fr-config-manager.git
+cd fr-config-manager
+git checkout `git describe --abbrev=0`
+npm i --ws
+```
+
+### Installing the package
+
+To install using npm
+
+```
+npm i -g @forgerock/fr-config-manager
+```
+
 ## Configuration
 
 The tools are configured via the environment, either using a `.env` file in the working directory, or via corresponding environment variables. The `.env.sample` file in the root of this repository provides an example, and should be copied as `.env` to the working directory when running the tool (or used as a reference for setting environment variables).
@@ -105,46 +130,52 @@ Environment specific variables and secrets may be pushed via the `fr-config-push
 
 To get started, create a baseline repo with your initial Identity Cloud configuration as a baseline, with the following steps
 
-- Clone the `fr-config-manager` repository to your workstation and configure the tools
-- Create an empty configuration repository and clone to your workstation
-- Use `fr-config-pull` to populate the local clone of the configuration repository
-- Merge the baseline configuration to the main branch in the repo
+- Install the `fr-config-manager` packages
+- Create a base directory
+- Configure the tools via an `.env` file
+- Create an empty configuration repository
+- Use `fr-config-pull` to populate the repository with the current tenant configuration
 
-### Clone the config manager repository, checkout the latest version and build the pull tool
+### Install
+
+```
+npm i -g @forgerock/fr-config-manager
+```
+
+## Create a base directory and configuration file
 
 ```
 mkdir ~/identity-cloud
 cd ~/identity-cloud
-git clone https://github.com/ForgeRock/fr-config-manager.git
-cd fr-config-manager
-git checkout `git describe --abbrev=0`
-npm install --ws
-cd packages/fr-config-pull
-npm link
-```
-
-### Create a blank github repo and clone
-
-```
-cd ~/identity-cloud
-git clone https://github.com/my-org/identity-cloud-config
-
+curl https://raw.githubusercontent.com/ForgeRock/fr-config-manager/main/.env.sample -o .env
 ```
 
 ### Configure
-
-Copy the sample configuration `.env` file to your working directory.
-
-```
-cd ~/identity-cloud
-cp ~/fr-config-manager/.env.sample ./.env
-```
 
 Edit the basic configuration section of the `.env` file, as per the [configuration README](docs/environment.md). For the `CONFIG_DIR` option, use the relative path of your cloned config repo - e.g. in your `.env` file:
 
 `CONFIG_DIR=identity-cloud-config`
 
-### Pull config, commit and push
+Configure the remaining basic settings:
+
+- `TENANT_BASE_URL`
+- `SCRIPT_PREFIXES`
+- `SERVICE_ACCOUNT_ID`
+- `SERVICE_ACCOUNT_KEY`
+
+### Create a blank github repo
+
+Create a directory corresponding to `CONFIG_DIR` in the `.env` file, and initialise as a repo
+
+```
+cd ~/identity-cloud
+mkdir identity-cloud-config
+cd identity-cloud-config
+git init
+
+```
+
+### Pull config and commit
 
 ```
 cd ~/identity-cloud/identity-cloud-config
@@ -154,12 +185,7 @@ fr-config-pull all-static
 cd ~/identity-cloud/identity-cloud-config
 git add .
 git commit -m "Initial config"
-git push origin initial-config
 ```
-
-### Merge
-
-You can now create a pull request for the `initial-config` branch in github and merge, and optionally tag.
 
 ## Licence
 

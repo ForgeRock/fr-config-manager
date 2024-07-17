@@ -19,7 +19,7 @@ In order to meet the requirements of managing ForgeRock config as code, the tool
 
 Note that these tools are not supported by ForgeRock: they are sample code to be adapted or used as-is as part of the customer owned configuration management tooling.
 
-If you encounter any issues or have any suggestions for improvement, please [raise an issue via the repo](issues) and it will be reviewed for addition to the backlog.
+If you encounter any issues or have any suggestions for improvement, please [raise an issue via the repo](/issues) and it will be reviewed for addition to the backlog.
 
 If you would like to contribute to this project you can fork the repository, clone it to your machine and get started.
 

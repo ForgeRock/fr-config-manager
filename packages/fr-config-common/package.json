@@ -1,17 +1,19 @@
 {
   "name": "fr-config-common",
-  "version": "1.4.1-SNAPSHOT",
-  "description": "Config tools for FIDC",
+  "version": "1.4.1",
+  "description": "Config tools for Ping Advanced Identity Cloud",
   "main": "src/index.js",
-  "dependencies": {
-    "axios": "^1.2.1",
-    "cli-table3": "^0.6.3",
-    "dotenv": "16.0.3",
-    "jsonwebtoken": "9.0.0",
-    "node-jose": "^2.1.1",
-    "slugify": "1.6.5",
-    "uuid": "9.0.0",
-    "yargs": "17.6.2",
-    "https-proxy-agent": "7.0.2"
-  }
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/forgerock/fr-config-manager.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/forgerock/fr-config-manager/issues"
+  },
+  "homepage": "https://github.com/forgerock/fr-config-manager#readme"
 }

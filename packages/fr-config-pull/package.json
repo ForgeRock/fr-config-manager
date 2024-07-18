@@ -1,19 +1,22 @@
 {
   "name": "fr-config-pull",
-  "version": "1.4.1-SNAPSHOT",
+  "version": "1.4.1",
   "description": "Config tools for FIDC",
   "main": "src/index.js",
-  "dependencies": {
-    "axios": "^1.2.1",
-    "cli-table3": "^0.6.3",
-    "dotenv": "16.0.3",
-    "jsonwebtoken": "9.0.0",
-    "uuid": "9.0.0",
-    "yargs": "17.6.2",
-    "sanitize-filename": "1.6.3",
-    "lodash": "4.17.21"
-  },
   "bin": {
     "fr-config-pull": "src/index.js"
-  }
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/forgerock/fr-config-manager.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/forgerock/fr-config-manager/issues"
+  },
+  "homepage": "https://github.com/forgerock/fr-config-manager#readme"
 }

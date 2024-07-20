@@ -1,6 +1,6 @@
 {
   "name": "@forgerock/fr-config-common",
-  "version": "1.4.2",
+  "version": "1.4.3-SNAPSHOT",
   "description": "Config tools for Ping Advanced Identity Cloud",
   "main": "src/index.js",
   "scripts": {

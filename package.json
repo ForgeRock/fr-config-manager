@@ -1,6 +1,6 @@
 {
   "name": "@forgerock/fr-config-manager",
-  "version": "1.4.3-SNAPSHOT",
+  "version": "1.4.3",
   "description": "The cloud success config manager repository",
   "devDependencies": {
     "prettier": "2.8.2"

@@ -45,7 +45,11 @@ Refer to the Identity Cloud documentation for details on how to create a service
 
 ## Installation
 
-The `fr-config-manager` packages may be installed from source as follows
+The `fr-config-manager` packages may be installed from source or as an `npm` package.
+
+### Installing from source
+
+To install all packages from source, clone the config manager repository, checkout the latest version and build the tools
 
 ```
 mkdir ~/identity-cloud
@@ -53,8 +57,16 @@ cd ~/identity-cloud
 git clone https://github.com/ForgeRock/fr-config-manager.git
 cd fr-config-manager
 git checkout `git describe --abbrev=0`
-npm install
+npm i
 npm link
+```
+
+### Installing the package
+
+To install all packages using npm
+
+```
+npm i -g @forgerock/fr-config-manager
 ```
 
 ## Configuration
@@ -128,18 +140,13 @@ To get started, create a baseline repo with your initial Identity Cloud configur
 ### Install
 
 ```
-mkdir ~/identity-cloud
-cd ~/identity-cloud
-git clone https://github.com/ForgeRock/fr-config-manager.git
-cd fr-config-manager
-git checkout `git describe --abbrev=0`
-npm install
-npm link
+npm i -g @forgerock/fr-config-manager
 ```
 
 ### Create a base directory and configuration file
 
 ```
+mkdir ~/identity-cloud
 cd ~/identity-cloud
 curl https://raw.githubusercontent.com/ForgeRock/fr-config-manager/main/.env.sample -o .env
 ```

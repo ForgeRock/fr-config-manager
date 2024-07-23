@@ -1,4 +1,4 @@
-# ForgeRock Identity Cloud - Demonstration Configuration Management Tools
+# PingOne Advanced Identity Cloud - Sample Configuration Management Tools
 
 ## Disclaimer
 
@@ -38,7 +38,7 @@ For full usage details, refer to the README in the respective package directorie
 The tools require the following:
 
 - Node.js
-- Access to a ForgeRock Identity Cloud tenant.
+- Access to a PingOne Advanced Identity Cloud tenant.
 - A tenant service account ID and private key.
 
 Refer to the Identity Cloud documentation for details on how to create a service account and obtain its ID and private key.
@@ -61,13 +61,19 @@ npm i
 npm link
 ```
 
-### Installing the package
+### Installing via npm
 
 To install all packages using npm
 
 ```
 npm i -g @forgerock/fr-config-manager
 ```
+
+This will install
+
+- fr-config-pull
+- fr-config-push
+- fr-config-promote
 
 ## Configuration
 
@@ -119,7 +125,7 @@ Refer to the [raw config README](docs/raw.md) for more details.
 
 The `fr-config-pull` tool exports ForgeRock configuration to the local filesystem as a set of json files in a directory structure that represents both global and realm specific configuration.
 
-The `fr-config-push` tool imports ForgeRock configuration from the local filesystem to the ForgeRock platform: the tool expects configuration to be structured as per the `fr-config-pull` output.
+The `fr-config-push` tool imports ForgeRock configuration from the local filesystem to the PingOne Advanced Identity Cloud tenant: the tool expects configuration to be structured as per the `fr-config-pull` output.
 
 Refer to the [export contents README](docs/contents.md) for more details of the configuration structure.
 

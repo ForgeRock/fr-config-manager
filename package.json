@@ -1,7 +1,7 @@
 {
   "name": "@forgerock/fr-config-manager",
-  "version": "1.4.3",
-  "description": "The cloud success config manager repository",
+  "version": "1.4.4-beta.0",
+  "description": "Sample tools for managing PingOne Advanced Identity Cloud configuration",
   "devDependencies": {
     "prettier": "2.8.2"
   },
@@ -61,5 +61,5 @@
       "email": "jelle.verbraak@pingidentity.com"
     }
   ],
-  "license": "ISC"
+  "license": "MIT"
 }

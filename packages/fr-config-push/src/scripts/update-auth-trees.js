@@ -1,8 +1,7 @@
 const fs = require("fs");
 const path = require("path");
 const { restPut } = require("../../../fr-config-common/src/restClient");
-const glob = require("glob");
-const { readFile } = require("fs/promises");
+const { globSync } = require("glob");
 const { pushScriptById } = require("./update-scripts");
 const cliUtils = require("../helpers/cli-options");
 const { OPTION } = cliUtils;
@@ -21,67 +20,44 @@ async function handleNodes(
   journeysProcessed,
   token
 ) {
-  return new Promise((resolve, reject) => {
-    glob(globPattern, { cwd: dir }, async (error, nodes) => {
-      if (error) {
-        reject(error);
-        return;
-      }
+  const nodeFiles = globSync(globPattern, { cwd: dir });
 
-      for (const nodeFile of nodes) {
-        const node = JSON.parse(await readFile(path.join(dir, nodeFile)));
-        if (node._type._id === INNER_TREE_ID && pushInnerJourneys) {
-          const journeyDir = path.resolve(dir, "../../");
-          const journeyFile = `${node.tree}/${node.tree}.json`;
-          await handleJourney(
-            configDir,
-            journeyFile,
-            tenantBaseUrl,
-            realm,
-            pushInnerJourneys,
-            pushScripts,
-            journeysProcessed,
-            token
-          );
-        } else if (
-          pushScripts &&
-          (node._type._id === "ScriptedDecisionNode" ||
-            node._type._id === "ConfigProviderNode")
-        ) {
-          // console.log("pushing script", node.script);
-          await pushScriptById(
-            configDir,
-            node.script,
-            tenantBaseUrl,
-            realm,
-            token
-          );
-        }
-        await pushNode(baseUrl, node, token);
-      }
-      resolve();
-    });
-  });
+  for (const nodeFile of nodeFiles) {
+    const node = JSON.parse(fs.readFileSync(path.join(dir, nodeFile)));
+    if (node._type._id === INNER_TREE_ID && pushInnerJourneys) {
+      const journeyDir = path.resolve(dir, "../../");
+      const journeyFile = `${node.tree}/${node.tree}.json`;
+      await handleJourney(
+        configDir,
+        journeyFile,
+        tenantBaseUrl,
+        realm,
+        pushInnerJourneys,
+        pushScripts,
+        journeysProcessed,
+        token
+      );
+    } else if (
+      pushScripts &&
+      (node._type._id === "ScriptedDecisionNode" ||
+        node._type._id === "ConfigProviderNode")
+    ) {
+      await pushScriptById(configDir, node.script, tenantBaseUrl, realm, token);
+    }
+    await pushNode(baseUrl, node, token);
+  }
 }
 
-function pushNode(baseUrl, node, token) {
-  return new Promise((resolve, reject) => {
-    const nodeRequestUrl = `${baseUrl}/nodes/${node._type._id}/${node._id}`;
-    delete node._rev;
-    restPut(nodeRequestUrl, node, token, "protocol=2.1,resource=1.0")
-      .then(resolve)
-      .catch(reject);
-  });
+async function pushNode(baseUrl, node, token) {
+  const nodeRequestUrl = `${baseUrl}/nodes/${node._type._id}/${node._id}`;
+  delete node._rev;
+  await restPut(nodeRequestUrl, node, token, "protocol=2.1,resource=1.0");
 }
 
-function pushJourney(journey, baseUrl, token) {
-  return new Promise((resolve, reject) => {
-    delete journey._rev;
-    const requestUrl = `${baseUrl}/trees/${journey._id}`;
-    restPut(requestUrl, journey, token, "protocol=2.1,resource=1.0")
-      .then(resolve)
-      .catch(reject);
-  });
+async function pushJourney(journey, baseUrl, token) {
+  delete journey._rev;
+  const requestUrl = `${baseUrl}/trees/${journey._id}`;
+  await restPut(requestUrl, journey, token, "protocol=2.1,resource=1.0");
 }
 
 async function handleJourney(
@@ -109,6 +85,8 @@ async function handleJourney(
 
   const journeyDir = path.dirname(journeyFile);
   const nodeDir = `${dir}/${journeyDir}/nodes`;
+
+  console.log(`Pushing journey ${realm}/${journey._id}`);
 
   //paged nodes
   await handleNodes(
@@ -183,33 +161,25 @@ const updateAuthTrees = async (argv, token) => {
 
       const globPattern = journeyName ? `${journeyName}/*.json` : "*/*.json";
 
-      await glob(
-        globPattern,
-        { cwd: journeyBaseDir },
-        async (error, journeys) => {
-          if (error) {
-            throw error;
-          }
+      const journeys = globSync(globPattern, { cwd: journeyBaseDir });
 
-          if (journeys.length === 0) {
-            console.error("No journeys found");
-            process.exit(1);
-          }
+      if (journeys.length === 0) {
+        console.error("No journeys found");
+        process.exit(1);
+      }
 
-          for (const journeyFile of journeys) {
-            await handleJourney(
-              CONFIG_DIR,
-              journeyFile,
-              TENANT_BASE_URL,
-              realm,
-              pushInnerJourneys,
-              pushScripts,
-              journeysProcessed,
-              token
-            );
-          }
-        }
-      );
+      for (const journeyFile of journeys) {
+        await handleJourney(
+          CONFIG_DIR,
+          journeyFile,
+          TENANT_BASE_URL,
+          realm,
+          pushInnerJourneys,
+          pushScripts,
+          journeysProcessed,
+          token
+        );
+      }
     }
   } catch (error) {
     console.error(error);

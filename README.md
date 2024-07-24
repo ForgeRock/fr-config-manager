@@ -54,7 +54,7 @@ To install all packages from source, clone the config manager repository, checko
 ```
 mkdir ~/identity-cloud
 cd ~/identity-cloud
-git clone https://github.com/ForgeRock/fr-config-manager.git
+git clone https://github.com/ForgeRock/fr-config-manager
 cd fr-config-manager
 git checkout `git describe --abbrev=0`
 npm i

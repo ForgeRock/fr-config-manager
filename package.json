@@ -1,6 +1,6 @@
 {
   "name": "@forgerock/fr-config-manager",
-  "version": "1.4.5-beta.0",
+  "version": "1.4.5",
   "description": "Sample tools for managing PingOne Advanced Identity Cloud configuration",
   "devDependencies": {
     "prettier": "2.8.2"
@@ -31,8 +31,12 @@
   },
   "repository": {
     "type": "git",
-    "url": "ssh://git@stash.forgerock.org:7999/cs/cs_config_manager.git"
+    "url": "https://github.com/ForgeRock/fr-config-manager"
   },
+  "bugs": {
+    "url": "https://github.com/forgerock/fr-config-manager/issues"
+  },
+  "homepage": "https://github.com/ForgeRock/fr-config-manager",
   "workspaces": [
     "./packages/fr-config-pull",
     "./packages/fr-config-push",

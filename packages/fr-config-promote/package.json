@@ -1,6 +1,6 @@
 {
   "name": "@forgerock/fr-config-promote",
-  "version": "1.4.5-beta.0",
+  "version": "1.4.5",
   "description": "This tool is used to promote configuration from the one ForgeRock Identity Cloud tenant to the other ForgeRock Identity Cloud tenant.",
   "scripts": {
     "lint": "standard",
@@ -22,10 +22,10 @@
   "main": "index.js",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/forgerock/fr-config-manager.git"
+    "url": "https://github.com/forgerock/fr-config-manager"
   },
   "bugs": {
     "url": "https://github.com/forgerock/fr-config-manager/issues"
   },
-  "homepage": "https://github.com/forgerock/fr-config-manager#readme"
+  "homepage": "https://github.com/forgerock/fr-config-manager"
 }

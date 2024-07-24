@@ -1,6 +1,6 @@
 {
   "name": "@forgerock/fr-config-pull",
-  "version": "1.4.5-beta.0",
+  "version": "1.4.5",
   "description": "Config tools for FIDC",
   "main": "src/index.js",
   "bin": {
@@ -11,12 +11,12 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/forgerock/fr-config-manager.git"
+    "url": "https://github.com/forgerock/fr-config-manager"
   },
   "author": "",
-  "license": "ISC",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/forgerock/fr-config-manager/issues"
   },
-  "homepage": "https://github.com/forgerock/fr-config-manager#readme"
+  "homepage": "https://github.com/forgerock/fr-config-manager"
 }

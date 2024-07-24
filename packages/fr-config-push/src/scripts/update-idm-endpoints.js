@@ -1,7 +1,7 @@
 const path = require("path");
 const { restPut } = require("../../../fr-config-common/src/restClient");
 const fileFilter = require("../helpers/file-filter");
-const glob = require("glob");
+const { globSync } = require("glob");
 const fs = require("fs");
 const cliUtils = require("../helpers/cli-options");
 const { request } = require("http");
@@ -13,7 +13,7 @@ async function handleEndpoint(dir, endpoint, baseUrl, token) {
   delete endpoint.file;
   const requestUrl = `${baseUrl}/${endpoint._id}`;
   await restPut(requestUrl, endpoint, token);
-  console.log(`IDM endpoint updated: ${endpoint._id}`);
+  console.log(`Endpoint updated: ${endpoint._id}`);
 }
 
 const updateIdmEndpoints = async (argv, token) => {
@@ -22,9 +22,9 @@ const updateIdmEndpoints = async (argv, token) => {
   const requestedEndpointName = argv[OPTION.NAME];
 
   if (requestedEndpointName) {
-    console.log("Updating IDM endpoint", requestedEndpointName);
+    console.log("Updating endpoint", requestedEndpointName);
   } else {
-    console.log("Updating IDM endpoints");
+    console.log("Updating endpoints");
   }
 
   try {
@@ -33,39 +33,42 @@ const updateIdmEndpoints = async (argv, token) => {
     const useFF = filenameFilter || argv[OPTION.FILENAME_FILTER];
 
     if (!fs.existsSync(dir)) {
-      console.log("Warning: no IDM endpoints defined");
+      console.log("Warning: no endpoints defined");
       return;
     }
 
-    await glob("*/*.json", { cwd: dir }, async (error, endpoints) => {
-      if (error) {
-        throw error;
+    const endpointJsonFiles = globSync("*/*.json", { cwd: dir });
+    var endpointFound = false;
+
+    for (const endpointJsonFile of endpointJsonFiles) {
+      const endpoint = JSON.parse(
+        fs.readFileSync(path.join(dir, endpointJsonFile))
+      );
+
+      const endpointName = endpoint._id.split("/")[1];
+
+      if (requestedEndpointName && requestedEndpointName !== endpointName) {
+        continue;
       }
 
-      for (const fileContent of endpoints) {
-        const endpoint = JSON.parse(
-          fs.readFileSync(path.join(dir, fileContent))
-        );
+      endpointFound = true;
 
-        const endpointName = endpoint._id.split("/")[1];
-
-        if (requestedEndpointName && requestedEndpointName !== endpointName) {
-          continue;
-        }
-
-        if (!fileFilter(endpoint.file, useFF)) {
-          continue;
-        }
-
-        const endpointDir = path.dirname(fileContent);
-        await handleEndpoint(
-          `${dir}/${endpointDir}`,
-          endpoint,
-          `${TENANT_BASE_URL}/openidm/config`,
-          token
-        );
+      if (!fileFilter(endpoint.file, useFF)) {
+        continue;
       }
-    });
+
+      const endpointDir = path.dirname(endpointJsonFile);
+      await handleEndpoint(
+        `${dir}/${endpointDir}`,
+        endpoint,
+        `${TENANT_BASE_URL}/openidm/config`,
+        token
+      );
+    }
+
+    if (requestedEndpointName && !endpointFound) {
+      console.error(`Endpoint not found: ${requestedEndpointName}`);
+    }
   } catch (error) {
     console.error(error.message);
     process.exit(1);

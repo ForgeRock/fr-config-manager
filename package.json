@@ -1,6 +1,6 @@
 {
   "name": "@forgerock/fr-config-manager",
-  "version": "1.4.4",
+  "version": "1.4.5-beta.0",
   "description": "Sample tools for managing PingOne Advanced Identity Cloud configuration",
   "devDependencies": {
     "prettier": "2.8.2"
@@ -22,7 +22,8 @@
     "uuid": "^10.0.0",
     "https-proxy-agent": "^7.0.5",
     "sanitize-filename": "^1.6.3",
-    "lodash": "4.17.21"
+    "lodash": "4.17.21",
+    "glob": "10.4.5"
   },
   "scripts": {
     "test": "npm run test --workspaces",

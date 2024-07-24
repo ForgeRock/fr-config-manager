@@ -1,6 +1,6 @@
 {
   "name": "@forgerock/fr-config-push",
-  "version": "1.4.5-beta.0",
+  "version": "1.4.5",
   "description": "This tool is used to push configuration from the local host to your ForgeRock Identity Cloud tenant.",
   "scripts": {
     "lint": "standard",
@@ -10,7 +10,7 @@
     "fr-config-push": "src/index.js"
   },
   "author": "Kevin Schneider",
-  "license": "ISC",
+  "license": "MIT",
   "standard": {
     "env": [
       "jest"
@@ -22,10 +22,10 @@
   "main": "index.js",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/forgerock/fr-config-manager.git"
+    "url": "https://github.com/forgerock/fr-config-manager"
   },
   "bugs": {
     "url": "https://github.com/forgerock/fr-config-manager/issues"
   },
-  "homepage": "https://github.com/forgerock/fr-config-manager#readme"
+  "homepage": "https://github.com/forgerock/fr-config-manager"
 }

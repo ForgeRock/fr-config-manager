@@ -40,6 +40,11 @@ function matchJourneyName(journeys, journey, name) {
   return journey._id === name;
 }
 
+function isScript(nodeSpec) {
+  const id = nodeSpec._type._id;
+  return id === "ScriptedDecisionNode" || id === "ConfigProviderNode";
+}
+
 async function processJourneys(
   journeys,
   realm,
@@ -76,19 +81,19 @@ async function processJourneys(
           realm,
           token
         );
-        const node = nodeCache[nodeType].find(({ _id }) => _id === nodeId);
+        const nodeSpec = nodeCache[nodeType].find(({ _id }) => _id === nodeId);
 
         const nodeFileNameRoot = `${nodeDir}/${fileNameFromNode(
           nodeInfo.displayName,
           nodeId
         )}`;
 
-        if (node._type._id === "PageNode") {
+        if (nodeSpec._type._id === "PageNode") {
           if (!fs.existsSync(nodeFileNameRoot)) {
             fs.mkdirSync(nodeFileNameRoot, { recursive: true });
           }
 
-          for (const subNode of node.nodes) {
+          for (const subNode of nodeSpec.nodes) {
             nodeCache = await cacheNodesByType(
               nodeCache,
               subNode.nodeType,
@@ -104,18 +109,30 @@ async function processJourneys(
               subNodeSpec._id
             )}.json`;
             saveJsonToFile(subNodeSpec, subNodeFilename, true);
+            if (pullDependencies && isScript(subNodeSpec)) {
+              exportScriptById(
+                exportDir,
+                tenantUrl,
+                realm,
+                subNodeSpec.script,
+                token
+              );
+            }
           }
         } else if (pullDependencies) {
-          if (
-            node._type._id === "ScriptedDecisionNode" ||
-            node._type._id === "ConfigProviderNode"
-          ) {
-            exportScriptById(exportDir, tenantUrl, realm, node.script, token);
-          } else if (node._type._id === "InnerTreeEvaluatorNode") {
+          if (isScript(nodeSpec)) {
+            exportScriptById(
+              exportDir,
+              tenantUrl,
+              realm,
+              nodeSpec.script,
+              token
+            );
+          } else if (nodeSpec._type._id === "InnerTreeEvaluatorNode") {
             processJourneys(
               journeys,
               realm,
-              node.tree,
+              nodeSpec.tree,
               pullDependencies,
               tenantUrl,
               token,
@@ -123,7 +140,7 @@ async function processJourneys(
             );
           }
         }
-        saveJsonToFile(node, `${nodeFileNameRoot}.json`, true);
+        saveJsonToFile(nodeSpec, `${nodeFileNameRoot}.json`, true);
       }
 
       const fileName = `${journeyDir}/${journey._id}.json`;

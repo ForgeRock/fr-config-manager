@@ -4,7 +4,7 @@
   "description": "This tool is used to push configuration from the local host to your ForgeRock Identity Cloud tenant.",
   "scripts": {
     "lint": "standard",
-    "test": "jest --coverage"
+    "test": "echo TODO: set up vitest"
   },
   "bin": {
     "fr-config-push": "src/index.js"

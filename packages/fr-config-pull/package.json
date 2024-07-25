@@ -7,7 +7,7 @@
     "fr-config-pull": "src/index.js"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "vitest run"
   },
   "repository": {
     "type": "git",
@@ -18,5 +18,11 @@
   "bugs": {
     "url": "https://github.com/forgerock/fr-config-manager/issues"
   },
-  "homepage": "https://github.com/forgerock/fr-config-manager"
+  "homepage": "https://github.com/forgerock/fr-config-manager",
+  "devDependencies": {
+    "memfs": "^4.9.4",
+    "mock-require": "^3.0.3",
+    "msw": "^2.3.4",
+    "vitest": "^2.0.4"
+  }
 }

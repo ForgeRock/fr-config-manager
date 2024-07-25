@@ -234,3 +234,77 @@ it(
     });
   })
 );
+
+it(
+  "exports dependent scripts that are part of PageNodes",
+  server.boundary(async () => {
+    const journey = {
+      _id: "Login",
+      nodes: { 3: { _id: "3", displayName: "My Page", nodeType: "PageNode" } },
+    };
+    const pageNode = {
+      _id: "3",
+      _type: { _id: "PageNode" },
+      nodes: [
+        { _id: "5", displayName: "Frob", nodeType: "ScriptedDecisionNode" },
+      ],
+    };
+    const scriptNode = {
+      _id: "5",
+      _type: { _id: "ScriptedDecisionNode", name: "Call Frob" },
+      script: "555",
+    };
+    const scriptConfig = {
+      _id: "555",
+      context: "AUTHENTICATION_TREE_DECISION_NODE",
+      name: "Frob",
+      script: Buffer.from("log('Hi')").toString("base64"),
+    };
+    server.use(
+      http.get(
+        "http://test.org/am/json/realms/root/realms/alpha/realm-config/authentication/authenticationtrees/trees",
+        () => HttpResponse.json({ result: [journey] })
+      ),
+      http.get(
+        "http://test.org/am/json/realms/root/realms/alpha/realm-config/authentication/authenticationtrees/nodes/PageNode",
+        () => HttpResponse.json({ result: [pageNode] })
+      ),
+      http.get(
+        "http://test.org/am/json/realms/root/realms/alpha/realm-config/authentication/authenticationtrees/nodes/ScriptedDecisionNode",
+        () => HttpResponse.json({ result: [scriptNode] })
+      ),
+      http.get("http://test.org/am/json/alpha/scripts/555", () =>
+        HttpResponse.json(scriptConfig)
+      )
+    );
+
+    await exportJourneys("/", "http://test.org", ["alpha"], null, true);
+    await setTimeout();
+
+    expect(vol.toJSON()).toEqual({
+      "/alpha/journeys/Login/Login.json": JSON.stringify(journey, null, 2),
+      "/alpha/journeys/Login/nodes/My Page - 3.json": JSON.stringify(
+        pageNode,
+        null,
+        2
+      ),
+      "/alpha/journeys/Login/nodes/My Page - 3/Frob - 5.json": JSON.stringify(
+        scriptNode,
+        null,
+        2
+      ),
+      "/alpha/scripts/scripts-config/555.json": JSON.stringify(
+        {
+          ...scriptConfig,
+          script: {
+            file: "scripts-content/AUTHENTICATION_TREE_DECISION_NODE/Frob.js",
+          },
+        },
+        null,
+        2
+      ),
+      "/alpha/scripts/scripts-content/AUTHENTICATION_TREE_DECISION_NODE/Frob.js":
+        "log('Hi')",
+    });
+  })
+);

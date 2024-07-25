@@ -4,7 +4,7 @@
   "description": "This tool is used to promote configuration from the one ForgeRock Identity Cloud tenant to the other ForgeRock Identity Cloud tenant.",
   "scripts": {
     "lint": "standard",
-    "test": "jest --coverage"
+    "test": "echo TODO: set up vitest"
   },
   "bin": {
     "fr-config-promote": "src/index.js"

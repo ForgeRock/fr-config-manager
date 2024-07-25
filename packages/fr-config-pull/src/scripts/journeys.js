@@ -40,6 +40,13 @@ function matchJourneyName(journeys, journey, name) {
   return journey._id === name;
 }
 
+function isScriptNode(node) {
+  return (
+    node._type._id === "ScriptedDecisionNode" ||
+    node._type._id === "ConfigProviderNode"
+  );
+}
+
 async function processJourneys(
   journeys,
   realm,
@@ -104,25 +111,33 @@ async function processJourneys(
               subNodeSpec._id
             )}.json`;
             saveJsonToFile(subNodeSpec, subNodeFilename, true);
+            if (pullDependencies && isScriptNode(subNodeSpec)) {
+              exportScriptById(
+                exportDir,
+                tenantUrl,
+                realm,
+                subNodeSpec.script,
+                token
+              );
+            }
           }
-        } else if (pullDependencies) {
-          if (
-            node._type._id === "ScriptedDecisionNode" ||
-            node._type._id === "ConfigProviderNode"
-          ) {
-            exportScriptById(exportDir, tenantUrl, realm, node.script, token);
-          } else if (node._type._id === "InnerTreeEvaluatorNode") {
-            processJourneys(
-              journeys,
-              realm,
-              node.tree,
-              pullDependencies,
-              tenantUrl,
-              token,
-              exportDir
-            );
-          }
+        } else if (pullDependencies && isScriptNode(node)) {
+          exportScriptById(exportDir, tenantUrl, realm, node.script, token);
+        } else if (
+          pullDependencies &&
+          node._type._id === "InnerTreeEvaluatorNode"
+        ) {
+          processJourneys(
+            journeys,
+            realm,
+            node.tree,
+            pullDependencies,
+            tenantUrl,
+            token,
+            exportDir
+          );
         }
+
         saveJsonToFile(node, `${nodeFileNameRoot}.json`, true);
       }
 

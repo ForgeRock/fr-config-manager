@@ -12,29 +12,26 @@ const {
   THEME_HTML_FIELDS,
 } = require("../../../fr-config-common/src/constants.js");
 
-async function mergeExistingThemes(newTheme, realm, resourceUrl, token) {
-  const response = await restGet(resourceUrl, null, token);
-
-  const themes = response.data;
-
-  const existingThemeIndex = themes.realm[realm].findIndex((el) => {
+function mergeExistingThemes(existingThemes, newTheme) {
+  // console.log(JSON.stringify(existingThemes));
+  const existingThemeIndex = existingThemes.findIndex((el) => {
     return el.name === newTheme.name;
   });
 
   if (existingThemeIndex >= 0) {
-    themes.realm[realm].splice(existingThemeIndex, 1);
+    existingThemes.splice(existingThemeIndex, 1);
   }
 
-  themes.realm[realm].push(newTheme);
+  existingThemes.push(newTheme);
 
-  return themes;
+  return existingThemes;
 }
 
 function encodeOrNot(input, encoded) {
   return encoded ? btoa(input) : input;
 }
 
-function processThemes(theme, themePath) {
+function processTheme(theme, themePath) {
   try {
     for (const field of THEME_HTML_FIELDS) {
       if (!theme[field.name]) {
@@ -92,10 +89,17 @@ const updateThemes = async (argv, token) => {
     console.log("Updating themes");
   }
 
+  const resourceUrl = `${TENANT_BASE_URL}/openidm/config/ui/themerealm`;
+  var response = await restGet(resourceUrl, null, token);
+
+  var themerealm = response.data;
+
+  /*
   var themerealm = {
     _id: "ui/themerealm",
     realm: {},
   };
+  */
   try {
     for (const realm of realms) {
       const dir = path.join(CONFIG_DIR, `/realms/${realm}/themes`);
@@ -107,7 +111,7 @@ const updateThemes = async (argv, token) => {
         .readdirSync(`${dir}`, { withFileTypes: true })
         .filter((dirent) => dirent.isDirectory())
         .map((dirent) => path.join(`${dir}`, dirent.name));
-      const realmthemes = [];
+      var realmthemes = [];
       for (const themePath of themes) {
         const themename = path.parse(themePath).base;
         if (requestedThemeName && requestedThemeName !== themename) {
@@ -116,23 +120,21 @@ const updateThemes = async (argv, token) => {
         const theme = JSON.parse(
           fs.readFileSync(path.join(themePath, `${themename}.json`))
         );
-        const mergedTheme = processThemes(theme, themePath);
-        realmthemes.push(mergedTheme);
+        const flattenedTheme = processTheme(theme, themePath);
+        if (requestedThemeName) {
+          realmthemes = mergeExistingThemes(
+            themerealm.realm[realm],
+            flattenedTheme
+          );
+          break;
+        }
+        realmthemes.push(flattenedTheme);
       }
 
       themerealm.realm[realm] = realmthemes;
     }
-    const requestUrl = `${TENANT_BASE_URL}/openidm/config/ui/themerealm`;
 
-    if (requestedThemeName) {
-      themerealm = await mergeExistingThemes(
-        themerealm.realm[realms[0]][0],
-        realms[0],
-        requestUrl,
-        token
-      );
-    }
-    await restPut(requestUrl, themerealm, token);
+    await restPut(resourceUrl, themerealm, token);
   } catch (error) {
     console.error(error.message);
     process.exit(1);

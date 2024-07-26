@@ -97,6 +97,10 @@ async function exportThemes(exportDir, realms, tenantUrl, name, token) {
         token
       );
 
+      if (!response.data.realm) {
+        continue;
+      }
+
       const themes = response.data.realm[realm];
 
       const fileDir = `${exportDir}/${realm}/${EXPORT_SUB_DIR}`;

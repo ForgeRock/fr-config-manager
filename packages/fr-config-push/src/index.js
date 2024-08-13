@@ -319,7 +319,7 @@ async function getCommands() {
     .command({
       command: "raw",
       desc: "Update raw config",
-      builder: cliOptions([OPTION.PATH]),
+      builder: cliOptions([OPTION.PATH, OPTION.STDIN]),
       handler: (argv) =>
         getAccessToken().then((token) => updateRawConfig(argv, token)),
     })

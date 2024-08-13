@@ -712,7 +712,7 @@ yargs
   .command({
     command: COMMAND.RAW,
     desc: "Get raw config",
-    builder: cliOptions([OPTION.PATH, OPTION.PUSH_API_VERSION]),
+    builder: cliOptions([OPTION.PATH, OPTION.PUSH_API_VERSION, OPTION.STDOUT]),
     handler: (argv) => getConfig(argv),
   })
   .command({

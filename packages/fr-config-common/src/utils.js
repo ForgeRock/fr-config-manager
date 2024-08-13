@@ -1,5 +1,6 @@
 const fs = require("fs");
 const sanitize = require("sanitize-filename");
+const { STDOUT_OPTION, STDOUT_OPTION_SHORT } = require("./constants.js");
 
 function safeFileName(filename) {
   return sanitize(filename, {
@@ -57,31 +58,21 @@ function saveJsonToFile(data, filename, sort = true) {
   if (sort) {
     data = deepSort(data);
   }
-  fs.writeFile(filename, JSON.stringify(data, null, 2), (err) => {
+
+  const jsonData = JSON.stringify(data, null, 2);
+  if (
+    process.argv.includes(`--${STDOUT_OPTION}`) ||
+    process.argv.includes(`-${STDOUT_OPTION_SHORT}`)
+  ) {
+    console.log(jsonData);
+    return;
+  }
+
+  fs.writeFile(filename, jsonData, (err) => {
     if (err) {
       console.error(`ERROR - can't save ${filename}`);
     }
-    return "";
-  });
-}
-
-function saveToFile(type, data, identifier, filename) {
-  const exportData = {};
-  exportData["meta"] = getMetadata();
-  exportData[type] = {};
-
-  if (Array.isArray(data)) {
-    data.forEach((element) => {
-      exportData[type][element[identifier]] = element;
-    });
-  } else {
-    exportData[type][data[identifier]] = data;
-  }
-  fs.writeFile(filename, JSON.stringify(exportData, null, 2), (err) => {
-    if (err) {
-      return printMessage(`ERROR - can't save ${type} to file`, "error");
-    }
-    return "";
+    return;
   });
 }
 

@@ -1,3 +1,8 @@
+const {
+  STDIN_OPTION,
+  STDIN_OPTION_SHORT,
+} = require("../../../fr-config-common/src/constants.js");
+
 const OPTION = {
   NAME: "name",
   REALM: "realm",
@@ -10,6 +15,7 @@ const OPTION = {
   STATUS: "status",
   PATH: "path",
   PRUNE: "prune",
+  STDIN: STDIN_OPTION,
 };
 
 const CLI_OPTIONS = {
@@ -69,6 +75,11 @@ const CLI_OPTIONS = {
     alias: "x",
     demandOption: false,
     describe: "Prune old configuration",
+    type: "boolean",
+  },
+  stdin: {
+    alias: STDIN_OPTION_SHORT,
+    describe: "Read config from stdin",
     type: "boolean",
   },
 };

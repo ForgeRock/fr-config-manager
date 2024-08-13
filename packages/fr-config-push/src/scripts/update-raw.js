@@ -16,23 +16,7 @@ const {
   STDIN_OPTION,
   STDIN_OPTION_SHORT,
 } = require("../../../fr-config-common/src/constants.js");
-
-async function listFiles(dir) {
-  const files = fs.readdirSync(dir, { withFileTypes: true, recursive: false });
-
-  const filesAndDirs = await Promise.all(
-    files.map(async (file) => {
-      const filePath = path.join(dir, file.name);
-      if (file.isDirectory()) {
-        return listFiles(filePath); // Recursively list files
-      } else {
-        return filePath; // Return file path
-      }
-    })
-  );
-
-  return filesAndDirs.flat();
-}
+const { globSync } = require("glob");
 
 async function uploadConfig(configJson, urlPath, token) {
   var resolvedConfigJson = replaceEnvSpecificValues(configJson);
@@ -90,7 +74,7 @@ const updateRawConfig = async (argv, token) => {
       return;
     }
 
-    const configFiles = await listFiles(baseDir);
+    const configFiles = globSync(`${baseDir}/**/*.json`);
 
     for (const configFile of configFiles) {
       const urlPath = configFile.slice(baseDir.length).replace(/.json$/, "");

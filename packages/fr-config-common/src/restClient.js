@@ -1,6 +1,5 @@
 const axios = require("axios");
 const { HttpsProxyAgent } = require("https-proxy-agent");
-const constants = require("./constants");
 const qs = require("qs");
 const REQUEST_TYPE = {
   GET: "get",

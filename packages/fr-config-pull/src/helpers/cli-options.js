@@ -1,3 +1,8 @@
+const {
+  STDOUT_OPTION,
+  STDOUT_OPTION_SHORT,
+} = require("../../../fr-config-common/src/constants.js");
+
 const OPTION = {
   NAME: "name",
   REALM: "realm",
@@ -6,6 +11,7 @@ const OPTION = {
   ACTIVE_ONLY: "active-only",
   PATH: "path",
   PUSH_API_VERSION: "push-api-version",
+  STDOUT: STDOUT_OPTION,
 };
 
 const CLI_OPTIONS = {
@@ -50,6 +56,12 @@ const CLI_OPTIONS = {
     demandOption: false,
     describe: "Configuration push API version",
     type: "string",
+  },
+  stdout: {
+    alias: STDOUT_OPTION_SHORT,
+    demandOption: false,
+    describe: "Print to stdout",
+    type: "boolean",
   },
 };
 

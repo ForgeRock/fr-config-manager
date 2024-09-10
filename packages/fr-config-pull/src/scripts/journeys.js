@@ -1,13 +1,11 @@
-const { restGet } = require("../../../fr-config-common/src/restClient");
-const utils = require("../../../fr-config-common/src/utils.js");
 const fs = require("fs");
-const process = require("process");
-const constants = require("../../../fr-config-common/src/constants.js");
-const { AuthzTypes } = constants;
-const scriptUtils = require("./scripts.js");
-const { exportScriptById } = scriptUtils;
-
-const { saveJsonToFile, safeFileName } = utils;
+const { restGet } = require("../../../fr-config-common/src/restClient");
+const {
+  saveJsonToFile,
+  safeFileName,
+  journeyNodeNeedsScript,
+} = require("../../../fr-config-common/src/utils.js");
+const { exportScriptById } = require("./scripts.js");
 
 const JOURNEY_SUB_DIR = "journeys";
 const NODES_SUB_DIR = "nodes";
@@ -38,13 +36,6 @@ function fileNameFromNode(displayName, id) {
 
 function matchJourneyName(journeys, journey, name) {
   return journey._id === name;
-}
-
-function isScriptNode(node) {
-  return (
-    node._type._id === "ScriptedDecisionNode" ||
-    node._type._id === "ConfigProviderNode"
-  );
 }
 
 async function processJourneys(
@@ -111,7 +102,7 @@ async function processJourneys(
               subNodeSpec._id
             )}.json`;
             saveJsonToFile(subNodeSpec, subNodeFilename, true);
-            if (pullDependencies && isScriptNode(subNodeSpec)) {
+            if (pullDependencies && journeyNodeNeedsScript(subNodeSpec)) {
               exportScriptById(
                 exportDir,
                 tenantUrl,
@@ -121,7 +112,7 @@ async function processJourneys(
               );
             }
           }
-        } else if (pullDependencies && isScriptNode(node)) {
+        } else if (pullDependencies && journeyNodeNeedsScript(node)) {
           exportScriptById(exportDir, tenantUrl, realm, node.script, token);
         } else if (
           pullDependencies &&

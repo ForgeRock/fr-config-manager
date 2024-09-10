@@ -5,6 +5,9 @@ const { globSync } = require("glob");
 const { pushScriptById } = require("./update-scripts");
 const cliUtils = require("../helpers/cli-options");
 const { OPTION } = cliUtils;
+const {
+  journeyNodeNeedsScript,
+} = require("../../../fr-config-common/src/utils.js");
 
 const INNER_TREE_ID = "InnerTreeEvaluatorNode";
 
@@ -37,11 +40,7 @@ async function handleNodes(
         journeysProcessed,
         token
       );
-    } else if (
-      pushScripts &&
-      (node._type._id === "ScriptedDecisionNode" ||
-        node._type._id === "ConfigProviderNode")
-    ) {
+    } else if (pushScripts && journeyNodeNeedsScript(node)) {
       await pushScriptById(configDir, node.script, tenantBaseUrl, realm, token);
     }
     await pushNode(baseUrl, node, token);

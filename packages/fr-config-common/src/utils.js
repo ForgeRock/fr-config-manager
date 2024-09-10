@@ -88,9 +88,17 @@ function unescapePlaceholders(content) {
   return content.replace(/\\\\\${/g, "${");
 }
 
+function journeyNodeNeedsScript(node) {
+  return (
+    node.hasOwnProperty("script") &&
+    (!node.hasOwnProperty("useScript") || node.useScript)
+  );
+}
+
 module.exports.saveJsonToFile = saveJsonToFile;
 module.exports.safeFileName = safeFileName;
 module.exports.esvToEnv = esvToEnv;
 module.exports.deepMerge = deepMerge;
 module.exports.escapePlaceholders = escapePlaceholders;
 module.exports.unescapePlaceholders = unescapePlaceholders;
+module.exports.journeyNodeNeedsScript = journeyNodeNeedsScript;

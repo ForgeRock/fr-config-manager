@@ -23,7 +23,7 @@ const runPromotion = async (argv, token) => {
           "protocol=2.1,resource=1.0"
       );
 
-      console.log(response.data);
+      console.log(JSON.stringify(response.data,null,4));
 
   } catch (error) {
       console.error(error.message);

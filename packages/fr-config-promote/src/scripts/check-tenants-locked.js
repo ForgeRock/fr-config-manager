@@ -19,7 +19,7 @@ const checkTenantsLocked = async (argv, token) => {
           "protocol=1.0,resource=1.0"
       );
 
-      console.log(lockedStateResponse.data);
+      console.log(JSON.stringify(lockedStateResponse.data,null,4));
 
   } catch (error) {
       console.error(error.message);

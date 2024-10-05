@@ -26,7 +26,7 @@ async function waitForLocked(token) {
           await waitForLocked(token);
       }
       if (response.data.result == "locked") {
-          console.log(JSON.parse('{"status": "' + response.data.result + '", "Promotionid": "' + response.data.promotionId + '"}'));
+          console.log(JSON.stringify({ status: response.data.result, Promotionid: response.data.promotionId },null,4));
       }
   } catch (error) {
       console.error(error.message);

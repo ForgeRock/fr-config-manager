@@ -29,7 +29,7 @@ async function waitForUnLocked(token) {
           await waitForUnLocked(token);
       }
       if (response.data.result == "unlocked") {
-          console.log(JSON.parse('{"status": "' + response.data.result + '"}'));
+          console.log(JSON.stringify({ status: response.data.result },null,4));
       }
   } catch (error) {
       console.error(error.message);

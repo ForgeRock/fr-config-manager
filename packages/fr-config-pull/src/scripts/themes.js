@@ -97,7 +97,7 @@ async function exportThemes(exportDir, realms, tenantUrl, name, token) {
         token
       );
 
-      if (!response.data.realm) {
+      if (!response.data.realm || !response.data.realm[realm]) {
         continue;
       }
 

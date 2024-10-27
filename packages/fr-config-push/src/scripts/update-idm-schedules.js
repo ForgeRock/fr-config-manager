@@ -57,7 +57,7 @@ const updateIdmSchedules = async (argv, token) => {
           `${schedulePath}/${schedule.invokeContext.task.script.file}`,
           "utf8"
         );
-        schedule.invokeContext.task.script.source = data;
+        schedule.invokeContext.task.script.source = scriptData;
         delete schedule.invokeContext.task.script.file;
       }
 

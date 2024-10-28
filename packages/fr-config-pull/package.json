@@ -1,6 +1,6 @@
 {
   "name": "@forgerock/fr-config-pull",
-  "version": "1.4.7-beta.2",
+  "version": "1.4.7",
   "description": "Config tools for FIDC",
   "main": "src/index.js",
   "bin": {

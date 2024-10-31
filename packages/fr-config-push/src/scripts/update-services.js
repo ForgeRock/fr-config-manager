@@ -1,6 +1,9 @@
 const fs = require("fs");
 const path = require("path");
-const { restPut } = require("../../../fr-config-common/src/restClient");
+const {
+  restPut,
+  restUpsert,
+} = require("../../../fr-config-common/src/restClient");
 const cliUtils = require("../helpers/cli-options");
 const { OPTION } = cliUtils;
 
@@ -51,12 +54,14 @@ const updateServices = async (argv, token) => {
           delete serviceFile._rev;
 
           const requestUrl = `${TENANT_BASE_URL}/am/json/realms/root/realms/${realm}/realm-config/services/${serviceName}`;
-          await restPut(
+
+          await restUpsert(
             requestUrl,
             serviceFile,
             token,
-            "protocol=1.0,resource=1.0"
+            "protocol=2.0,resource=1.0"
           );
+
           // Descendents
           const descendentsDir = `${dir}/${serviceName}`;
           if (

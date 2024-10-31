@@ -36,6 +36,7 @@ const {
   updateCsp,
   updateOrgPrivileges,
   updateRawConfig,
+  updateCookieDomains,
 } = require("./scripts");
 
 require("dotenv").config();
@@ -213,6 +214,13 @@ async function getCommands() {
       builder: cliOptions([OPTION.NAME]),
       handler: (argv) =>
         getAccessToken().then((token) => updateConnectorMappings(argv, token)),
+    })
+    .command({
+      command: "cookie-domains",
+      desc: "Update cookie domain config",
+      builder: cliOptions([]),
+      handler: (argv) =>
+        getAccessToken().then((token) => updateCookieDomains(argv, token)),
     })
     .command({
       command: "cors",

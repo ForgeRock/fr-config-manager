@@ -33,6 +33,7 @@ const { updateScripts } = scriptUtils;
 const updateCsp = require("./update-csp");
 const updateOrgPrivileges = require("./update-org-privileges");
 const updateRawConfig = require("./update-raw");
+const updateCookieDomains = require("./update-cookie-domains");
 
 module.exports = {
   updateAgents,
@@ -69,4 +70,5 @@ module.exports = {
   updateCsp,
   updateOrgPrivileges,
   updateRawConfig,
+  updateCookieDomains,
 };

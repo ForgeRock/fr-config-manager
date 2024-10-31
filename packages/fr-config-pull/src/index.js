@@ -30,6 +30,7 @@ const systemUsers = require("./scripts/serviceObjects");
 const locales = require("./scripts/locales");
 const csp = require("./scripts/csp.js");
 const orgPrivileges = require("./scripts/orgPrivileges.js");
+const cookieDomains = require("./scripts/cookieDomains.js");
 const raw = require("./scripts/raw.js");
 
 const yargs = require("yargs");
@@ -43,6 +44,7 @@ const COMMAND = {
   AUTH_TREE: "journeys",
   CONNECTOR_DEFINITIONS: "connector-definitions",
   CONNECTOR_MAPPINGS: "connector-mappings",
+  COOKIE_DOMAINS: "cookie-domains",
   CORS: "cors",
   CSP: "csp",
   MANAGED_OBJECTS: "managed-objects",
@@ -81,6 +83,7 @@ const COMMAND_MAP = {
     COMMAND.AUTH_TREE,
     COMMAND.CONNECTOR_DEFINITIONS,
     COMMAND.CONNECTOR_MAPPINGS,
+    COMMAND.COOKIE_DOMAINS,
     COMMAND.CORS,
     COMMAND.MANAGED_OBJECTS,
     COMMAND.EMAIL_TEMPLATES,
@@ -536,6 +539,11 @@ async function getConfig(argv) {
     orgPrivileges.exportOrgPrivileges(configDir, tenantUrl, name, token);
   }
 
+  if (matchCommand(argv, COMMAND.COOKIE_DOMAINS)) {
+    console.log("Getting cookie domain config");
+    cookieDomains.exportCookieDomains(configDir, tenantUrl, token);
+  }
+
   if (matchCommand(argv, COMMAND.RAW)) {
     const path = argv.path;
     const rawConfigFile = process.env.RAW_CONFIG;
@@ -629,6 +637,12 @@ yargs
     command: COMMAND.CONNECTOR_MAPPINGS,
     desc: "Get connector mappings",
     builder: cliOptions([OPTION.NAME]),
+    handler: (argv) => getConfig(argv),
+  })
+  .command({
+    command: COMMAND.COOKIE_DOMAINS,
+    desc: "Get cookie domain config",
+    builder: cliOptions([]),
     handler: (argv) => getConfig(argv),
   })
   .command({

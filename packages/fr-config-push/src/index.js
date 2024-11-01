@@ -89,10 +89,23 @@ function checkConfig() {
   return valid;
 }
 
-async function getCommands() {
-  if (process.env.TENANT_READONLY && process.env.TENANT_READONLY === "true") {
-    console.error("Environment set to readonly - no push permitted");
+function checkNamed() {
+  if (
+    process.env.PUSH_NAMED_ONLY &&
+    process.env.PUSH_NAMED_ONLY === "true" &&
+    !process.argv.includes("--name") &&
+    !process.argv.includes("-n")
+  ) {
+    console.error("Push only permitted by name");
     process.exit(1);
+  }
+
+  return true;
+}
+
+function checkAllowedCommand() {
+  if (process.argv.includes("--help") || process.argv.includes("-h")) {
+    return true;
   }
 
   const command = process.argv.length > 2 ? process.argv[2] : null;
@@ -112,16 +125,16 @@ async function getCommands() {
     process.exit(1);
   }
 
-  if (
-    command &&
-    process.env.PUSH_NAMED_ONLY &&
-    process.env.PUSH_NAMED_ONLY === "true" &&
-    !process.argv.includes("--name") &&
-    !process.argv.includes("-n")
-  ) {
-    console.error("Push only permitted by name");
+  return true;
+}
+
+async function getCommands() {
+  if (process.env.TENANT_READONLY && process.env.TENANT_READONLY === "true") {
+    console.error("Environment set to readonly - no push permitted");
     process.exit(1);
   }
+
+  checkAllowedCommand();
 
   process.env.CONFIG_DIR = process.env.CONFIG_DIR || process.cwd();
 
@@ -204,6 +217,7 @@ async function getCommands() {
       desc: "Update connector definitions",
       builder: cliOptions([OPTION.NAME]),
       handler: (argv) =>
+        checkNamed() &&
         getAccessToken().then((token) =>
           updateConnectorDefinitions(argv, token)
         ),
@@ -213,6 +227,7 @@ async function getCommands() {
       desc: "Update connector mappings",
       builder: cliOptions([OPTION.NAME]),
       handler: (argv) =>
+        checkNamed() &&
         getAccessToken().then((token) => updateConnectorMappings(argv, token)),
     })
     .command({
@@ -234,6 +249,7 @@ async function getCommands() {
       desc: "Update content security policy",
       builder: cliOptions([OPTION.NAME]),
       handler: (argv) =>
+        checkNamed() &&
         getAccessToken().then((token) => updateCsp(argv, token)),
     })
     .command({
@@ -248,6 +264,7 @@ async function getCommands() {
       desc: "Update email templates",
       builder: cliOptions([OPTION.NAME]),
       handler: (argv) =>
+        checkNamed() &&
         getAccessToken().then((token) => updateEmailTemplates(argv, token)),
     })
     .command({
@@ -255,6 +272,7 @@ async function getCommands() {
       desc: "Update custom endpoints",
       builder: cliOptions([OPTION.FILENAME_FILTER, OPTION.NAME]),
       handler: (argv) =>
+        checkNamed() &&
         getAccessToken().then((token) => updateIdmEndpoints(argv, token)),
     })
     .command({
@@ -262,6 +280,7 @@ async function getCommands() {
       desc: "Update internal roles",
       builder: cliOptions([OPTION.NAME]),
       handler: (argv) =>
+        checkNamed() &&
         getAccessToken().then((token) => updateInternalRoles(argv, token)),
     })
     .command({
@@ -273,6 +292,7 @@ async function getCommands() {
         OPTION.PUSH_DEPENDENCIES,
       ]),
       handler: (argv) =>
+        checkNamed() &&
         getAccessToken().then((token) => updateAuthTrees(argv, token)),
     })
     .command({
@@ -287,13 +307,15 @@ async function getCommands() {
       desc: "Update locales",
       builder: cliOptions([OPTION.NAME]),
       handler: (argv) =>
+        checkNamed() &&
         getAccessToken().then((token) => updateLocales(argv, token)),
     })
     .command({
       command: "managed-objects",
       desc: "Update managed objects",
-      builder: cliOptions([OPTION.NAME, OPTION.REALM]),
+      builder: cliOptions([OPTION.NAME]),
       handler: (argv) =>
+        checkNamed() &&
         getAccessToken().then((token) => updateManagedObjects(argv, token)),
     })
     .command({
@@ -308,6 +330,7 @@ async function getCommands() {
       desc: "Update org privileges",
       builder: cliOptions([OPTION.NAME]),
       handler: (argv) =>
+        checkNamed() &&
         getAccessToken().then((token) => updateOrgPrivileges(argv, token)),
     })
     .command({
@@ -320,7 +343,7 @@ async function getCommands() {
     .command({
       command: "remote-servers",
       desc: "Update remote connector servers",
-      builder: cliOptions([OPTION.NAME]),
+      builder: cliOptions([]),
       handler: (argv) =>
         getAccessToken().then((token) => updateRemoteServers(argv, token)),
     })
@@ -343,6 +366,7 @@ async function getCommands() {
       desc: "Update schedules",
       builder: cliOptions([OPTION.FILENAME_FILTER, OPTION.NAME]),
       handler: (argv) =>
+        checkNamed() &&
         getAccessToken().then((token) => updateIdmSchedules(argv, token)),
     })
     .command({
@@ -350,6 +374,7 @@ async function getCommands() {
       desc: "Update authentication scripts",
       builder: cliOptions([OPTION.FILENAME_FILTER, OPTION.NAME, OPTION.REALM]),
       handler: (argv) =>
+        checkNamed() &&
         getAccessToken().then((token) => updateScripts(argv, token)),
     })
     .command({
@@ -357,6 +382,7 @@ async function getCommands() {
       desc: "Update secrets",
       builder: cliOptions([OPTION.NAME, OPTION.PRUNE]),
       handler: (argv) =>
+        checkNamed() &&
         getAccessToken().then((token) => updateSecrets(argv, token)),
     })
     .command({
@@ -364,6 +390,7 @@ async function getCommands() {
       desc: "Update secret mappings",
       builder: cliOptions([OPTION.NAME, OPTION.REALM]),
       handler: (argv) =>
+        checkNamed() &&
         getAccessToken().then((token) => updateSecretMappings(argv, token)),
     })
     .command({
@@ -378,12 +405,13 @@ async function getCommands() {
       desc: "Update authentication services",
       builder: cliOptions([OPTION.NAME, OPTION.REALM]),
       handler: (argv) =>
+        checkNamed() &&
         getAccessToken().then((token) => updateServices(argv, token)),
     })
     .command({
       command: "terms-and-conditions",
       desc: "Update terms and conditions",
-      builder: cliOptions([OPTION.NAME]),
+      builder: cliOptions([]),
       handler: (argv) =>
         getAccessToken().then((token) => updateTermsAndConditions(argv, token)),
     })
@@ -401,6 +429,7 @@ async function getCommands() {
       desc: "Update UI themes",
       builder: cliOptions([OPTION.NAME, OPTION.REALM]),
       handler: (argv) =>
+        checkNamed() &&
         getAccessToken().then((token) => updateThemes(argv, token)),
     })
     .command({
@@ -415,6 +444,7 @@ async function getCommands() {
       desc: "Update environment specific variables",
       builder: cliOptions([OPTION.NAME, OPTION.FORCE]),
       handler: (argv) =>
+        checkNamed() &&
         getAccessToken().then((token) => updateVariables(argv, token)),
     })
     .demandCommand()

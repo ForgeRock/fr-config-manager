@@ -117,6 +117,16 @@ async function httpRequest(
     }
   });
 
+  if (process.argv.includes("--debug") || process.argv.includes("-d")) {
+    console.log(
+      "============================== >> DEBUG >> =============================="
+    );
+    console.log(response);
+    console.log(
+      "============================== << DEBUG << =============================="
+    );
+  }
+
   return response;
 }
 

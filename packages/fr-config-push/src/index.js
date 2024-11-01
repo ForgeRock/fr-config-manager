@@ -343,9 +343,8 @@ async function getCommands() {
     .command({
       command: "remote-servers",
       desc: "Update remote connector servers",
-      builder: cliOptions([OPTION.NAME]),
+      builder: cliOptions([]),
       handler: (argv) =>
-        checkNamed() &&
         getAccessToken().then((token) => updateRemoteServers(argv, token)),
     })
     .command({
@@ -412,9 +411,8 @@ async function getCommands() {
     .command({
       command: "terms-and-conditions",
       desc: "Update terms and conditions",
-      builder: cliOptions([OPTION.NAME]),
+      builder: cliOptions([]),
       handler: (argv) =>
-        checkNamed() &&
         getAccessToken().then((token) => updateTermsAndConditions(argv, token)),
     })
     .command({

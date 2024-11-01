@@ -806,5 +806,10 @@ yargs
     builder: cliOptions([OPTION.NAME, OPTION.DUMP]),
     handler: (argv) => getConfig(argv),
   })
+  .option("debug", {
+    alias: "d",
+    type: "boolean",
+    description: "Run with debug output",
+  })
   .demandCommand()
   .parse();

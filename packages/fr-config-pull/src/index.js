@@ -572,6 +572,11 @@ async function getConfig(argv) {
       token
     );
   }
+
+  if (matchCommand(argv, COMMAND.CONFIG_METADATA)) {
+    console.log("Getting config metadata");
+    showConfigMetadata(tenantUrl, token);
+  }
 }
 
 yargs

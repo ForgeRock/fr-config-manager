@@ -447,6 +447,11 @@ async function getCommands() {
         checkNamed() &&
         getAccessToken().then((token) => updateVariables(argv, token)),
     })
+    .option("debug", {
+      alias: "d",
+      type: "boolean",
+      description: "Run with debug output",
+    })
     .demandCommand()
     .parse();
 }

@@ -121,7 +121,10 @@ async function httpRequest(
     console.log(
       "============================== >> DEBUG >> =============================="
     );
-    console.log(response);
+    console.log("Request:");
+    console.log(JSON.stringify(response.config, null, 2));
+    console.log("Response:");
+    console.log(JSON.stringify(response.data, null, 2));
     console.log(
       "============================== << DEBUG << =============================="
     );

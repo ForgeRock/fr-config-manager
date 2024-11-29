@@ -268,6 +268,7 @@ async function getConfig(argv) {
       realms,
       argv[OPTION.NAME],
       argv[OPTION.PULL_DEPENDENCIES],
+      argv[OPTION.CLEAN],
       token
     );
   }
@@ -688,7 +689,12 @@ yargs
   .command({
     command: COMMAND.AUTH_TREE,
     desc: "Get journeys",
-    builder: cliOptions([OPTION.NAME, OPTION.REALM, OPTION.PULL_DEPENDENCIES]),
+    builder: cliOptions([
+      OPTION.NAME,
+      OPTION.REALM,
+      OPTION.PULL_DEPENDENCIES,
+      OPTION.CLEAN,
+    ]),
     handler: (argv) => getConfig(argv),
   })
   .command({

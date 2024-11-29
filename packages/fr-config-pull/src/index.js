@@ -20,9 +20,8 @@ const internalRoles = require("./scripts/internalRoles.js");
 const secrets = require("./scripts/secrets.js");
 const variables = require("./scripts/variables.js");
 const secretMappings = require("./scripts/secretMappings.js");
-const {
-  ORG_PRIVILEGES_CONFIG,
-} = require("../../fr-config-common/src/constants");
+const saml = require("./scripts/saml.js");
+const { ORG_PRIVILEGES_CONFIG } = require("../../fr-config-common/src/constants");
 const { cliOptions, OPTION } = require("./helpers/cli-options");
 const oauth2Agents = require("./scripts/oauth2Agents.js");
 const authzPolicies = require("./scripts/authzPolicies.js");
@@ -76,6 +75,7 @@ const COMMAND = {
   TEST: "test",
   ORG_PRIVILEGES: "org-privileges",
   RAW: "raw",
+  SAML: "saml",
 };
 
 const COMMAND_MAP = {
@@ -110,6 +110,7 @@ const COMMAND_MAP = {
     COMMAND.LOCALES,
     COMMAND.AUDIT,
     COMMAND.ORG_PRIVILEGES,
+    COMMAND.SAML,
   ],
   "all-static": [
     COMMAND.AUTH_TREE,
@@ -141,8 +142,7 @@ function matchCommand(argv, command) {
   const requestedCommand = argv._[0];
   return (
     requestedCommand === command ||
-    (COMMAND_MAP[requestedCommand] &&
-      COMMAND_MAP[requestedCommand].includes(command))
+    (COMMAND_MAP[requestedCommand] && COMMAND_MAP[requestedCommand].includes(command))
   );
 }
 
@@ -206,23 +206,12 @@ async function getConfig(argv) {
       console.log("Getting email templates");
     }
 
-    emailTemplates.exportEmailTemplates(
-      configDir,
-      tenantUrl,
-      argv[OPTION.NAME],
-      token
-    );
+    emailTemplates.exportEmailTemplates(configDir, tenantUrl, argv[OPTION.NAME], token);
   }
 
   if (matchCommand(argv, COMMAND.EMAIL_PROVIDER)) {
     console.log("Getting email provider settings");
-    idmFlatConfig.exportConfig(
-      "external.email",
-      configDir,
-      "email-provider",
-      tenantUrl,
-      token
-    );
+    idmFlatConfig.exportConfig("external.email", configDir, "email-provider", tenantUrl, token);
   }
 
   if (matchCommand(argv, COMMAND.MANAGED_OBJECTS)) {
@@ -295,13 +284,7 @@ async function getConfig(argv) {
 
   if (matchCommand(argv, COMMAND.IDM_ACCESS_CONFIG)) {
     console.log("Getting access config");
-    idmFlatConfig.exportConfig(
-      "access",
-      configDir,
-      "access-config",
-      tenantUrl,
-      token
-    );
+    idmFlatConfig.exportConfig("access", configDir, "access-config", tenantUrl, token);
   }
 
   if (matchCommand(argv, COMMAND.CORS)) {
@@ -316,34 +299,17 @@ async function getConfig(argv) {
 
   if (matchCommand(argv, COMMAND.THEMES)) {
     console.log("Getting themes");
-    themes.exportThemes(
-      realmConfigDir,
-      realms,
-      tenantUrl,
-      argv[OPTION.NAME],
-      token
-    );
+    themes.exportThemes(realmConfigDir, realms, tenantUrl, argv[OPTION.NAME], token);
   }
 
   if (matchCommand(argv, COMMAND.TERMS_AND_CONDITIONS)) {
     console.log("Getting terms and conditions");
-    termsAndConditions.exportTerms(
-      configDir,
-      tenantUrl,
-      argv[OPTION.NAME],
-      token
-    );
+    termsAndConditions.exportTerms(configDir, tenantUrl, argv[OPTION.NAME], token);
   }
 
   if (matchCommand(argv, COMMAND.KBA)) {
     console.log("Getting KBA");
-    idmFlatConfig.exportConfig(
-      "selfservice.kba",
-      configDir,
-      "kba",
-      tenantUrl,
-      token
-    );
+    idmFlatConfig.exportConfig("selfservice.kba", configDir, "kba", tenantUrl, token);
   }
 
   if (matchCommand(argv, COMMAND.SERVICES)) {
@@ -357,24 +323,12 @@ async function getConfig(argv) {
       console.log("Getting services");
     }
 
-    amServices.exportConfig(
-      realmConfigDir,
-      realms,
-      tenantUrl,
-      argv[OPTION.NAME],
-      token
-    );
+    amServices.exportConfig(realmConfigDir, realms, tenantUrl, argv[OPTION.NAME], token);
   }
 
   if (matchCommand(argv, COMMAND.AUTHENTICATION)) {
     console.log("Getting authentication config");
-    amRealmConfig.exportConfig(
-      realmConfigDir,
-      realms,
-      "authentication",
-      tenantUrl,
-      token
-    );
+    amRealmConfig.exportConfig(realmConfigDir, realms, "authentication", tenantUrl, token);
   }
 
   if (matchCommand(argv, COMMAND.REMOTE_SERVERS)) {
@@ -391,13 +345,7 @@ async function getConfig(argv) {
 
   if (matchCommand(argv, COMMAND.UI_CONFIG)) {
     console.log("Getting UI config");
-    idmFlatConfig.exportConfig(
-      "ui-configuration",
-      configDir,
-      "ui",
-      tenantUrl,
-      token
-    );
+    idmFlatConfig.exportConfig("ui-configuration", configDir, "ui", tenantUrl, token);
   }
 
   if (matchCommand(argv, COMMAND.INTERNAL_ROLES)) {
@@ -416,47 +364,26 @@ async function getConfig(argv) {
       console.log("Getting secrets");
     }
 
-    var activeOnly =
-      argv[OPTION.ACTIVE_ONLY] || process.env.ACTIVE_ONLY_SECRETS === "true";
+    var activeOnly = argv[OPTION.ACTIVE_ONLY] || process.env.ACTIVE_ONLY_SECRETS === "true";
 
-    secrets.exportConfig(
-      configDir,
-      tenantUrl,
-      argv[OPTION.NAME],
-      activeOnly,
-      token
-    );
+    secrets.exportConfig(configDir, tenantUrl, argv[OPTION.NAME], activeOnly, token);
   }
 
   if (matchCommand(argv, COMMAND.ESVS)) {
-    variables.exportConfig(
-      configDir,
-      tenantUrl,
-      argv[OPTION.NAME],
-      argv[OPTION.DUMP],
-      token
-    );
+    variables.exportConfig(configDir, tenantUrl, argv[OPTION.NAME], argv[OPTION.DUMP], token);
   }
 
   if (matchCommand(argv, COMMAND.SECRET_MAPPINGS)) {
     if (argv.name) {
       if (realms.length !== 1) {
-        console.error(
-          "Error: for a named secret mapping, specify a single realm"
-        );
+        console.error("Error: for a named secret mapping, specify a single realm");
         process.exit(1);
       }
       console.log("Getting secret mapping", argv.name, "in realm", realms[0]);
     } else {
       console.log("Getting secret mappings");
     }
-    secretMappings.exportConfig(
-      realmConfigDir,
-      realms,
-      tenantUrl,
-      argv[OPTION.NAME],
-      token
-    );
+    secretMappings.exportConfig(realmConfigDir, realms, tenantUrl, argv[OPTION.NAME], token);
   }
 
   if (matchCommand(argv, COMMAND.LOCALES)) {
@@ -471,17 +398,10 @@ async function getConfig(argv) {
 
   if (matchCommand(argv, COMMAND.OAUTH2_AGENTS)) {
     if (!process.env.OAUTH2_AGENTS_CONFIG) {
-      console.log(
-        "Warning - no OAUTH2_AGENTS_CONFIG defined - skipping agents"
-      );
+      console.log("Warning - no OAUTH2_AGENTS_CONFIG defined - skipping agents");
     } else {
       console.log("Getting OAuth2 agents");
-      oauth2Agents.exportConfig(
-        configDir,
-        process.env.OAUTH2_AGENTS_CONFIG,
-        tenantUrl,
-        token
-      );
+      oauth2Agents.exportConfig(configDir, process.env.OAUTH2_AGENTS_CONFIG, tenantUrl, token);
     }
   }
 
@@ -490,40 +410,30 @@ async function getConfig(argv) {
       console.log("Warning - no AUTHZ_POLICY_SETS defined - skipping policies");
     } else {
       console.log("Getting Authorization Policies");
-      authzPolicies.exportConfig(
-        configDir,
-        process.env.AUTHZ_POLICY_SETS_CONFIG,
-        tenantUrl,
-        token
-      );
+      authzPolicies.exportConfig(configDir, process.env.AUTHZ_POLICY_SETS_CONFIG, tenantUrl, token);
     }
   }
 
+  if (matchCommand(argv, COMMAND.SAML)) {
+    if (!process.env.SAML_CONFIG) {
+      console.log("Warning - no SAML_CONFIG defined - skipping saml entities");
+    } else {
+      console.log("Getting SAML entities");
+      saml.exportConfig(configDir, process.env.SAML_CONFIG, tenantUrl, token);
+    }
+  }
   if (matchCommand(argv, COMMAND.SERVICE_OBJECTS)) {
     if (!process.env.SERVICE_OBJECTS_CONFIG) {
-      console.log(
-        "Warning - no SERVICE_OBJECTS_CONFIG defined - skipping service objects"
-      );
+      console.log("Warning - no SERVICE_OBJECTS_CONFIG defined - skipping service objects");
     } else {
       console.log("Getting Service Objects");
-      systemUsers.exportConfig(
-        configDir,
-        process.env.SERVICE_OBJECTS_CONFIG,
-        tenantUrl,
-        token
-      );
+      systemUsers.exportConfig(configDir, process.env.SERVICE_OBJECTS_CONFIG, tenantUrl, token);
     }
   }
 
   if (matchCommand(argv, COMMAND.CSP)) {
     console.log("Getting CSP config");
-    csp.exportCsp(
-      configDir,
-      process.env.CSP_OVERRIDES,
-      tenantUrl,
-      argv[OPTION.NAME],
-      token
-    );
+    csp.exportCsp(configDir, process.env.CSP_OVERRIDES, tenantUrl, argv[OPTION.NAME], token);
   }
 
   if (matchCommand(argv, COMMAND.ORG_PRIVILEGES)) {
@@ -549,9 +459,7 @@ async function getConfig(argv) {
     const path = argv.path;
     const rawConfigFile = process.env.RAW_CONFIG;
     if (!path && !rawConfigFile) {
-      console.error(
-        `${COMMAND.RAW} requires the --path option or a configured RAW_CONFIG file`
-      );
+      console.error(`${COMMAND.RAW} requires the --path option or a configured RAW_CONFIG file`);
       process.exit(1);
     }
 
@@ -564,14 +472,7 @@ async function getConfig(argv) {
       process.exit(1);
     }
 
-    raw.exportRawConfig(
-      configDir,
-      tenantUrl,
-      path,
-      apiVersion,
-      rawConfigFile,
-      token
-    );
+    raw.exportRawConfig(configDir, tenantUrl, path, apiVersion, rawConfigFile, token);
   }
 
   if (matchCommand(argv, COMMAND.CONFIG_METADATA)) {
@@ -749,6 +650,12 @@ yargs
     command: COMMAND.IDM_SCHEDULES,
     desc: "Get schedules",
     builder: cliOptions([OPTION.NAME]),
+    handler: (argv) => getConfig(argv),
+  })
+  .command({
+    command: COMMAND.SAML,
+    desc: "Get SAML entities",
+    builder: cliOptions([]),
     handler: (argv) => getConfig(argv),
   })
   .command({

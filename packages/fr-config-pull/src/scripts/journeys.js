@@ -10,6 +10,8 @@ const { exportScriptById } = require("./scripts.js");
 const JOURNEY_SUB_DIR = "journeys";
 const NODES_SUB_DIR = "nodes";
 
+let journeyCache = [];
+
 async function cacheNodesByType(nodeCache, nodeType, tenantUrl, realm, token) {
   if (nodeCache[nodeType]) {
     return nodeCache;
@@ -59,6 +61,15 @@ async function processJourneys(
       if (name && !matchJourneyName(journeys, journey, name)) {
         continue;
       }
+
+      console.log("processing journey " + journey._id);
+      if (name && journeyCache.includes(journey._id)) {
+        console.log("excluding existing journey " + journey._id);
+        continue;
+      } else {
+        journeyCache.push(journey._id);
+      }
+
       const journeyDir = `${fileDir}/${safeFileName(journey._id)}`;
       const nodeDir = `${journeyDir}/${NODES_SUB_DIR}`;
 
@@ -120,6 +131,7 @@ async function processJourneys(
         } else if (pullDependencies && journeyNodeNeedsScript(node)) {
           exportScriptById(exportDir, tenantUrl, realm, node.script, token);
         } else if (
+          !!name &&
           pullDependencies &&
           node._type._id === "InnerTreeEvaluatorNode"
         ) {

@@ -45,7 +45,8 @@ async function processJourneys(
   pullDependencies,
   tenantUrl,
   token,
-  exportDir
+  exportDir,
+  clean
 ) {
   const fileDir = `${exportDir}/${realm}/${JOURNEY_SUB_DIR}`;
 
@@ -60,6 +61,10 @@ async function processJourneys(
       }
       const journeyDir = `${fileDir}/${safeFileName(journey._id)}`;
       const nodeDir = `${journeyDir}/${NODES_SUB_DIR}`;
+
+      if (clean) {
+        fs.rmSync(nodeDir, { recursive: true, force: true });
+      }
 
       if (!fs.existsSync(nodeDir)) {
         fs.mkdirSync(nodeDir, { recursive: true });
@@ -125,7 +130,8 @@ async function processJourneys(
             pullDependencies,
             tenantUrl,
             token,
-            exportDir
+            exportDir,
+            clean
           );
         }
 
@@ -146,6 +152,7 @@ async function exportJourneys(
   realms,
   name,
   pullDependencies,
+  clean,
   token
 ) {
   for (const realm of realms) {
@@ -163,7 +170,8 @@ async function exportJourneys(
         pullDependencies,
         tenantUrl,
         token,
-        exportDir
+        exportDir,
+        clean
       );
     } catch (err) {
       console.log(err);

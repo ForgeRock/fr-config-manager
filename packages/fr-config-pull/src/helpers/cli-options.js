@@ -12,6 +12,7 @@ const OPTION = {
   PATH: "path",
   PUSH_API_VERSION: "push-api-version",
   STDOUT: STDOUT_OPTION,
+  CLEAN: "clean",
 };
 
 const CLI_OPTIONS = {
@@ -61,6 +62,12 @@ const CLI_OPTIONS = {
     alias: STDOUT_OPTION_SHORT,
     demandOption: false,
     describe: "Print to stdout",
+    type: "boolean",
+  },
+  clean: {
+    alias: "c",
+    demandOption: false,
+    describe: "Clear existing configuration before pull",
     type: "boolean",
   },
 };

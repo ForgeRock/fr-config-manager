@@ -62,9 +62,7 @@ async function processJourneys(
         continue;
       }
 
-      console.log("processing journey " + journey._id);
       if (name && journeyCache.includes(journey._id)) {
-        console.log("excluding existing journey " + journey._id);
         continue;
       } else {
         journeyCache.push(journey._id);

@@ -1,10 +1,10 @@
 {
   "name": "@forgerock/fr-config-common",
-  "version": "1.4.9.beta.2",
+  "version": "1.4.9.beta.3",
   "description": "Config tools for Ping Advanced Identity Cloud",
   "main": "src/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jest"
   },
   "repository": {
     "type": "git",
@@ -15,5 +15,8 @@
   "bugs": {
     "url": "https://github.com/forgerock/fr-config-manager/issues"
   },
-  "homepage": "https://github.com/forgerock/fr-config-manager"
+  "homepage": "https://github.com/forgerock/fr-config-manager",
+  "dependencies": {
+    "jest": "^29.7.0"
+  }
 }

@@ -1,6 +1,10 @@
 const fs = require("fs");
 const path = require("path");
-const { restGet, restPost, restPut } = require("../../../fr-config-common/src/restClient");
+const {
+  restGet,
+  restPost,
+  restPut,
+} = require("../../../fr-config-common/src/restClient");
 const { replaceEnvSpecificValues } = require("../helpers/config-process");
 
 async function getEntity(amSamlBaseUrl, entityId, token) {
@@ -45,7 +49,9 @@ async function handleRemoteEntity(samlObject, amSamlBaseUrl, token) {
   if (samlQuery.resultCount == 0) {
     const metadata = samlObject.metadata;
     console.log(metadata);
-    const encodedMetadata = Buffer.from(metadata, "utf-8").toString("base64url");
+    const encodedMetadata = Buffer.from(metadata, "utf-8").toString(
+      "base64url"
+    );
     await restPost(
       `${amSamlBaseUrl}/remote?_action=importEntity`,
       null,
@@ -68,7 +74,10 @@ const updateSaml = async (argv, token) => {
   for (const realm of JSON.parse(REALMS)) {
     try {
       // Read agent JSON files
-      const baseDir = path.join(CONFIG_DIR, `/realms/${realm}/realm-config/saml`);
+      const baseDir = path.join(
+        CONFIG_DIR,
+        `/realms/${realm}/realm-config/saml`
+      );
       if (!fs.existsSync(baseDir)) {
         console.log("Warning: no saml config present for realm", realm);
         return;
@@ -79,11 +88,17 @@ const updateSaml = async (argv, token) => {
       for (const samlType of samlTypes) {
         const subDir = path.join(baseDir, samlType);
 
-        const samlFiles = fs.readdirSync(subDir).filter((name) => path.extname(name) === ".json");
+        const samlFiles = fs
+          .readdirSync(subDir)
+          .filter((name) => path.extname(name) === ".json");
 
         for (const samlFile of samlFiles) {
-          var samlFileContents = fs.readFileSync(path.join(subDir, samlFile), "utf8");
-          var resolvedSamlFileContents = replaceEnvSpecificValues(samlFileContents);
+          var samlFileContents = fs.readFileSync(
+            path.join(subDir, samlFile),
+            "utf8"
+          );
+          var resolvedSamlFileContents =
+            replaceEnvSpecificValues(samlFileContents);
 
           const samlObject = JSON.parse(resolvedSamlFileContents);
           switch (samlType.toLowerCase()) {

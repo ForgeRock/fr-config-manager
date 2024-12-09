@@ -94,6 +94,14 @@ function journeyNodeNeedsScript(node) {
     (!node.hasOwnProperty("useScript") || node.useScript)
   );
 }
+function replaceAllInJson(content, replacements) {
+  let contentString = JSON.stringify(content);
+
+  replacements.forEach(({ search, replacement }) => {
+    contentString = contentString.split(search).join(replacement);
+  });
+  return JSON.parse(contentString);
+}
 
 module.exports.saveJsonToFile = saveJsonToFile;
 module.exports.safeFileName = safeFileName;
@@ -102,3 +110,4 @@ module.exports.deepMerge = deepMerge;
 module.exports.escapePlaceholders = escapePlaceholders;
 module.exports.unescapePlaceholders = unescapePlaceholders;
 module.exports.journeyNodeNeedsScript = journeyNodeNeedsScript;
+module.exports.replaceAllInJson = replaceAllInJson;

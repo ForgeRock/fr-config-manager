@@ -1,6 +1,13 @@
-const { saveJsonToFile, escapePlaceholders } = require("../../../fr-config-common/src/utils.js");
+const {
+  saveJsonToFile,
+  escapePlaceholders,
+  replaceAllInJson,
+} = require("../../../fr-config-common/src/utils.js");
 const fs = require("fs");
-const { restGet, logRestError } = require("../../../fr-config-common/src/restClient.js");
+const {
+  restGet,
+  logRestError,
+} = require("../../../fr-config-common/src/restClient.js");
 const constants = require("../../../fr-config-common/src/constants.js");
 const EXPORT_SUBDIR = "realm-config/saml";
 const _ = require("lodash");
@@ -20,20 +27,26 @@ async function exportConfig(exportDir, samlConfigFile, tenantUrl, token) {
           console.error("SAML entity does not exist %s", entityId);
           break;
         }
-        console.log("response %s", JSON.stringify(samlQuery.result));
+
         let samlId = samlQuery.result[0]._id;
         let samlLocation = samlQuery.result[0].location;
 
         let samlEntityEndpoint = `${amSamlBaseUrl}/${samlLocation}/${samlId}`;
 
         const entityRequest = await restGet(samlEntityEndpoint, null, token);
-        console.log("response %s", JSON.stringify(entityRequest.data));
         let config = escapePlaceholders(entityRequest.data);
-        const mergedConfig = _.merge(config, samlEntity.overrides);
+        let mergedConfig = _.merge(config, samlEntity.overrides);
+        if (!!samlEntity.replacements) {
+          console.log(
+            "replacing with " + JSON.stringify(samlEntity.replacements)
+          );
+          mergedConfig = replaceAllInJson(
+            mergedConfig,
+            samlEntity.replacements
+          );
+        }
         const metadataUrl = `${tenantUrl}/am/saml2/jsp/exportmetadata.jsp?entityid=${entityId}&realm=${realm}`;
         const metadataRequest = await restGet(metadataUrl, null, token);
-
-        console.log(metadataRequest.data);
 
         let samlConfig = {};
         samlConfig.config = mergedConfig;

@@ -34,7 +34,7 @@ const updateCsp = require("./update-csp");
 const updateOrgPrivileges = require("./update-org-privileges");
 const updateRawConfig = require("./update-raw");
 const updateCookieDomains = require("./update-cookie-domains");
-const updateSaml = require("./update-saml");
+const { updateSaml } = require("./update-saml");
 
 module.exports = {
   updateAgents,

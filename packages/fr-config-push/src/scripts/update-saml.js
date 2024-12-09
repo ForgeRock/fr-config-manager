@@ -7,67 +7,109 @@ const {
 } = require("../../../fr-config-common/src/restClient");
 const { replaceEnvSpecificValues } = require("../helpers/config-process");
 
-async function getEntity(amSamlBaseUrl, entityId, token) {
-  const samlEndpoint = `${amSamlBaseUrl}?_queryFilter=entityId%20eq%20'${entityId}'`;
+const PROTOCOL_RESOURCE_HEADER = "protocol=1.0,resource=1.0";
 
-  const response = await restGet(samlEndpoint, null, token);
+async function getSAMLEntity(
+  amSamlBaseUrl,
+  entityId,
+  token,
+  restGetFn = restGet
+) {
+  const samlEndpoint = `${amSamlBaseUrl}?_queryFilter=entityId%20eq%20'${entityId}'`;
+  const response = await restGetFn(samlEndpoint, null, token);
   return response?.data;
 }
-async function handleHostedEntity(samlObject, amSamlBaseUrl, token) {
-  const fileContent = samlObject.config;
-  delete fileContent._rev;
-  const entityId = fileContent.entityId;
 
-  const samlQuery = await getEntity(amSamlBaseUrl, entityId, token);
-  if (samlQuery.resultCount == 1) {
-    await restPut(
-      `${amSamlBaseUrl}/hosted/${fileContent._id}`,
-      fileContent,
-      token,
-      "protocol=1.0,resource=1.0"
-    );
-  } else if (samlQuery.resultCount == 0) {
-    await restPost(
-      `${amSamlBaseUrl}/hosted?_action=create`,
-      null,
-      fileContent,
-      token,
-      "protocol=1.0,resource=1.0"
-    );
-  } else {
-    throw new Error("Error while looking up hosted entity " + entityId);
-  }
-}
-
-async function handleRemoteEntity(samlObject, amSamlBaseUrl, token) {
-  const fileContent = samlObject.config;
-  delete fileContent._rev;
-  const entityId = fileContent.entityId;
-
-  const samlQuery = await getEntity(amSamlBaseUrl, entityId, token);
-  //Import metadata if the SAML entity doesn't exist
-  if (samlQuery.resultCount == 0) {
-    const metadata = samlObject.metadata;
-    console.log(metadata);
-    const encodedMetadata = Buffer.from(metadata, "utf-8").toString(
-      "base64url"
-    );
-    await restPost(
-      `${amSamlBaseUrl}/remote?_action=importEntity`,
-      null,
-      { standardMetadata: encodedMetadata },
-      token,
-      "protocol=1.0,resource=1.0"
-    );
-  }
-  //update the remote entity config
-  await restPut(
-    `${amSamlBaseUrl}/remote/${fileContent._id}`,
+async function updateHosteSAMLdEntity(
+  fileContent,
+  amSamlBaseUrl,
+  token,
+  restPutFn = restPut
+) {
+  await restPutFn(
+    `${amSamlBaseUrl}/hosted/${fileContent._id}`,
     fileContent,
     token,
-    "protocol=1.0,resource=1.0"
+    PROTOCOL_RESOURCE_HEADER
   );
 }
+
+async function createHostedSAMLEntity(
+  fileContent,
+  amSamlBaseUrl,
+  token,
+  restPostFn = restPost
+) {
+  await restPostFn(
+    `${amSamlBaseUrl}/hosted?_action=create`,
+    null,
+    fileContent,
+    token,
+    PROTOCOL_RESOURCE_HEADER
+  );
+}
+
+async function handleHostedSAMLEntity(samlObject, amSamlBaseUrl, token) {
+  const fileContent = { ...samlObject.config };
+  delete fileContent._rev;
+  const entityId = fileContent.entityId;
+
+  const samlQuery = await getSAMLEntity(amSamlBaseUrl, entityId, token);
+  if (samlQuery.resultCount === 1) {
+    await updateHosteSAMLdEntity(fileContent, amSamlBaseUrl, token);
+  } else if (samlQuery.resultCount === 0) {
+    await createHostedSAMLEntity(fileContent, amSamlBaseUrl, token);
+  } else {
+    throw new Error(`Error while looking up hosted entity ${entityId}`);
+  }
+}
+
+async function importRemoteSAMLEntity(
+  metadata,
+  amSamlBaseUrl,
+  token,
+  restPostFn = restPost
+) {
+  const encodedMetadata = Buffer.from(metadata, "utf-8").toString("base64url");
+  await restPostFn(
+    `${amSamlBaseUrl}/remote?_action=importEntity`,
+    null,
+    { standardMetadata: encodedMetadata },
+    token,
+    PROTOCOL_RESOURCE_HEADER
+  );
+}
+
+async function updateRemoteSAMLEntity(
+  entity,
+  amSamlBaseUrl,
+  token,
+  restPutFn = restPut
+) {
+  delete entity._rev;
+  {
+    await restPutFn(
+      `${amSamlBaseUrl}/remote/${entity._id}`,
+      entity,
+      token,
+      PROTOCOL_RESOURCE_HEADER
+    );
+  }
+}
+
+async function handleRemoteSAMLEntity(samlObject, amSamlBaseUrl, token) {
+  const fileContent = { ...samlObject.config };
+  delete fileContent._rev;
+  const entityId = fileContent.entityId;
+
+  const samlQuery = await getSAMLEntity(amSamlBaseUrl, entityId, token);
+  if (samlQuery.resultCount === 0) {
+    await importRemoteSAMLEntity(samlObject.metadata, amSamlBaseUrl, token);
+  }
+
+  await updateRemoteSAMLEntity(fileContent, amSamlBaseUrl, token);
+}
+
 const updateSaml = async (argv, token) => {
   console.log("Updating saml");
   const { REALMS, TENANT_BASE_URL, CONFIG_DIR } = process.env;
@@ -79,7 +121,7 @@ const updateSaml = async (argv, token) => {
         `/realms/${realm}/realm-config/saml`
       );
       if (!fs.existsSync(baseDir)) {
-        console.log("Warning: no saml config present for realm", realm);
+        console.warn("Warning: no saml config present for realm", realm);
         return;
       }
 
@@ -103,10 +145,10 @@ const updateSaml = async (argv, token) => {
           const samlObject = JSON.parse(resolvedSamlFileContents);
           switch (samlType.toLowerCase()) {
             case "remote":
-              handleRemoteEntity(samlObject, amSamlBaseUrl, token);
+              handleRemoteSAMLEntity(samlObject, amSamlBaseUrl, token);
               break;
             case "hosted":
-              handleHostedEntity(samlObject, amSamlBaseUrl, token);
+              handleHostedSAMLEntity(samlObject, amSamlBaseUrl, token);
               break;
             default:
               console.error("unable to handle saml entity type %s", samlType);
@@ -121,4 +163,12 @@ const updateSaml = async (argv, token) => {
   }
 };
 
-module.exports = updateSaml;
+module.exports = {
+  getEntity: getSAMLEntity,
+  handleHostedEntity: handleHostedSAMLEntity,
+  handleRemoteEntity: handleRemoteSAMLEntity,
+  updateHostedEntity: updateHosteSAMLdEntity,
+  createHostedEntity: createHostedSAMLEntity,
+  importRemoteEntity: importRemoteSAMLEntity,
+  updateSaml: updateSaml,
+};

@@ -1,9 +1,9 @@
+const fs = require("fs");
 const {
   saveJsonToFile,
   escapePlaceholders,
   replaceAllInJson,
 } = require("../../../fr-config-common/src/utils.js");
-const fs = require("fs");
 const {
   restGet,
   logRestError,
@@ -12,51 +12,96 @@ const constants = require("../../../fr-config-common/src/constants.js");
 const EXPORT_SUBDIR = "realm-config/saml";
 const _ = require("lodash");
 
-async function exportConfig(exportDir, samlConfigFile, tenantUrl, token) {
+const getAmSamlBaseUrl = (tenantUrl, realm) =>
+  `${tenantUrl}/am/json/realms/root/realms/${realm}/realm-config/saml2`;
+
+const getSamlEndpoint = (amSamlBaseUrl, entityId) =>
+  `${amSamlBaseUrl}?_queryFilter=entityId%20eq%20'${entityId}'`;
+
+const getMetadataUrl = (tenantUrl, entityId, realm) =>
+  `${tenantUrl}/am/saml2/jsp/exportmetadata.jsp?entityid=${entityId}&realm=${realm}`;
+
+async function fetchSamlEntity(samlEndpoint, token, restGetFn = restGet) {
+  const response = await restGetFn(samlEndpoint, null, token);
+  return response.data;
+}
+
+async function fetchSamlEntityDetails(
+  samlEntityEndpoint,
+  token,
+  restGetFn = restGet
+) {
+  const response = await restGetFn(samlEntityEndpoint, null, token);
+  return response.data;
+}
+
+async function fetchMetadata(metadataUrl, token, restGetFn = restGet) {
+  const response = await restGetFn(metadataUrl, null, token);
+  return response.data;
+}
+
+function mergeConfig(config, overrides, replacements) {
+  let mergedConfig = _.merge(config, overrides);
+  if (replacements) {
+    console.log("replacing with " + JSON.stringify(replacements));
+    mergedConfig = replaceAllInJson(mergedConfig, replacements);
+  }
+  return mergedConfig;
+}
+
+function createTargetDir(targetDir, fsModule = fs) {
+  if (!fsModule.existsSync(targetDir)) {
+    fsModule.mkdirSync(targetDir, { recursive: true });
+  }
+}
+
+async function exportConfig(
+  exportDir,
+  samlConfigFile,
+  tenantUrl,
+  token,
+  fsModule = fs,
+  restGetFn = restGet,
+  saveJsonToFileFn = saveJsonToFile
+) {
   try {
-    var samlEntities = JSON.parse(fs.readFileSync(samlConfigFile, "utf8"));
+    const samlEntities = JSON.parse(
+      fsModule.readFileSync(samlConfigFile, "utf8")
+    );
     for (const realm of Object.keys(samlEntities)) {
-      let amSamlBaseUrl = `${tenantUrl}/am/json/realms/root/realms/${realm}/realm-config/saml2`;
+      const amSamlBaseUrl = getAmSamlBaseUrl(tenantUrl, realm);
       for (const samlEntity of samlEntities[realm]) {
         const entityId = samlEntity.entityId;
-        const samlEndpoint = `${amSamlBaseUrl}?_queryFilter=entityId%20eq%20'${entityId}'`;
+        const samlEndpoint = getSamlEndpoint(amSamlBaseUrl, entityId);
 
-        const response = await restGet(samlEndpoint, null, token);
-        let samlQuery = response.data;
+        const samlQuery = await fetchSamlEntity(samlEndpoint, token, restGetFn);
         if (samlQuery.resultCount !== 1) {
           console.error("SAML entity does not exist %s", entityId);
           break;
         }
 
-        let samlId = samlQuery.result[0]._id;
-        let samlLocation = samlQuery.result[0].location;
+        const samlId = samlQuery.result[0]._id;
+        const samlLocation = samlQuery.result[0].location;
+        const samlEntityEndpoint = `${amSamlBaseUrl}/${samlLocation}/${samlId}`;
 
-        let samlEntityEndpoint = `${amSamlBaseUrl}/${samlLocation}/${samlId}`;
+        const config = escapePlaceholders(
+          await fetchSamlEntityDetails(samlEntityEndpoint, token, restGetFn)
+        );
+        const mergedConfig = mergeConfig(
+          config,
+          samlEntity.overrides,
+          samlEntity.replacements
+        );
 
-        const entityRequest = await restGet(samlEntityEndpoint, null, token);
-        let config = escapePlaceholders(entityRequest.data);
-        let mergedConfig = _.merge(config, samlEntity.overrides);
-        if (!!samlEntity.replacements) {
-          console.log(
-            "replacing with " + JSON.stringify(samlEntity.replacements)
-          );
-          mergedConfig = replaceAllInJson(
-            mergedConfig,
-            samlEntity.replacements
-          );
-        }
-        const metadataUrl = `${tenantUrl}/am/saml2/jsp/exportmetadata.jsp?entityid=${entityId}&realm=${realm}`;
-        const metadataRequest = await restGet(metadataUrl, null, token);
+        const metadataUrl = getMetadataUrl(tenantUrl, entityId, realm);
+        const metadata = await fetchMetadata(metadataUrl, token, restGetFn);
 
-        let samlConfig = {};
-        samlConfig.config = mergedConfig;
-        samlConfig.metadata = metadataRequest.data;
+        const samlConfig = { config: mergedConfig, metadata };
         const targetDir = `${exportDir}/realms/${realm}/${EXPORT_SUBDIR}/${samlLocation}`;
-        if (!fs.existsSync(targetDir)) {
-          fs.mkdirSync(targetDir, { recursive: true });
-        }
+        createTargetDir(targetDir, fsModule);
+
         const fileName = `${targetDir}/${entityId}.json`;
-        saveJsonToFile(samlConfig, fileName);
+        saveJsonToFileFn(samlConfig, fileName);
       }
     }
   } catch (err) {
@@ -64,4 +109,11 @@ async function exportConfig(exportDir, samlConfigFile, tenantUrl, token) {
   }
 }
 
-module.exports.exportConfig = exportConfig;
+module.exports = {
+  exportConfig,
+  fetchSamlEntity,
+  fetchSamlEntityDetails,
+  fetchMetadata,
+  mergeConfig,
+  createTargetDir,
+};

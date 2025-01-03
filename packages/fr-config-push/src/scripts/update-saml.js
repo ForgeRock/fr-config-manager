@@ -7,8 +7,20 @@ const {
 } = require("../../../fr-config-common/src/restClient");
 const { replaceEnvSpecificValues } = require("../helpers/config-process");
 
-const PROTOCOL_RESOURCE_HEADER = "protocol=1.0,resource=1.0";
+const PROTOCOL_RESOURCE_HEADER = "protocol=2.0,resource=1.0";
+const getCotEndpoint = (tenantUrl, realm, cotName) =>
+  `${tenantUrl}/am/json/realms/root/realms/${realm}/realm-config/federation/circlesoftrust/${cotName}`;
 
+/**
+ * Get SAML entity by entityId
+ *
+ * @param {string} amSamlBaseUrl - AM SAML base URL
+ * @param {string} entityId - entityId of the SAML entity
+ * @param {string} token - access token
+ * @param {function} restGetFn - function to make a GET request
+ * @returns {Promise} - Promise object represents the SAML entity
+ *
+ */
 async function getSAMLEntity(
   amSamlBaseUrl,
   entityId,
@@ -20,6 +32,15 @@ async function getSAMLEntity(
   return response?.data;
 }
 
+/**
+ * Updates a hosted SAML entity with the provided file content.
+ *
+ * @param {Object} fileContent - The content of the file to update the SAML entity with.
+ * @param {string} amSamlBaseUrl - The base URL for the SAML endpoint.
+ * @param {string} token - The authentication token to use for the request.
+ * @param {Function} [restPutFn=restPut] - Optional. The function to use for making the PUT request. Defaults to `restPut`.
+ * @returns {Promise<void>} A promise that resolves when the update is complete.
+ */
 async function updateHosteSAMLdEntity(
   fileContent,
   amSamlBaseUrl,
@@ -34,6 +55,15 @@ async function updateHosteSAMLdEntity(
   );
 }
 
+/**
+ * Creates a hosted SAML entity with the provided file content.
+ *
+ * @param {Object} fileContent - The content of the file to create the SAML entity with.
+ * @param {string} amSamlBaseUrl - The base URL for the SAML endpoint.
+ * @param {string} token - The authentication token to use for the request.
+ * @param {Function} [restPostFn=restPost] - Optional. The function to use for making the POST request. Defaults to `restPost`.
+ * @returns {Promise<void>} A promise that resolves when the creation is complete.
+ */
 async function createHostedSAMLEntity(
   fileContent,
   amSamlBaseUrl,
@@ -49,6 +79,14 @@ async function createHostedSAMLEntity(
   );
 }
 
+/**
+ * Handles a hosted SAML entity.
+ *
+ * @param {Object} samlObject - The SAML object to handle.
+ * @param {string} amSamlBaseUrl - The base URL for the SAML endpoint.
+ * @param {string} token - The authentication token to use for the request.
+ * @returns {Promise<void>} A promise that resolves when the SAML entity has been handled.
+ */
 async function handleHostedSAMLEntity(samlObject, amSamlBaseUrl, token) {
   const fileContent = { ...samlObject.config };
   delete fileContent._rev;
@@ -64,6 +102,15 @@ async function handleHostedSAMLEntity(samlObject, amSamlBaseUrl, token) {
   }
 }
 
+/**
+ * Imports a remote SAML entity by posting the provided metadata to the specified AM SAML base URL.
+ *
+ * @param {string} metadata - The SAML metadata to be imported.
+ * @param {string} amSamlBaseUrl - The base URL of the AM SAML service.
+ * @param {string} token - The authentication token to be used for the request.
+ * @param {Function} [restPostFn=restPost] - The function to use for making the POST request. Defaults to `restPost`.
+ * @returns {Promise<void>} A promise that resolves when the import is complete.
+ */
 async function importRemoteSAMLEntity(
   metadata,
   amSamlBaseUrl,
@@ -80,6 +127,15 @@ async function importRemoteSAMLEntity(
   );
 }
 
+/**
+ * Updates a remote SAML entity by sending a PUT request to the specified URL.
+ *
+ * @param {Object} entity - The SAML entity to be updated.
+ * @param {string} amSamlBaseUrl - The base URL for the SAML service.
+ * @param {string} token - The authentication token to be used for the request.
+ * @param {Function} [restPutFn=restPut] - Optional custom function to perform the PUT request. Defaults to `restPut`.
+ * @returns {Promise<void>} - A promise that resolves when the update is complete.
+ */
 async function updateRemoteSAMLEntity(
   entity,
   amSamlBaseUrl,
@@ -97,6 +153,16 @@ async function updateRemoteSAMLEntity(
   }
 }
 
+/**
+ * Handles the remote SAML entity by either importing it if it does not exist or updating it if it does.
+ *
+ * @param {Object} samlObject - The SAML object containing configuration and metadata.
+ * @param {Object} samlObject.config - The configuration of the SAML entity.
+ * @param {Object} samlObject.metadata - The metadata of the SAML entity.
+ * @param {string} amSamlBaseUrl - The base URL for the SAML service.
+ * @param {string} token - The authentication token.
+ * @returns {Promise<void>} A promise that resolves when the operation is complete.
+ */
 async function handleRemoteSAMLEntity(samlObject, amSamlBaseUrl, token) {
   const fileContent = { ...samlObject.config };
   delete fileContent._rev;
@@ -110,9 +176,55 @@ async function handleRemoteSAMLEntity(samlObject, amSamlBaseUrl, token) {
   await updateRemoteSAMLEntity(fileContent, amSamlBaseUrl, token);
 }
 
+/**
+ * Handles the Circle of Trust (COT) update for a given SAML object.
+ *
+ * @param {Object} samlObject - The SAML object to be updated.
+ * @param {string} tenantUrl - The URL of the tenant.
+ * @param {string} realm - The realm within the tenant.
+ * @param {string} token - The authentication token.
+ * @param {Function} [restPutFn=restPut] - The function to perform the REST PUT request.
+ * @returns {Promise<void>} - A promise that resolves when the COT update is complete.
+ */
+async function handleCOTs(
+  samlObject,
+  tenantUrl,
+  realm,
+  token,
+  restPutFn = restPut
+) {
+  delete samlObject._rev;
+
+  const cotName = samlObject._id;
+  const cotEndpoint = getCotEndpoint(tenantUrl, realm, cotName);
+  await restPutFn(cotEndpoint, samlObject, token, PROTOCOL_RESOURCE_HEADER);
+}
+
+/**
+ * Updates SAML configurations for configured realms.
+ *
+ * @param {Object} argv - The arguments passed to the script.
+ * @param {string} token - The authentication token.
+ * @returns {Promise<void>} - A promise that resolves when the update is complete.
+ *
+ * @throws Will throw an error if the SAML configuration update fails.
+ *
+ * Environment Variables:
+ * @property {string} REALMS - A JSON string representing an array of realms.
+ * @property {string} TENANT_BASE_URL - The base URL of the tenant.
+ * @property {string} CONFIG_DIR - The directory where configuration files are stored.
+ */
 const updateSaml = async (argv, token) => {
   console.log("Updating saml");
   const { REALMS, TENANT_BASE_URL, CONFIG_DIR } = process.env;
+
+  if (!REALMS || !TENANT_BASE_URL || !CONFIG_DIR) {
+    console.error(
+      "Environment variables REALMS, TENANT_BASE_URL, and CONFIG_DIR must be set"
+    );
+    return;
+  }
+
   for (const realm of JSON.parse(REALMS)) {
     try {
       // Read agent JSON files
@@ -125,24 +237,22 @@ const updateSaml = async (argv, token) => {
         return;
       }
 
-      let amSamlBaseUrl = `${TENANT_BASE_URL}/am/json/realms/root/realms/${realm}/realm-config/saml2`;
+      const amSamlBaseUrl = `${TENANT_BASE_URL}/am/json/realms/root/realms/${realm}/realm-config/saml2`;
       const samlTypes = fs.readdirSync(baseDir);
+
       for (const samlType of samlTypes) {
         const subDir = path.join(baseDir, samlType);
-
         const samlFiles = fs
           .readdirSync(subDir)
           .filter((name) => path.extname(name) === ".json");
 
         for (const samlFile of samlFiles) {
-          var samlFileContents = fs.readFileSync(
-            path.join(subDir, samlFile),
-            "utf8"
-          );
-          var resolvedSamlFileContents =
+          const samlFilePath = path.join(subDir, samlFile);
+          const samlFileContents = fs.readFileSync(samlFilePath, "utf8");
+          const resolvedSamlFileContents =
             replaceEnvSpecificValues(samlFileContents);
-
           const samlObject = JSON.parse(resolvedSamlFileContents);
+
           switch (samlType.toLowerCase()) {
             case "remote":
               handleRemoteSAMLEntity(samlObject, amSamlBaseUrl, token);
@@ -150,8 +260,11 @@ const updateSaml = async (argv, token) => {
             case "hosted":
               handleHostedSAMLEntity(samlObject, amSamlBaseUrl, token);
               break;
+            case "cot":
+              handleCOTs(samlObject, TENANT_BASE_URL, realm, token, restPut);
+              break;
             default:
-              console.error("unable to handle saml entity type %s", samlType);
+              console.error(`Unknown SAML type: ${samlType}`);
               process.exit(1);
           }
         }

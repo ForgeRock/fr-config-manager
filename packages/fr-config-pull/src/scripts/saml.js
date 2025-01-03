@@ -21,6 +21,9 @@ const getSamlEndpoint = (amSamlBaseUrl, entityId) =>
 const getMetadataUrl = (tenantUrl, entityId, realm) =>
   `${tenantUrl}/am/saml2/jsp/exportmetadata.jsp?entityid=${entityId}&realm=${realm}`;
 
+const getCotEndpoint = (tenantUrl, realm, cotName) =>
+  `${tenantUrl}/am/json/realms/root/realms/${realm}/realm-config/federation/circlesoftrust/${cotName}`;
+
 async function fetchSamlEntity(samlEndpoint, token, restGetFn = restGet) {
   const response = await restGetFn(samlEndpoint, null, token);
   return response.data;
@@ -35,15 +38,30 @@ async function fetchSamlEntityDetails(
   return response.data;
 }
 
+/**
+ * Fetches the metadata.
+ *
+ * @param {string} metadataUrl - The metadata URL.
+ * @param {string} token - The authentication token.
+ * @param {function} restGetFn - The function to make a GET request.
+ * @returns {Promise<Object>} - The fetched metadata.
+ */
 async function fetchMetadata(metadataUrl, token, restGetFn = restGet) {
   const response = await restGetFn(metadataUrl, null, token);
   return response.data;
 }
 
+/**
+ * Merges the configuration with overrides and replacements.
+ *
+ * @param {Object} config - The original configuration.
+ * @param {Object} overrides - The configuration overrides.
+ * @param {Array} replacements - The replacements to be applied.
+ * @returns {Object} - The merged configuration.
+ */
 function mergeConfig(config, overrides, replacements) {
   let mergedConfig = _.merge(config, overrides);
   if (replacements) {
-    console.log("replacing with " + JSON.stringify(replacements));
     mergedConfig = replaceAllInJson(mergedConfig, replacements);
   }
   return mergedConfig;
@@ -55,6 +73,17 @@ function createTargetDir(targetDir, fsModule = fs) {
   }
 }
 
+/**
+ * Exports the SAML configuration.
+ *
+ * @param {string} exportDir - The export directory.
+ * @param {string} samlConfigFile - The SAML configuration file path.
+ * @param {string} tenantUrl - The base URL of the tenant.
+ * @param {string} token - The authentication token.
+ * @param {Object} fsModule - The file system module.
+ * @param {function} restGetFn - The function to make a GET request.
+ * @param {function} saveJsonToFileFn - The function to save JSON to a file.
+ */
 async function exportConfig(
   exportDir,
   samlConfigFile,
@@ -70,11 +99,11 @@ async function exportConfig(
     );
     for (const realm of Object.keys(samlEntities)) {
       const amSamlBaseUrl = getAmSamlBaseUrl(tenantUrl, realm);
-      for (const samlEntity of samlEntities[realm]) {
+      for (const samlEntity of samlEntities[realm].samlProviders) {
         const entityId = samlEntity.entityId;
         const samlEndpoint = getSamlEndpoint(amSamlBaseUrl, entityId);
-
         const samlQuery = await fetchSamlEntity(samlEndpoint, token, restGetFn);
+
         if (samlQuery.resultCount !== 1) {
           console.error("SAML entity does not exist %s", entityId);
           break;
@@ -95,13 +124,26 @@ async function exportConfig(
 
         const metadataUrl = getMetadataUrl(tenantUrl, entityId, realm);
         const metadata = await fetchMetadata(metadataUrl, token, restGetFn);
-
         const samlConfig = { config: mergedConfig, metadata };
         const targetDir = `${exportDir}/realms/${realm}/${EXPORT_SUBDIR}/${samlLocation}`;
+
         createTargetDir(targetDir, fsModule);
 
         const fileName = `${targetDir}/${entityId}.json`;
         saveJsonToFileFn(samlConfig, fileName);
+      }
+      for (const cotName of samlEntities[realm].circlesOfTrust) {
+        const cotEndpoint = getCotEndpoint(tenantUrl, realm, cotName);
+        const cotQuery = await restGetFn(cotEndpoint, null, token);
+        if (cotQuery?.status !== 200) {
+          console.error("COT does not exist %s", cotName);
+          process.exit(1);
+        }
+        const targetDir = `${exportDir}/realms/${realm}/${EXPORT_SUBDIR}/COT`;
+        createTargetDir(targetDir, fsModule);
+
+        const fileName = `${targetDir}/${cotName}.json`;
+        saveJsonToFileFn(cotQuery.data, fileName);
       }
     }
   } catch (err) {

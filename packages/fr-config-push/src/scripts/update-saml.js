@@ -92,7 +92,6 @@ async function handleHostedSAMLEntity(samlObject, amSamlBaseUrl, token) {
   delete fileContent._rev;
   const entityId = fileContent.entityId;
 
-  console.log("updating entity: ", entityId);
   const samlQuery = await getSAMLEntity(amSamlBaseUrl, entityId, token);
   if (samlQuery.resultCount === 1) {
     await updateHosteSAMLdEntity(fileContent, amSamlBaseUrl, token);
@@ -268,17 +267,12 @@ const updateSaml = async (argv, token) => {
             replaceEnvSpecificValues(samlFileContents);
           const samlObject = JSON.parse(resolvedSamlFileContents);
 
-          console.log(
-            "handling entity: ",
-            !!samlObject.config ? samlObject.config.entityId : samlObject._id
-          );
           if (
             entityName &&
             ((!!samlObject._id && samlObject._id !== entityName) ||
               (!!samlObject.config &&
                 samlObject.config.entityId !== entityName))
           ) {
-            console.log("continue");
             continue;
           }
           switch (samlType.toLowerCase()) {

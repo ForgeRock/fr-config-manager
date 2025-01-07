@@ -6,7 +6,7 @@ const {
   restPut,
 } = require("../../../fr-config-common/src/restClient");
 const { replaceEnvSpecificValues } = require("../helpers/config-process");
-
+const { OPTION } = require("../helpers/cli-options");
 const PROTOCOL_RESOURCE_HEADER = "protocol=2.0,resource=1.0";
 const getCotEndpoint = (tenantUrl, realm, cotName) =>
   `${tenantUrl}/am/json/realms/root/realms/${realm}/realm-config/federation/circlesoftrust/${cotName}`;
@@ -92,6 +92,7 @@ async function handleHostedSAMLEntity(samlObject, amSamlBaseUrl, token) {
   delete fileContent._rev;
   const entityId = fileContent.entityId;
 
+  console.log("updating entity: ", entityId);
   const samlQuery = await getSAMLEntity(amSamlBaseUrl, entityId, token);
   if (samlQuery.resultCount === 1) {
     await updateHosteSAMLdEntity(fileContent, amSamlBaseUrl, token);
@@ -215,7 +216,6 @@ async function handleCOTs(
  * @property {string} CONFIG_DIR - The directory where configuration files are stored.
  */
 const updateSaml = async (argv, token) => {
-  console.log("Updating saml");
   const { REALMS, TENANT_BASE_URL, CONFIG_DIR } = process.env;
 
   if (!REALMS || !TENANT_BASE_URL || !CONFIG_DIR) {
@@ -225,7 +225,22 @@ const updateSaml = async (argv, token) => {
     return;
   }
 
-  for (const realm of JSON.parse(REALMS)) {
+  const realms = argv[OPTION.REALM] ? [argv[OPTION.REALM]] : JSON.parse(REALMS);
+
+  const entityName = argv[OPTION.NAME];
+
+  if (entityName) {
+    if (realms.length !== 1) {
+      console.error("Error: for a named SAML entity, specify a single realm");
+      process.exit(1);
+    } else {
+      console.log("Updating SAML Entity", `"${entityName}"`);
+    }
+  } else {
+    console.log("Updating SAML Entities");
+  }
+
+  for (const realm of realms) {
     try {
       // Read agent JSON files
       const baseDir = path.join(
@@ -233,7 +248,7 @@ const updateSaml = async (argv, token) => {
         `/realms/${realm}/realm-config/saml`
       );
       if (!fs.existsSync(baseDir)) {
-        console.warn("Warning: no saml config present for realm", realm);
+        console.warn("Warning: no SAML config present for realm", realm);
         return;
       }
 
@@ -253,6 +268,19 @@ const updateSaml = async (argv, token) => {
             replaceEnvSpecificValues(samlFileContents);
           const samlObject = JSON.parse(resolvedSamlFileContents);
 
+          console.log(
+            "handling entity: ",
+            !!samlObject.config ? samlObject.config.entityId : samlObject._id
+          );
+          if (
+            entityName &&
+            ((!!samlObject._id && samlObject._id !== entityName) ||
+              (!!samlObject.config &&
+                samlObject.config.entityId !== entityName))
+          ) {
+            console.log("continue");
+            continue;
+          }
           switch (samlType.toLowerCase()) {
             case "remote":
               handleRemoteSAMLEntity(samlObject, amSamlBaseUrl, token);

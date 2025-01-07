@@ -365,7 +365,7 @@ async function getCommands() {
     .command({
       command: "saml",
       desc: "Update SAML Entities",
-      builder: cliOptions([OPTION.FILENAME_FILTER, OPTION.REALM, OPTION.NAME]),
+      builder: cliOptions([OPTION.REALM, OPTION.NAME]),
       handler: (argv) =>
         checkNamed() &&
         getAccessToken().then((token) => updateSaml(argv, token)),

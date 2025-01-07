@@ -61,7 +61,7 @@ describe("update-saml.js", () => {
         `${amSamlBaseUrl}/hosted/${samlObject.config._id}`,
         samlObject.config,
         token,
-        "protocol=1.0,resource=1.0"
+        "protocol=2.0,resource=1.0"
       );
     });
 
@@ -75,7 +75,7 @@ describe("update-saml.js", () => {
         null,
         samlObject.config,
         token,
-        "protocol=1.0,resource=1.0"
+        "protocol=2.0,resource=1.0"
       );
     });
 
@@ -104,14 +104,14 @@ describe("update-saml.js", () => {
         null,
         { standardMetadata: encodedMetadata },
         token,
-        "protocol=1.0,resource=1.0"
+        "protocol=2.0,resource=1.0"
       );
 
       expect(restPut).toHaveBeenCalledWith(
         `${amSamlBaseUrl}/remote/${samlObject.config._id}`,
         samlObject.config,
         token,
-        "protocol=1.0,resource=1.0"
+        "protocol=2.0,resource=1.0"
       );
     });
 
@@ -125,7 +125,7 @@ describe("update-saml.js", () => {
         `${amSamlBaseUrl}/remote/${samlObject.config._id}`,
         samlObject.config,
         token,
-        "protocol=1.0,resource=1.0"
+        "protocol=2.0,resource=1.0"
       );
     });
   });

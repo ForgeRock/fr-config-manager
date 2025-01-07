@@ -37,6 +37,7 @@ const {
   updateOrgPrivileges,
   updateRawConfig,
   updateCookieDomains,
+  updateSaml,
 } = require("./scripts");
 
 require("dotenv").config();
@@ -360,6 +361,14 @@ async function getCommands() {
       builder: cliOptions([OPTION.CHECK, OPTION.WAIT, OPTION.STATUS]),
       handler: (argv) =>
         getAccessToken().then((token) => restartFidc(argv, token)),
+    })
+    .command({
+      command: "saml",
+      desc: "Update SAML Entities",
+      builder: cliOptions([OPTION.REALM, OPTION.NAME]),
+      handler: (argv) =>
+        checkNamed() &&
+        getAccessToken().then((token) => updateSaml(argv, token)),
     })
     .command({
       command: "schedules",

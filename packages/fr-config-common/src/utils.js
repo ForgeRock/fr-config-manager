@@ -8,6 +8,12 @@ function safeFileName(filename) {
   });
 }
 
+function safeFileNameUnderscore(filename) {
+  return sanitize(filename, {
+    replacement: "_",
+  });
+}
+
 function deepSort(obj) {
   if (typeof obj !== "object" || obj === null) {
     return obj;
@@ -94,6 +100,14 @@ function journeyNodeNeedsScript(node) {
     (!node.hasOwnProperty("useScript") || node.useScript)
   );
 }
+function replaceAllInJson(content, replacements) {
+  let contentString = JSON.stringify(content);
+
+  replacements.forEach(({ search, replacement }) => {
+    contentString = contentString.split(search).join(replacement);
+  });
+  return JSON.parse(contentString);
+}
 
 module.exports.saveJsonToFile = saveJsonToFile;
 module.exports.safeFileName = safeFileName;
@@ -102,3 +116,5 @@ module.exports.deepMerge = deepMerge;
 module.exports.escapePlaceholders = escapePlaceholders;
 module.exports.unescapePlaceholders = unescapePlaceholders;
 module.exports.journeyNodeNeedsScript = journeyNodeNeedsScript;
+module.exports.replaceAllInJson = replaceAllInJson;
+module.exports.safeFileNameUnderscore = safeFileNameUnderscore;

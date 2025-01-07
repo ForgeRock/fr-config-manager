@@ -6,6 +6,7 @@ const {
   unescapePlaceholders,
   journeyNodeNeedsScript,
   replaceAllInJson,
+  safeFileNameUnderscore,
 } = require("../src/utils");
 
 jest.mock("fs");
@@ -122,5 +123,26 @@ describe("saveJsonToFile", () => {
     expect(console.log).toHaveBeenCalledWith(jsonData);
 
     process.argv.pop();
+  });
+});
+
+//tests for safeFileName
+describe("safeFileNameUnderscore", () => {
+  test("replaces special characters in a string with underscores", () => {
+    const name = "urn:example.com:my_file-name";
+    const expected = "urn_example.com_my_file-name";
+    expect(safeFileNameUnderscore(name)).toEqual(expected);
+  });
+
+  test("handles empty string", () => {
+    const name = "";
+    const expected = "";
+    expect(safeFileNameUnderscore(name)).toEqual(expected);
+  });
+
+  test("handles string with no special characters", () => {
+    const name = "myfilename";
+    const expected = "myfilename";
+    expect(safeFileNameUnderscore(name)).toEqual(expected);
   });
 });

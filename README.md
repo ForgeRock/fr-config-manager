@@ -121,6 +121,14 @@ The raw configuration file contains a list of individual configuration paths to 
 
 Refer to the [raw config README](docs/raw.md) for more details.
 
+### SAML entity configuration file
+
+The SAML entity configuration file contains a list of SAML entities to pull from the Identity Cloud tenant, for subsequent push to each target environment.
+
+The path to this file is configured in the `.env` file (or environment directly) as the `SAML_CONFIG` value.
+
+Refer to the [SAML configuration README](docs/saml.md) for more details.
+
 ## Exported configuration
 
 The `fr-config-pull` tool exports ForgeRock configuration to the local filesystem as a set of json files in a directory structure that represents both global and realm specific configuration.

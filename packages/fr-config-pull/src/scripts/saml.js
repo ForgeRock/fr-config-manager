@@ -3,6 +3,8 @@ const {
   saveJsonToFile,
   escapePlaceholders,
   replaceAllInJson,
+  safeFileName,
+  safeFileNameUnderscore,
 } = require("../../../fr-config-common/src/utils.js");
 const {
   restGet,
@@ -94,13 +96,14 @@ async function exportConfig(
   saveJsonToFileFn = saveJsonToFile
 ) {
   try {
-    const samlEntities = JSON.parse(
+    const samlEntitiesPullConfig = JSON.parse(
       fsModule.readFileSync(samlConfigFile, "utf8")
     );
-    for (const realm of Object.keys(samlEntities)) {
+    for (const realm of Object.keys(samlEntitiesPullConfig)) {
       const amSamlBaseUrl = getAmSamlBaseUrl(tenantUrl, realm);
-      for (const samlEntity of samlEntities[realm].samlProviders) {
-        const entityId = samlEntity.entityId;
+      for (const samlEntityPullConfig of samlEntitiesPullConfig[realm]
+        .samlProviders) {
+        const entityId = samlEntityPullConfig.entityId;
         const samlEndpoint = getSamlEndpoint(amSamlBaseUrl, entityId);
         const samlQuery = await fetchSamlEntity(samlEndpoint, token, restGetFn);
 
@@ -118,8 +121,8 @@ async function exportConfig(
         );
         const mergedConfig = mergeConfig(
           config,
-          samlEntity.overrides,
-          samlEntity.replacements
+          samlEntityPullConfig.overrides,
+          samlEntityPullConfig.replacements
         );
 
         const metadataUrl = getMetadataUrl(tenantUrl, entityId, realm);
@@ -129,10 +132,16 @@ async function exportConfig(
 
         createTargetDir(targetDir, fsModule);
 
-        const fileName = `${targetDir}/${entityId}.json`;
-        saveJsonToFileFn(samlConfig, fileName);
+        let fileName;
+        if (!!samlEntityPullConfig.fileName) {
+          fileName = samlEntityPullConfig.fileName;
+        } else {
+          fileName = safeFileNameUnderscore(entityId);
+        }
+        const filePath = `${targetDir}/${fileName}.json`;
+        saveJsonToFileFn(samlConfig, filePath);
       }
-      for (const cotName of samlEntities[realm].circlesOfTrust) {
+      for (const cotName of samlEntitiesPullConfig[realm].circlesOfTrust) {
         const cotEndpoint = getCotEndpoint(tenantUrl, realm, cotName);
         const cotQuery = await restGetFn(cotEndpoint, null, token);
         if (cotQuery?.status !== 200) {

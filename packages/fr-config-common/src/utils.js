@@ -8,6 +8,12 @@ function safeFileName(filename) {
   });
 }
 
+function safeFileNameUnderscore(filename) {
+  return sanitize(filename, {
+    replacement: "_",
+  });
+}
+
 function deepSort(obj) {
   if (typeof obj !== "object" || obj === null) {
     return obj;
@@ -111,3 +117,4 @@ module.exports.escapePlaceholders = escapePlaceholders;
 module.exports.unescapePlaceholders = unescapePlaceholders;
 module.exports.journeyNodeNeedsScript = journeyNodeNeedsScript;
 module.exports.replaceAllInJson = replaceAllInJson;
+module.exports.safeFileNameUnderscore = safeFileNameUnderscore;

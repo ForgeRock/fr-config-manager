@@ -40,7 +40,7 @@ async function exportConfig(exportDir, tenantUrl, name, dump, token) {
       const fileName = `${targetDir}/${variable._id}.json`;
       saveJsonToFile(variableObject, fileName);
       if (dump) {
-        const value = atob(variable.valueBase64);
+        const value = Buffer.from(variable.valueBase64, "base64");
         console.log(`${envVariable}='${value}'`);
       }
     });

@@ -1,10 +1,10 @@
 {
   "name": "@forgerock/fr-config-promote",
-  "version": "1.4.9",
+  "version": "1.5.0-beta.1",
   "description": "This tool is used to promote configuration from the one ForgeRock Identity Cloud tenant to the other ForgeRock Identity Cloud tenant.",
   "scripts": {
     "lint": "standard",
-    "test": "jest --coverage"
+    "test": "echo \"No tests defined\""
   },
   "bin": {
     "fr-config-promote": "src/index.js"

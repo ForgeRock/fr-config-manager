@@ -4,6 +4,7 @@ const {
   saveJsonToFile,
   escapePlaceholders,
   replaceAllInJson,
+  safeFileNameUnderscore,
 } = require("../../fr-config-common/src/utils.js");
 const {
   exportConfig,
@@ -117,22 +118,25 @@ describe("saml.js", () => {
       const exportDir = "/export";
       const samlConfigFile = "/path/to/samlConfig.json";
       const samlEntities = {
-        [realm]: [
-          {
-            entityId: entityId,
-            overrides: { key: "overrideValue" },
-            replacements: [
-              { search: "overrideValue", replacement: "replacedValue" },
-            ],
-          },
-        ],
+        [realm]: {
+          samlProviders: [
+            {
+              entityId: entityId,
+              overrides: { key: "overrideValue" },
+              replacements: [
+                { search: "overrideValue", replacement: "replacedValue" },
+              ],
+            },
+          ],
+        },
       };
+
       const samlQuery = {
         resultCount: 1,
         result: [{ _id: "test-id", location: "hosted" }],
       };
-      const config = { key: "value" };
-      const mergedConfig = { key: "replacedValue" };
+      const config = { entityId: entityId, key: "value" };
+      const mergedConfig = { entityId: entityId, key: "replacedValue" };
       const metadata = "<xml>metadata</xml>";
       const samlConfig = { config: mergedConfig, metadata };
 
@@ -142,6 +146,7 @@ describe("saml.js", () => {
       restGet.mockResolvedValueOnce({ data: metadata });
       escapePlaceholders.mockReturnValue(config);
       replaceAllInJson.mockReturnValue(mergedConfig);
+      safeFileNameUnderscore.mockReturnValue(entityId);
 
       await exportConfig(exportDir, samlConfigFile, tenantUrl, token);
 
@@ -152,7 +157,7 @@ describe("saml.js", () => {
       expect(escapePlaceholders).toHaveBeenCalledWith(config);
       expect(replaceAllInJson).toHaveBeenCalledWith(
         config,
-        samlEntities[realm][0].replacements
+        samlEntities[realm].samlProviders[0].replacements
       );
       expect(fs.existsSync).toHaveBeenCalledWith(
         `${exportDir}/realms/${realm}/realm-config/saml/hosted`

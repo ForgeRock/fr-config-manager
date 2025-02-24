@@ -1,9 +1,13 @@
 const fs = require("fs");
 const path = require("path");
-const { restPut } = require("../../../fr-config-common/src/restClient");
+const {
+  restPut,
+  restGet,
+} = require("../../../fr-config-common/src/restClient");
 const fileFilter = require("../helpers/file-filter");
 const uglifyJS = require("uglify-js");
 const { OPTION } = require("../helpers/cli-options");
+const { isEqual } = require("lodash");
 
 function regexIndexOf(text, re, i) {
   const indexInSuffix = text.slice(i).search(re);
@@ -15,7 +19,8 @@ async function pushScriptById(
   scriptId,
   tenantBaseUrl,
   realm,
-  token
+  token,
+  updateOnlyChangedScripts
 ) {
   const baseDir = path.join(configDir, `/realms/${realm}/scripts`);
   const scriptConfigDir = path.join(baseDir, "scripts-config");
@@ -32,7 +37,8 @@ async function pushScriptById(
     tenantBaseUrl,
     realm,
     lintingWarnedScripts,
-    token
+    token,
+    updateOnlyChangedScripts
   );
 
   if (lintingWarnedScripts.length > 0) {
@@ -46,7 +52,8 @@ async function pushScript(
   tenantBaseUrl,
   realm,
   lintingWarnedScripts,
-  token
+  token,
+  updateOnlyChangedScripts
 ) {
   const originalScript = fs.readFileSync(`${dir}/${script.script.file}`, {
     encoding: "utf-8",
@@ -56,10 +63,45 @@ async function pushScript(
 
   script.script = Buffer.from(originalScript).toString("base64");
 
+  delete script.createdBy;
+  delete script.creationDate;
+  delete script.lastModifiedBy;
+  delete script.lastModifiedDate;
+
   const baseUrl = `${tenantBaseUrl}/am/json/realms/root/realms/${realm}`;
   const requestUrl = `${baseUrl}/scripts/${script._id}`;
+  let updateNeeded = true;
+  if (updateOnlyChangedScripts) {
+    const currentScriptResponse = await restGet(
+      requestUrl,
+      null,
+      token,
+      "protocol=2.0,resource=1.0",
+      true
+    );
 
-  await restPut(requestUrl, script, token, "protocol=2.0,resource=1.0");
+    // compare if the script is already up to date
+    if (!!currentScriptResponse) {
+      const currentScript = currentScriptResponse.data;
+      console.log(JSON.stringify(currentScript));
+      delete currentScript.createdBy;
+      delete currentScript.creationDate;
+      delete currentScript.lastModifiedBy;
+      delete currentScript.lastModifiedDate;
+    }
+  }
+
+  // fix issue where null description becomes "null"
+  if (script.description === null) {
+    script.description = "";
+  }
+
+  if (updateNeeded) {
+    //console.log(`Updating script ${JSON.stringify(script)}`);
+    await restPut(requestUrl, script, token, "protocol=2.0,resource=1.0");
+  } else {
+    console.log(`No change in script ${script.name} - skipping update`);
+  }
 }
 
 function lintWithWarnings(scriptName, mergedScript, lintingWarnedScripts) {
@@ -91,10 +133,19 @@ function lintWithWarnings(scriptName, mergedScript, lintingWarnedScripts) {
 }
 
 const updateScripts = async (argv, token) => {
-  const { REALMS, TENANT_BASE_URL, CONFIG_DIR, filenameFilter } = process.env;
+  const {
+    REALMS,
+    TENANT_BASE_URL,
+    CONFIG_DIR,
+    filenameFilter,
+    UPDATE_CHANGED_ONLY,
+  } = process.env;
 
   const scriptName = argv[OPTION.NAME];
   const realms = argv[OPTION.REALM] ? [argv[OPTION.REALM]] : JSON.parse(REALMS);
+  const updateOnlyChangedScripts = UPDATE_CHANGED_ONLY
+    ? JSON.parse(UPDATE_CHANGED_ONLY)
+    : false;
   let scriptNotFound = false;
 
   if (scriptName) {
@@ -158,7 +209,8 @@ const updateScripts = async (argv, token) => {
           TENANT_BASE_URL,
           realm,
           lintingWarnedScripts,
-          token
+          token,
+          updateOnlyChangedScripts
         );
       }
       if (lintingWarnedScripts.length > 0) {

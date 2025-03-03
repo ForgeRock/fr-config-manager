@@ -83,11 +83,13 @@ async function pushScript(
     // compare if the script is already up to date
     if (!!currentScriptResponse) {
       const currentScript = currentScriptResponse.data;
-      console.log(JSON.stringify(currentScript));
       delete currentScript.createdBy;
       delete currentScript.creationDate;
       delete currentScript.lastModifiedBy;
       delete currentScript.lastModifiedDate;
+      if (isEqual(currentScript, script)) {
+        updateNeeded = false;
+      }
     }
   }
 

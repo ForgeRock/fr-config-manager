@@ -12,43 +12,6 @@ const cliUtils = require("../helpers/cli-options");
 const { OPTION } = cliUtils;
 const crypto = require("crypto");
 
-function getHash(input) {
-  let utf8Encode = new TextEncoder();
-  binaryInput = utf8Encode.encode(input);
-
-  const salt = crypto.randomBytes(16);
-  const binaryInputAndSalt = Buffer.concat([binaryInput, salt]);
-
-  var hash = crypto.createHash("sha512");
-  var hashedInput = hash.update(binaryInputAndSalt).digest();
-  var hashAndSalt = Buffer.concat([hashedInput, salt]);
-  return hashAndSalt.toString("base64");
-}
-
-async function remoteSecretMatches(
-  tenantUrl,
-  token,
-  secretId,
-  secretValueBase64
-) {
-  const hash = getHash(atob(secretValueBase64));
-  const dottedSecretId = secretId.replaceAll("-", ".");
-  const evalBody = {
-    type: "text/javascript",
-    source: `const value = identityServer.getProperty("${dottedSecretId}"); if (!value) { response = { found: false }; } else { response = { found: true, match: openidm.matches(value, { "$crypto": { value: { algorithm: "sha-512", data: "${hash}" }, type: "salted-hash" } }) } } `,
-  };
-
-  var response = await restPost(
-    `${tenantUrl}/openidm/script`,
-    { _action: "eval" },
-    evalBody,
-    token,
-    "protocol=1.0,resource=1.0"
-  );
-
-  return response.data.match;
-}
-
 const updateSecrets = async (argv, token) => {
   const { TENANT_BASE_URL } = process.env;
   const { CONFIG_DIR } = process.env;

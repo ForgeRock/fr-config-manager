@@ -10,7 +10,7 @@ const {
 } = require("../../../fr-config-common/src/constants.js");
 
 function decodeOrNot(input, encoded) {
-  return encoded ? atob(input) : input;
+  return encoded ? Buffer.from(input, "base64") : input;
 }
 
 function processThemes(themes, fileDir, name) {

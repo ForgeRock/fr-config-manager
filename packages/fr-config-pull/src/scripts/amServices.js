@@ -25,10 +25,10 @@ async function saveDescendents(targetDir, amEndpoint, serviceName, token) {
 
   const descendents = response.data.result;
   const serviceDir = `${targetDir}/${serviceName}`;
-  if (!fs.existsSync(serviceDir)) {
-    fs.mkdirSync(serviceDir, { recursive: true });
-  }
   for (const descendent of descendents) {
+    if (!fs.existsSync(serviceDir)) {
+      fs.mkdirSync(serviceDir, { recursive: true });
+    }
     const descendentName = descendent._id;
     const fileName = `${serviceDir}/${descendentName}.json`;
     saveJsonToFile(descendent, fileName);
@@ -73,11 +73,11 @@ async function exportConfig(exportDir, realms, tenantUrl, name, token) {
         const fileName = `${targetDir}/${serviceName}.json`;
         saveJsonToFile(serviceResponse.data, fileName);
 
-        // Special cases
+        // Secondary configurations
 
-        if (serviceName === SOCIAL_IDENTITY_PROVIDER_SERVICE) {
-          saveDescendents(targetDir, amEndpoint, serviceName, token);
-        }
+        //        if (serviceName === SOCIAL_IDENTITY_PROVIDER_SERVICE) {
+        saveDescendents(targetDir, amEndpoint, serviceName, token);
+        //        }
       }
     }
   } catch (err) {

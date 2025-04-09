@@ -64,10 +64,7 @@ const updateServices = async (argv, token) => {
 
           // Descendents
           const descendentsDir = `${dir}/${serviceName}`;
-          if (
-            serviceName === SOCIAL_IDENTITY_PROVIDER_SERVICE &&
-            fs.existsSync(descendentsDir)
-          ) {
+          if (fs.existsSync(descendentsDir)) {
             const descendentsFileContent = fs
               .readdirSync(descendentsDir)
               .filter((name) => path.extname(name) === ".json") // Filter out any non JSON files
@@ -76,8 +73,11 @@ const updateServices = async (argv, token) => {
               );
 
             descendentsFileContent.map(async (descendentFile) => {
-              // Needs fix to include blank redirectAfterFormPostURI (otherwise validation fails)
-              if (!descendentFile.redirectAfterFormPostURI) {
+              // Needs fix to include blank redirectAfterFormPostURI for service provider (otherwise validation fails)
+              if (
+                serviceName === SOCIAL_IDENTITY_PROVIDER_SERVICE &&
+                !descendentFile.redirectAfterFormPostURI
+              ) {
                 descendentFile.redirectAfterFormPostURI = "";
               }
               //remove _rev if present to prevent validation error

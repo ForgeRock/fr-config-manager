@@ -74,6 +74,7 @@ This will install
 - fr-config-pull
 - fr-config-push
 - fr-config-promote
+- fr-config-delete
 
 ## Configuration
 

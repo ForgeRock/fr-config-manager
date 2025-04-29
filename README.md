@@ -30,6 +30,7 @@ This repository provides the following packages
 - `fr-config-pull` - A tool to pull configuration from Identity Cloud into a local repository
 - `fr-config-push` - A tool to push configuration from a local repository into Identity Cloud
 - `fr-config-promote` - A tool to promote configuration from a lower tenant to a upper tenant in Identity Cloud
+- `fr-config-delete` - A tool to delete configuration from an Identity Cloud tenant
 
 For full usage details, refer to the README in the respective package directories.
 

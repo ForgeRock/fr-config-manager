@@ -94,7 +94,9 @@ async function processSingleJourney(
   debugLog(`Journey name: ${name}`);
   const journeysUrl = constructAmEndpoint(
     realm,
-    `realm-config/authentication/authenticationtrees/trees/${name}`
+    `realm-config/authentication/authenticationtrees/trees/${encodeURIComponent(
+      name
+    )}`
   );
   const response = await restGet(
     journeysUrl,
@@ -137,9 +139,12 @@ async function processJourney(journey, realm, name) {
   if (dryRun) {
     console.log(`Dry run: Deleting journey ${journey._id}`);
   } else {
+    //journey._id is the name of the journey, can contain trailing whitespace which must be preserved with encodeURIComponent
     const journeyUrl = constructAmEndpoint(
       realm,
-      `realm-config/authentication/authenticationtrees/trees/${journey._id}`
+      `realm-config/authentication/authenticationtrees/trees/${encodeURIComponent(
+        journey._id
+      )}`
     );
     await restDelete(journeyUrl, token, "protocol=2.1,resource=1.0");
   }

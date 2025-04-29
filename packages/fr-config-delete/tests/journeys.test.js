@@ -43,6 +43,27 @@ describe("journeys.js", () => {
       expect(restDelete).toHaveBeenCalled();
     });
 
+    it("should process a single journey with trailing space and delete it", async () => {
+      restGet.mockResolvedValueOnce({
+        data: {
+          _id: "journey1 ",
+          nodes: { node1: { nodeType: "TypeA" } },
+        },
+      });
+
+      restDelete.mockResolvedValue();
+
+      await processSingleJourney("alpha", "journey1 ", mockUrl, mockToken);
+
+      expect(restGet).toHaveBeenCalledWith(
+        `${mockUrl}/am/json/realms/root/realms/alpha/realm-config/authentication/authenticationtrees/trees/journey1%20`,
+        null,
+        mockToken,
+        "protocol=2.1,resource=1.0",
+        true
+      );
+      expect(restDelete).toHaveBeenCalled();
+    });
     it("should log a message if the journey is not found", async () => {
       const consoleSpy = jest.spyOn(console, "error").mockImplementation();
       restGet.mockResolvedValueOnce(null);
@@ -201,7 +222,7 @@ describe("journeys.js", () => {
         mockName,
         false,
         false,
-        true,
+        false,
         mockToken
       );
 

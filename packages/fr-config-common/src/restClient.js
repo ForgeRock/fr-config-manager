@@ -188,14 +188,15 @@ function restPut(
   );
 }
 
-function restDelete(requestUrl, token, apiVersion) {
+function restDelete(requestUrl, token, apiVersion, ignoreNotFound = false) {
   return httpRequest(
     requestUrl,
     null,
     REQUEST_TYPE.DELETE,
     null,
     token,
-    apiVersion
+    apiVersion,
+    ignoreNotFound
   );
 }
 

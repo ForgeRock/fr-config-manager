@@ -197,7 +197,6 @@ async function handleCOTs(
 
   const cotName = samlObject._id;
   const cotEndpoint = getCotEndpoint(tenantUrl, realm, cotName);
-  console.log("Updating COT", `"${JSON.stringify(samlObject)}"`);
   await restPutFn(cotEndpoint, samlObject, token, PROTOCOL_RESOURCE_HEADER);
 }
 
@@ -285,7 +284,7 @@ const updateSaml = async (argv, token) => {
               handleHostedSAMLEntity(samlObject, amSamlBaseUrl, token);
               break;
             case "cot":
-              //handleCOTs(samlObject, TENANT_BASE_URL, realm, token, restPut);
+              //do nothing, COTs are handled separately
               break;
             default:
               console.error(`Unknown SAML type: ${samlType}`);
@@ -298,7 +297,6 @@ const updateSaml = async (argv, token) => {
         const samlFiles = fs
           .readdirSync(dir)
           .filter((name) => path.extname(name) === ".json");
-        console.log("COT files", samlFiles);
         for (const samlFile of samlFiles) {
           const samlFilePath = path.join(dir, samlFile);
           const samlFileContents = fs.readFileSync(samlFilePath, "utf8");

@@ -197,6 +197,7 @@ async function handleCOTs(
 
   const cotName = samlObject._id;
   const cotEndpoint = getCotEndpoint(tenantUrl, realm, cotName);
+  console.log("Updating COT", `"${JSON.stringify(samlObject)}"`);
   await restPutFn(cotEndpoint, samlObject, token, PROTOCOL_RESOURCE_HEADER);
 }
 
@@ -252,6 +253,7 @@ const updateSaml = async (argv, token) => {
       }
 
       const amSamlBaseUrl = `${TENANT_BASE_URL}/am/json/realms/root/realms/${realm}/realm-config/saml2`;
+
       const samlTypes = fs.readdirSync(baseDir);
 
       for (const samlType of samlTypes) {
@@ -283,12 +285,28 @@ const updateSaml = async (argv, token) => {
               handleHostedSAMLEntity(samlObject, amSamlBaseUrl, token);
               break;
             case "cot":
-              handleCOTs(samlObject, TENANT_BASE_URL, realm, token, restPut);
+              //handleCOTs(samlObject, TENANT_BASE_URL, realm, token, restPut);
               break;
             default:
               console.error(`Unknown SAML type: ${samlType}`);
               process.exit(1);
           }
+        }
+      }
+      const dir = path.join(baseDir, "COT");
+      if (fs.existsSync(dir)) {
+        const samlFiles = fs
+          .readdirSync(dir)
+          .filter((name) => path.extname(name) === ".json");
+        console.log("COT files", samlFiles);
+        for (const samlFile of samlFiles) {
+          const samlFilePath = path.join(dir, samlFile);
+          const samlFileContents = fs.readFileSync(samlFilePath, "utf8");
+          const resolvedSamlFileContents =
+            replaceEnvSpecificValues(samlFileContents);
+          const samlObject = JSON.parse(resolvedSamlFileContents);
+
+          handleCOTs(samlObject, TENANT_BASE_URL, realm, token);
         }
       }
     } catch (error) {

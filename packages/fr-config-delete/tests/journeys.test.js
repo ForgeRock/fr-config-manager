@@ -127,42 +127,6 @@ describe("journeys.js", () => {
       expect(restDelete).toHaveBeenCalled();
     });
 
-    it("should handle errors gracefully", async () => {
-      restGet.mockRejectedValueOnce(new Error("API Error"));
-
-      await expect(
-        deleteJourneys(
-          mockUrl,
-          mockRealms,
-          mockName,
-          false,
-          false,
-          false,
-          mockToken
-        )
-      ).resolves.not.toThrow();
-
-      expect(restGet).toHaveBeenCalled();
-    });
-
-    it("should skip journeys that do not match the provided name", async () => {
-      restGet.mockResolvedValueOnce({
-        data: { result: [{ _id: "otherJourney", nodes: {} }] },
-      });
-
-      await deleteJourneys(
-        mockUrl,
-        mockRealms,
-        mockName,
-        false,
-        false,
-        false,
-        mockToken
-      );
-
-      expect(restDelete).not.toHaveBeenCalled();
-    });
-
     it("should process inner journeys when deleteInnerJourneys is true", async () => {
       restGet.mockResolvedValueOnce({
         data: {
@@ -228,6 +192,33 @@ describe("journeys.js", () => {
 
       expect(restGet).toHaveBeenCalledTimes(1); // Fetch journeys only
       expect(restDelete).toHaveBeenCalledTimes(2); // Delete only the main journey
+    });
+
+    it("should throw an error if delete journey by name is executed with multiple realms", async () => {
+      const mockRealms = ["alpha", "beta"];
+      const mockName = "journey1";
+      const consoleErrorSpy = jest.spyOn(console, "error").mockImplementation();
+      const processExitSpy = jest
+        .spyOn(process, "exit")
+        .mockImplementation(() => {});
+
+      await deleteJourneys(
+        mockUrl,
+        mockRealms,
+        mockName,
+        false,
+        false,
+        false,
+        mockToken
+      );
+
+      expect(consoleErrorSpy).toHaveBeenCalledWith(
+        "Error: Cannot delete journey by name when multiple realms are provided"
+      );
+      expect(processExitSpy).toHaveBeenCalledWith(1);
+
+      consoleErrorSpy.mockRestore();
+      processExitSpy.mockRestore();
     });
   });
 });

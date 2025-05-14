@@ -205,9 +205,18 @@ async function deleteJourneys(
   debugLog(`deleteInnerJourneys: ${deleteInnerJourneys}`);
   debugLog(`token: ${token}`);
 
-  for (const realm of realms) {
-    try {
-      if (!name) {
+  if (!!name) {
+    if (realms.length > 1) {
+      console.error(
+        "Error: Cannot delete journey by name when multiple realms are provided"
+      );
+      process.exit(1);
+    }
+
+    await processSingleJourney(realms[0], name);
+  } else {
+    for (const realm of realms) {
+      try {
         const journeysUrl = constructAmEndpoint(
           realm,
           "realm-config/authentication/authenticationtrees/trees?_queryFilter=true"
@@ -218,11 +227,9 @@ async function deleteJourneys(
         await processJourneys(journeys, realm, name);
         // Cleanup orphaned nodes
         await cleanupNodes(realm);
-      } else {
-        await processSingleJourney(realm, name);
+      } catch (err) {
+        console.error(`Error processing realm ${realm}: ${err}`);
       }
-    } catch (err) {
-      console.error(`Error processing realm ${realm}: ${err}`);
     }
   }
 }

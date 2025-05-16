@@ -1,6 +1,6 @@
 {
   "name": "@forgerock/fr-config-manager",
-  "version": "1.5.1",
+  "version": "1.5.2",
   "description": "Sample tools for managing PingOne Advanced Identity Cloud configuration",
   "devDependencies": {
     "prettier": "2.8.2"

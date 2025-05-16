@@ -278,10 +278,10 @@ const updateSaml = async (argv, token) => {
           }
           switch (samlType.toLowerCase()) {
             case "remote":
-              handleRemoteSAMLEntity(samlObject, amSamlBaseUrl, token);
+              await handleRemoteSAMLEntity(samlObject, amSamlBaseUrl, token);
               break;
             case "hosted":
-              handleHostedSAMLEntity(samlObject, amSamlBaseUrl, token);
+              await handleHostedSAMLEntity(samlObject, amSamlBaseUrl, token);
               break;
             case "cot":
               //do nothing, COTs are handled separately
@@ -304,7 +304,7 @@ const updateSaml = async (argv, token) => {
             replaceEnvSpecificValues(samlFileContents);
           const samlObject = JSON.parse(resolvedSamlFileContents);
 
-          handleCOTs(samlObject, TENANT_BASE_URL, realm, token);
+          await handleCOTs(samlObject, TENANT_BASE_URL, realm, token);
         }
       }
     } catch (error) {

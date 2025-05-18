@@ -80,7 +80,7 @@ async function getCommands() {
     .command({
       command: "check-locked-status",
       desc: "Checks tenants to see if it is locked",
-      builder: cliOptions([]),
+      builder: cliOptions([OPTION.LOCAL_LOCK_ONLY]),
       handler: (argv) =>
         getAccessToken(tenantUpperUrl, upperClientConfig).then((token) =>
           checkTenantsLocked(argv, token)
@@ -116,7 +116,13 @@ async function getCommands() {
     .command({
       command: "run-dryrun-promotion",
       desc: "Run DryRun Promotion",
-      builder: cliOptions([OPTION.IGNORE_ENCRYPTED_SECRETS]),
+      builder: cliOptions([
+        OPTION.IGNORE_ENCRYPTED_SECRETS,
+        OPTION.PROMOTER,
+        OPTION.PROMOTION_DESCRIPTION,
+        OPTION.TICKET_REFERENCE,
+        OPTION.UNLOCK_AFTER,
+      ]),
       handler: (argv) =>
         getAccessToken(tenantUpperUrl, upperClientConfig).then((token) =>
           runPromotion(argv, true, token)
@@ -125,7 +131,13 @@ async function getCommands() {
     .command({
       command: "run-promotion",
       desc: "Run Promotion",
-      builder: cliOptions([OPTION.IGNORE_ENCRYPTED_SECRETS]),
+      builder: cliOptions([
+        OPTION.IGNORE_ENCRYPTED_SECRETS,
+        OPTION.PROMOTER,
+        OPTION.PROMOTION_DESCRIPTION,
+        OPTION.TICKET_REFERENCE,
+        OPTION.UNLOCK_AFTER,
+      ]),
       handler: (argv) =>
         getAccessToken(tenantUpperUrl, upperClientConfig).then((token) =>
           runPromotion(argv, false, token)

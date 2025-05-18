@@ -4,6 +4,11 @@ const OPTION = {
   LIST: "list",
   REPORTID: "reportID",
   IGNORE_ENCRYPTED_SECRETS: "ignore-encrypted-secrets",
+  LOCAL_LOCK_ONLY: "local-lock-only",
+  PROMOTER: "promoter",
+  PROMOTION_DESCRIPTION: "description",
+  UNLOCK_AFTER: "unlock-after",
+  TICKET_REFERENCE: "ticket-reference",
 };
 
 const CLI_OPTIONS = {
@@ -27,6 +32,31 @@ const CLI_OPTIONS = {
     alias: "e",
     describe: "Ignore encrypted secrets",
     type: "boolean",
+  },
+  "local-lock-only": {
+    alias: "o",
+    describe: "Only show lock status of requested environment",
+    type: "boolean",
+  },
+  promoter: {
+    alias: "p",
+    describe: "Name of promotion initiator",
+    type: "string",
+  },
+  description: {
+    alias: "c",
+    describe: "Description",
+    type: "string",
+  },
+  "unlock-after": {
+    alias: "u",
+    describe: "Unlock after successful promotion",
+    type: "boolean",
+  },
+  "ticket-reference": {
+    alias: "t",
+    describe: "Ticket reference",
+    type: "string",
   },
 };
 

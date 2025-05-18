@@ -38,6 +38,11 @@ Options:
   -r, --reportID                   Report id                               [string]
   -v, --version                    Show version number                     [boolean]
   -e, --ignore-encrypted-secrets   Ignore encrypted secrets for promotion  [boolean]
+  -p, --promoter                   Name of promotion initiator             [string]
+  -c, --description                Description                             [string]
+  -t, --ticket-reference           Ticket reference                        [string]
+  -u, --unlock-after               Unlock after successful promotion       [boolean]
+  -d, --debug                      Run with debug output                   [boolean]
 ```
 
 Notes on specific options:
@@ -122,7 +127,7 @@ $ fr-config-promote check-promotion-status
 }
 ```
 
-- Don't forget to unlock
+- Don't forget to unlock (if not using the `--unlock-after` option)
 
 ```
 $ fr-config-promote  unlock-tenants -i 60712afb-af2c-4ca9-9e1e-fdae60b777eb

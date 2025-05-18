@@ -1,6 +1,6 @@
 {
   "name": "@forgerock/fr-config-push",
-  "version": "1.5.2",
+  "version": "1.5.3.beta-1",
   "description": "This tool is used to push configuration from the local host to your ForgeRock Identity Cloud tenant.",
   "scripts": {
     "lint": "standard",

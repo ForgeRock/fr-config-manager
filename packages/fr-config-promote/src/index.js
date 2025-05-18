@@ -8,7 +8,6 @@ const {
   lockTenants,
   unlockTenants,
   checkPromotionStatus,
-  runDryRunPromotion,
   runPromotion,
   checkPromotionReports,
 } = require("./scripts");
@@ -117,19 +116,19 @@ async function getCommands() {
     .command({
       command: "run-dryrun-promotion",
       desc: "Run DryRun Promotion",
-      builder: cliOptions([]),
+      builder: cliOptions([OPTION.IGNORE_ENCRYPTED_SECRETS]),
       handler: (argv) =>
         getAccessToken(tenantUpperUrl, upperClientConfig).then((token) =>
-          runDryRunPromotion(argv, token)
+          runPromotion(argv, true, token)
         ),
     })
     .command({
       command: "run-promotion",
       desc: "Run Promotion",
-      builder: cliOptions([]),
+      builder: cliOptions([OPTION.IGNORE_ENCRYPTED_SECRETS]),
       handler: (argv) =>
         getAccessToken(tenantUpperUrl, upperClientConfig).then((token) =>
-          runPromotion(argv, token)
+          runPromotion(argv, false, token)
         ),
     })
     .command({

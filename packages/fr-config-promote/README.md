@@ -32,14 +32,12 @@ Commands:
   fr-config-promote check-promotion-reports   check promotion reports
 
 Options:
-  -h, --help     Show help                                             [boolean]
-  -v, --version  Show version number                                   [boolean]
-Options:
-  -h, --help               Show help                                   [boolean]
-  -l, --list               list                                        [string]
-  -i, --id                 id                                          [string]
-  -r, --reportid           Report id                                   [string]
-  -v, --version            Show version number                         [boolean]
+  -h, --help                       Show help                               [boolean]
+  -l, --list                       list                                    [string]
+  -i, --id                         id                                      [string]
+  -r, --reportID                   Report id                               [string]
+  -v, --version                    Show version number                     [boolean]
+  -e, --ignore-encrypted-secrets   Ignore encrypted secrets for promotion  [boolean]
 ```
 
 Notes on specific options:

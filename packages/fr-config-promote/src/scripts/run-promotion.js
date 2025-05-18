@@ -7,12 +7,32 @@ const runPromotion = async (argv, dryRun, token) => {
     ? true
     : false;
 
+  const unlockEnvironmentsAfterPromotion = argv[OPTION.UNLOCK_AFTER]
+    ? true
+    : false;
+
+  const promoter = argv[OPTION.PROMOTER];
+  const promotionDescription = argv[OPTION.PROMOTION_DESCRIPTION];
+  const zendeskTicketReference = argv[OPTION.TICKET_REFERENCE];
+
   try {
     const envUrl = `${TENANT_ENV_UPPER_FQDN}/environment`;
-    const body = {
+    let body = {
       dryRun: dryRun,
       ignoreEncryptedSecrets: ignoreEncryptedSecrets,
+      unlockEnvironmentsAfterPromotion: unlockEnvironmentsAfterPromotion,
     };
+
+    if (promoter) {
+      body.promoter = promoter;
+    }
+    if (promotionDescription) {
+      body.promotionDescription = promotionDescription;
+    }
+    if (zendeskTicketReference) {
+      body.zendeskTicketReference = zendeskTicketReference;
+    }
+
     const response = await restPost(
       `${envUrl}/promotion/promote`,
       null,

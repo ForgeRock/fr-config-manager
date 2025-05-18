@@ -47,6 +47,14 @@ async function getCommands() {
   // process.env.CONFIG_DIR = process.env.CONFIG_DIR || process.cwd();
 
   const tenantUpperUrl = process.env.TENANT_ENV_UPPER_FQDN;
+  const tenantLowerUrl = process.env.TENANT_BASE_URL;
+
+  const lowerClientConfig = {
+    clientId: process.env.SERVICE_ACCOUNT_CLIENT_ID,
+    jwtIssuer: process.env.SERVICE_ACCOUNT_ID,
+    privateKey: process.env.SERVICE_ACCOUNT_KEY,
+    scope: process.env.SERVICE_ACCOUNT_PROMOTION_SCOPE,
+  };
 
   const upperClientConfig = {
     clientId: process.env.SERVICE_ACCOUNT_UPPER_CLIENT_ID,
@@ -146,11 +154,14 @@ async function getCommands() {
     .command({
       command: "check-promotion-reports",
       desc: "Check promotion reports",
-      builder: cliOptions([OPTION.LIST, OPTION.REPORTID]),
-      handler: (argv) =>
-        getAccessToken(tenantUpperUrl, upperClientConfig).then((token) =>
-          checkPromotionReports(argv, token)
-        ),
+      builder: cliOptions([OPTION.LIST, OPTION.REPORTID, OPTION.PROVISIONAL]),
+      handler: (argv) => {
+        const provisional = argv[OPTION.PROVISIONAL];
+        getAccessToken(
+          provisional ? tenantLowerUrl : tenantUpperUrl,
+          provisional ? lowerClientConfig : upperClientConfig
+        ).then((token) => checkPromotionReports(argv, token));
+      },
     })
     .option("debug", {
       alias: "d",

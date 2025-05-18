@@ -1,3 +1,5 @@
+const { describe } = require("yargs");
+
 const OPTION = {
   ID: "id",
   PROMOTE_DEPENDENCIES: "promote-dependencies",
@@ -9,6 +11,7 @@ const OPTION = {
   PROMOTION_DESCRIPTION: "description",
   UNLOCK_AFTER: "unlock-after",
   TICKET_REFERENCE: "ticket-reference",
+  PROVISIONAL: "provisional",
 };
 
 const CLI_OPTIONS = {
@@ -57,6 +60,11 @@ const CLI_OPTIONS = {
     alias: "t",
     describe: "Ticket reference",
     type: "string",
+  },
+  provisional: {
+    alias: "x",
+    describe: "Provisional report",
+    type: "boolean",
   },
 };
 

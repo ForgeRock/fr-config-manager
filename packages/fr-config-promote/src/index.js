@@ -10,6 +10,7 @@ const {
   checkPromotionStatus,
   runPromotion,
   checkPromotionReports,
+  rollbackPromotion,
 } = require("./scripts");
 
 require("dotenv").config();
@@ -95,6 +96,32 @@ async function getCommands() {
         ),
     })
     .command({
+      command: "check-promotion-reports",
+      desc: "Check promotion reports",
+      builder: cliOptions([
+        OPTION.LIST,
+        OPTION.REPORTID,
+        OPTION.PROVISIONAL,
+        OPTION.PROVISIONAL_ROLLBACK,
+      ]),
+      handler: (argv) => {
+        const provisional = argv[OPTION.PROVISIONAL];
+        getAccessToken(
+          provisional ? tenantLowerUrl : tenantUpperUrl,
+          provisional ? lowerClientConfig : upperClientConfig
+        ).then((token) => checkPromotionReports(argv, token));
+      },
+    })
+    .command({
+      command: "check-promotion-status",
+      desc: "Check Promotion Status",
+      builder: cliOptions([]),
+      handler: (argv) =>
+        getAccessToken(tenantUpperUrl, upperClientConfig).then((token) =>
+          checkPromotionStatus(argv, token)
+        ),
+    })
+    .command({
       command: "lock-tenants",
       desc: "Lock tenants",
       builder: cliOptions([]),
@@ -104,21 +131,17 @@ async function getCommands() {
         ),
     })
     .command({
-      command: "unlock-tenants",
-      desc: "Unlock tenants",
-      builder: cliOptions([OPTION.ID]),
+      command: "rollback",
+      desc: "Rollback promotion",
+      builder: cliOptions([
+        OPTION.PROMOTER,
+        OPTION.PROMOTION_DESCRIPTION,
+        OPTION.TICKET_REFERENCE,
+        OPTION.UNLOCK_AFTER,
+      ]),
       handler: (argv) =>
         getAccessToken(tenantUpperUrl, upperClientConfig).then((token) =>
-          unlockTenants(argv, token)
-        ),
-    })
-    .command({
-      command: "check-promotion-status",
-      desc: "Check Promotion Status",
-      builder: cliOptions([]),
-      handler: (argv) =>
-        getAccessToken(tenantUpperUrl, upperClientConfig).then((token) =>
-          checkPromotionStatus(argv, token)
+          rollbackPromotion(argv, token)
         ),
     })
     .command({
@@ -152,16 +175,13 @@ async function getCommands() {
         ),
     })
     .command({
-      command: "check-promotion-reports",
-      desc: "Check promotion reports",
-      builder: cliOptions([OPTION.LIST, OPTION.REPORTID, OPTION.PROVISIONAL]),
-      handler: (argv) => {
-        const provisional = argv[OPTION.PROVISIONAL];
-        getAccessToken(
-          provisional ? tenantLowerUrl : tenantUpperUrl,
-          provisional ? lowerClientConfig : upperClientConfig
-        ).then((token) => checkPromotionReports(argv, token));
-      },
+      command: "unlock-tenants",
+      desc: "Unlock tenants",
+      builder: cliOptions([OPTION.ID]),
+      handler: (argv) =>
+        getAccessToken(tenantUpperUrl, upperClientConfig).then((token) =>
+          unlockTenants(argv, token)
+        ),
     })
     .option("debug", {
       alias: "d",

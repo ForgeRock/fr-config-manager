@@ -12,6 +12,7 @@ const OPTION = {
   UNLOCK_AFTER: "unlock-after",
   TICKET_REFERENCE: "ticket-reference",
   PROVISIONAL: "provisional",
+  PROVISIONAL_ROLLBACK: "provisional-rollback",
 };
 
 const CLI_OPTIONS = {
@@ -64,6 +65,11 @@ const CLI_OPTIONS = {
   provisional: {
     alias: "x",
     describe: "Provisional report",
+    type: "boolean",
+  },
+  "provisional-rollback": {
+    alias: "y",
+    describe: "Provisional rollback report",
     type: "boolean",
   },
 };

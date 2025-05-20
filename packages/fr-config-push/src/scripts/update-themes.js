@@ -28,7 +28,7 @@ function mergeExistingThemes(existingThemes, newTheme) {
 }
 
 function encodeOrNot(input, encoded) {
-  return encoded ? input.toString("base64") : input;
+  return encoded ? Buffer.from(input).toString("base64") : input;
 }
 
 function processTheme(theme, themePath) {

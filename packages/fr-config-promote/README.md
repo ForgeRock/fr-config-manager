@@ -23,13 +23,14 @@ Run the `fr-config-promote` tool as follows to promote configuration from the on
 Usage: fr-config-promote [arguments]
 
 Commands:
-  fr-config-promote check-locked-status       Checks tenants to see if it is locked
-  fr-config-promote lock-tenants              Lock tenants
-  fr-config-promote unlock-tenants            Unlock tenants
-  fr-config-promote check-promotion-status    Check Promotion Status
-  fr-config-promote run-dryrun-promotion      Run DryRun Promotion
-  fr-config-promote run-promotion             Run Promotion
-  fr-config-promote check-promotion-reports   check promotion reports
+  fr-config-promote check-locked-status      Checks tenants to see if it is locked
+  fr-config-promote check-promotion-reports  Check promotion reports
+  fr-config-promote check-promotion-status   Check Promotion Status
+  fr-config-promote lock-tenants             Lock tenants
+  fr-config-promote rollback                 Rollback promotion
+  fr-config-promote run-dryrun-promotion     Run DryRun Promotion
+  fr-config-promote run-promotion            Run Promotion
+  fr-config-promote unlock-tenants           Unlock tenants
 
 Options:
   -h, --help                       Show help                               [boolean]

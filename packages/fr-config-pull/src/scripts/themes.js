@@ -9,8 +9,28 @@ const {
   THEME_HTML_FIELDS,
 } = require("../../../fr-config-common/src/constants.js");
 
+function isBase64(str) {
+  if (typeof str !== "string") {
+    return false;
+  }
+
+  // Basic format check: length must be multiple of 4, only valid characters
+  const base64Regex =
+    /^(?:[A-Za-z0-9+\/]{4})*(?:[A-Za-z0-9+\/]{2}==|[A-Za-z0-9+\/]{3}=)?$/;
+
+  return base64Regex.test(str);
+}
+
 function decodeOrNot(input, encoded) {
-  return encoded ? Buffer.from(input, "base64") : input;
+  if (!encoded) {
+    return input;
+  }
+
+  // Handle both encoded and non encoded values in tenant config
+
+  return isBase64(input)
+    ? Buffer.from(input, "base64").toString("utf-8")
+    : input;
 }
 
 function processThemes(themes, fileDir, name) {

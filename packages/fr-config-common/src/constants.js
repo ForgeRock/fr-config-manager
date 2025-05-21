@@ -10,7 +10,8 @@ const THEME_HTML_FIELDS = [
   { name: "journeyFooter", encoded: false },
   { name: "journeyHeader", encoded: false },
   { name: "journeyJustifiedContent", encoded: false },
-  { name: "journeyFooterScriptTag", encoded: false },
+  { name: "journeyFooterScriptTag", encoded: true },
+  { name: "accountFooterScriptTag", encoded: true },
 ];
 
 const CSP_SUBDIR = "csp";

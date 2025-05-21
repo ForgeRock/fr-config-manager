@@ -13,7 +13,6 @@ const {
 } = require("../../../fr-config-common/src/constants.js");
 
 function mergeExistingThemes(existingThemes, newTheme) {
-  // console.log(JSON.stringify(existingThemes));
   const existingThemeIndex = existingThemes.findIndex((el) => {
     return el.name === newTheme.name;
   });
@@ -94,12 +93,6 @@ const updateThemes = async (argv, token) => {
 
   var themerealm = response.data;
 
-  /*
-  var themerealm = {
-    _id: "ui/themerealm",
-    realm: {},
-  };
-  */
   try {
     for (const realm of realms) {
       const dir = path.join(CONFIG_DIR, `/realms/${realm}/themes`);

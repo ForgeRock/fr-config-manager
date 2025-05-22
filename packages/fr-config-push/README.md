@@ -60,18 +60,21 @@ Commands:
   fr-config-push variables              Update environment specific variables
 
 Options:
-  -h, --help               Show help                                   [boolean]
-  -n, --name               Specific configuration                       [string]
-  -r, --realm              Specific realm (overrides environment)       [string]
-  -d, --push-dependencies  Push dependencies                           [boolean]
-  -f, --filenameFilter     Filename filter                              [string]
+  -h, --help               Show help                                      [boolean]
+  -n, --name               Specific configuration                          [string]
+  -r, --realm              Specific realm (overrides environment)          [string]
+  -d, --push-dependencies  Push dependencies                              [boolean]
+  -f, --filenameFilter     Filename filter                                 [string]
   -m, --metadata           Configuration metadata
   -c, --check              Check for changes
   -w, --wait               Wait for completion
   -s, --status             Check status
-  -p, --path               Push specific configuration                 [string]
-  -x, --prune              Prune configuration                        [boolean]
-  -v, --version            Show version number                        [boolean]
+  -p, --path               Push specific configuration                     [string]
+  -x, --prune              Prune configuration                            [boolean]
+  -v, --version            Show version number                            [boolean]
+  -D, --debug              Run with debug output                          [boolean]
+  -R, --retries            Retry HTTP connections <n> times on on failure  [number]
+  -I, --retry-interval     Seconds to wait between retries                 [number]
 ```
 
 Notes on specific options:

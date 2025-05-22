@@ -2,6 +2,9 @@ const {
   STDOUT_OPTION,
   STDOUT_OPTION_SHORT,
 } = require("../../../fr-config-common/src/constants.js");
+const {
+  COMMON_OPTIONS,
+} = require("../../../fr-config-common/src/cli-options.js");
 
 const OPTION = {
   NAME: "name",

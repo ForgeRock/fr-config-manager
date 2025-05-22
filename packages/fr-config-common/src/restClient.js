@@ -10,6 +10,12 @@ const REQUEST_TYPE = {
 };
 const { URL } = require("url");
 const path = require("path");
+const { getOption, COMMON_OPTIONS } = require("./cli-options");
+const { debugMode } = require("./utils");
+
+function wait(seconds) {
+  return new Promise((resolve) => setTimeout(resolve, seconds * 1000));
+}
 
 async function httpRequest(
   requestUrl,
@@ -106,31 +112,49 @@ async function httpRequest(
     request.httpsAgent = new HttpsProxyAgent(proxyUrl);
   }
 
-  const response = await axios(request).catch(function (error) {
-    if (error.response && error.response.status === 404 && ignoreNotFound) {
-      return null;
-    } else {
-      console.error(`Exception processing request to ${requestUrl}`);
-      console.error(error.response?.data);
-      console.error(error.toJSON());
-      process.exit(1);
-    }
-  });
+  let attemptsLeft = 1 + (getOption(COMMON_OPTIONS.RETRIES) || 0);
+  const retryInterval = getOption(COMMON_OPTIONS.RETRY_INTERVAL);
 
-  if (process.argv.includes("--debug") || process.argv.includes("-d")) {
-    console.log(
-      "============================== >> DEBUG >> =============================="
-    );
-    console.log("Request:");
-    console.log(JSON.stringify(response.config, null, 2));
-    console.log("Response:");
-    console.log(JSON.stringify(response.data, null, 2));
-    console.log(
-      "============================== << DEBUG << =============================="
-    );
+  while (attemptsLeft) {
+    let responseError = false;
+    const response = await axios(request).catch(function (error) {
+      if (error.response && error.response.status === 404 && ignoreNotFound) {
+        return null;
+      } else {
+        console.error(`Exception processing request to ${requestUrl}`);
+        console.error(error.response?.data);
+        console.error(error.toJSON());
+        responseError = true;
+      }
+    });
+
+    if (responseError) {
+      attemptsLeft--;
+      console.log(`${attemptsLeft} attempts remaining`);
+      if (retryInterval && attemptsLeft > 0) {
+        await wait(retryInterval);
+      }
+      continue;
+    }
+
+    if (debugMode()) {
+      console.log(
+        "============================== >> DEBUG >> =============================="
+      );
+      console.log("Request:");
+      console.log(JSON.stringify(response.config, null, 2));
+      console.log("Response:");
+      console.log(JSON.stringify(response.data, null, 2));
+      console.log(
+        "============================== << DEBUG << =============================="
+      );
+    }
+
+    return response;
   }
 
-  return response;
+  console.log("Unsuccessful request");
+  process.exit(1);
 }
 
 function restGet(

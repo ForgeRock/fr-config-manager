@@ -33,17 +33,19 @@ Commands:
   fr-config-promote unlock-tenants           Unlock tenants
 
 Options:
-  -h, --help                       Show help                               [boolean]
-  -l, --list                       list                                    [string]
-  -i, --id                         id                                      [string]
-  -r, --reportID                   Report id                               [string]
-  -v, --version                    Show version number                     [boolean]
-  -e, --ignore-encrypted-secrets   Ignore encrypted secrets for promotion  [boolean]
-  -p, --promoter                   Name of promotion initiator             [string]
-  -c, --description                Description                             [string]
-  -t, --ticket-reference           Ticket reference                        [string]
-  -u, --unlock-after               Unlock after successful promotion       [boolean]
-  -d, --debug                      Run with debug output                   [boolean]
+  -h, --help                       Show help                                      [boolean]
+  -l, --list                       list                                            [string]
+  -i, --id                         id                                              [string]
+  -r, --reportID                   Report id                                       [string]
+  -v, --version                    Show version number                            [boolean]
+  -e, --ignore-encrypted-secrets   Ignore encrypted secrets for promotion         [boolean]
+  -p, --promoter                   Name of promotion initiator                     [string]
+  -c, --description                Description                                     [string]
+  -t, --ticket-reference           Ticket reference                                [string]
+  -u, --unlock-after               Unlock after successful promotion              [boolean]
+  -D, --debug                      Run with debug output                          [boolean]
+  -R, --retries                    Retry HTTP connections <n> times on on failure  [number]
+  -I, --retry-interval             Seconds to wait between retries                 [number]
 ```
 
 Notes on specific options:

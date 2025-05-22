@@ -60,13 +60,16 @@ Commands:
   fr-config-pull variables              Get environment specific variables
 
 Options:
-  -h, --help               Show help                                   [boolean]
-  -n, --name               Specific configuration item                  [string]
-  -r, --realm              Specific realm (overrides environment)       [string]
-  -d, --pull-dependencies  Pull dependencies                           [boolean]
-  -p, --path               Configuration path                           [string]
-  -x, --push-api-version   Configuration push API version               [string]
-  -v, --version            Show version number                         [boolean]
+  -h, --help               Show help                                      [boolean]
+  -n, --name               Specific configuration item                     [string]
+  -r, --realm              Specific realm (overrides environment)          [string]
+  -d, --pull-dependencies  Pull dependencies                              [boolean]
+  -p, --path               Configuration path                              [string]
+  -x, --push-api-version   Configuration push API version                  [string]
+  -v, --version            Show version number                            [boolean]
+  -D, --debug              Run with debug output                          [boolean]
+  -R, --retries            Retry HTTP connections <n> times on on failure  [number]
+  -I, --retry-interval     Seconds to wait between retries                 [number]
 ```
 
 Notes on specific options:

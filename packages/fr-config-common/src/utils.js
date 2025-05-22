@@ -1,6 +1,7 @@
 const fs = require("fs");
 const sanitize = require("sanitize-filename");
 const { STDOUT_OPTION, STDOUT_OPTION_SHORT } = require("./constants.js");
+const { getOption, COMMON_OPTIONS } = require("./cli-options");
 
 function safeFileName(filename) {
   return sanitize(filename, {
@@ -109,6 +110,10 @@ function replaceAllInJson(content, replacements) {
   return JSON.parse(contentString);
 }
 
+function debugMode() {
+  return getOption(COMMON_OPTIONS.DEBUG);
+}
+
 module.exports.saveJsonToFile = saveJsonToFile;
 module.exports.safeFileName = safeFileName;
 module.exports.esvToEnv = esvToEnv;
@@ -118,3 +123,4 @@ module.exports.unescapePlaceholders = unescapePlaceholders;
 module.exports.journeyNodeNeedsScript = journeyNodeNeedsScript;
 module.exports.replaceAllInJson = replaceAllInJson;
 module.exports.safeFileNameUnderscore = safeFileNameUnderscore;
+module.exports.debugMode = debugMode;

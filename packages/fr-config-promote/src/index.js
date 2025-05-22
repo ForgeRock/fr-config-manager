@@ -16,6 +16,10 @@ const {
 require("dotenv").config();
 const authenticate = require("../../fr-config-common/src/authenticate.js");
 const { all } = require("axios");
+const {
+  COMMON_OPTIONS,
+  COMMON_CLI_OPTIONS,
+} = require("../../fr-config-common/src/cli-options.js");
 
 const REQUIRED_CONFIG = [
   "TENANT_ENV_UPPER_FQDN",
@@ -183,11 +187,12 @@ async function getCommands() {
           unlockTenants(argv, token)
         ),
     })
-    .option("debug", {
-      alias: "d",
-      type: "boolean",
-      description: "Run with debug output",
-    })
+    .option(COMMON_OPTIONS.DEBUG, COMMON_CLI_OPTIONS[COMMON_OPTIONS.DEBUG])
+    .option(COMMON_OPTIONS.RETRIES, COMMON_CLI_OPTIONS[COMMON_OPTIONS.RETRIES])
+    .option(
+      COMMON_OPTIONS.RETRY_INTERVAL,
+      COMMON_CLI_OPTIONS[COMMON_OPTIONS.RETRY_INTERVAL]
+    )
     .demandCommand()
     .parse();
 }

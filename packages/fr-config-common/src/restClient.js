@@ -11,7 +11,7 @@ const REQUEST_TYPE = {
 const { URL } = require("url");
 const path = require("path");
 const { getOption, COMMON_OPTIONS } = require("./cli-options");
-const { debugMode } = require("./utils");
+const { debugMode, dryRun } = require("./utils");
 
 function wait(seconds) {
   return new Promise((resolve) => setTimeout(resolve, seconds * 1000));
@@ -112,6 +112,18 @@ async function httpRequest(
     request.httpsAgent = new HttpsProxyAgent(proxyUrl);
   }
 
+  if (dryRun()) {
+    console.log(
+      "============================== >> DRY RUN >> =============================="
+    );
+    console.log("Request");
+    console.log(JSON.stringify(request, null, 2));
+    console.log(
+      "============================== << DRY RUN << =============================="
+    );
+    return;
+  }
+
   let attemptsLeft = 1 + (getOption(COMMON_OPTIONS.RETRIES) || 0);
   const retryInterval = getOption(COMMON_OPTIONS.RETRY_INTERVAL);
 
@@ -123,7 +135,7 @@ async function httpRequest(
       } else {
         console.error(`Exception processing request to ${requestUrl}`);
         console.error(error.response?.data);
-        console.error(error.toJSON());
+        console.error(JSON.stringify(error, null, 2));
         responseError = true;
       }
     });

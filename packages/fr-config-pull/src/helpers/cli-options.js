@@ -16,6 +16,7 @@ const OPTION = {
   PUSH_API_VERSION: "push-api-version",
   STDOUT: STDOUT_OPTION,
   CLEAN: "clean",
+  INCLUDE_IMMUTABLE: "include-immutable",
 };
 
 const CLI_OPTIONS = {
@@ -71,6 +72,12 @@ const CLI_OPTIONS = {
     alias: "c",
     demandOption: false,
     describe: "Clear existing configuration before pull",
+    type: "boolean",
+  },
+  "include-immutable": {
+    alias: "m",
+    demandOption: false,
+    describe: "Include immutable IGA workflows",
     type: "boolean",
   },
 };

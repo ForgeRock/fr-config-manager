@@ -2,6 +2,7 @@ const COMMON_OPTIONS = {
   DEBUG: "debug",
   RETRIES: "retries",
   RETRY_INTERVAL: "retry-interval",
+  DRY_RUN: "dry-run",
 };
 
 const COMMON_CLI_OPTIONS = {
@@ -19,6 +20,11 @@ const COMMON_CLI_OPTIONS = {
     alias: "I",
     type: "number",
     description: "Seconds to wait between retries",
+  },
+  "dry-run": {
+    alias: "Y",
+    type: "boolean",
+    description: "Dry run for REST requests",
   },
 };
 

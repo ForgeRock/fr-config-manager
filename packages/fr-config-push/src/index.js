@@ -19,6 +19,7 @@ const {
   updateIdmEndpoints,
   updateIdmSchedules,
   updateIdmAccessConfig,
+  updateIgaWorkflows,
   updateVariables,
   updateSecrets,
   restartFidc,
@@ -281,6 +282,14 @@ async function getCommands() {
         getAccessToken().then((token) => updateIdmEndpoints(argv, token)),
     })
     .command({
+      command: "iga-workflows",
+      desc: "Update IGA workflows",
+      builder: cliOptions([OPTION.NAME, OPTION.DRAFT]),
+      handler: (argv) =>
+        checkNamed() &&
+        getAccessToken().then((token) => updateIgaWorkflows(argv, token)),
+    })
+    .command({
       command: "internal-roles",
       desc: "Update internal roles",
       builder: cliOptions([OPTION.NAME]),
@@ -461,6 +470,7 @@ async function getCommands() {
         getAccessToken().then((token) => updateVariables(argv, token)),
     })
     .option(COMMON_OPTIONS.DEBUG, COMMON_CLI_OPTIONS[COMMON_OPTIONS.DEBUG])
+    // .option(COMMON_OPTIONS.DRY_RUN, COMMON_CLI_OPTIONS[COMMON_OPTIONS.DRY_RUN])
     .option(COMMON_OPTIONS.RETRIES, COMMON_CLI_OPTIONS[COMMON_OPTIONS.RETRIES])
     .option(
       COMMON_OPTIONS.RETRY_INTERVAL,

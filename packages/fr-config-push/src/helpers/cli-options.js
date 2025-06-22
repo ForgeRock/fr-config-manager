@@ -16,6 +16,7 @@ const OPTION = {
   PATH: "path",
   PRUNE: "prune",
   STDIN: STDIN_OPTION,
+  DRAFT: "draft",
 };
 
 const CLI_OPTIONS = {
@@ -80,6 +81,11 @@ const CLI_OPTIONS = {
   stdin: {
     alias: STDIN_OPTION_SHORT,
     describe: "Read config from stdin",
+    type: "boolean",
+  },
+  draft: {
+    alias: "r",
+    describe: "Draft version",
     type: "boolean",
   },
 };

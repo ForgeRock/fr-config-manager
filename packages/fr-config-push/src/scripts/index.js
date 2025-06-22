@@ -35,6 +35,7 @@ const updateOrgPrivileges = require("./update-org-privileges");
 const updateRawConfig = require("./update-raw");
 const updateCookieDomains = require("./update-cookie-domains");
 const { updateSaml } = require("./update-saml");
+const updateIgaWorkflows = require("./update-iga-workflows");
 
 module.exports = {
   updateAgents,
@@ -73,4 +74,5 @@ module.exports = {
   updateRawConfig,
   updateCookieDomains,
   updateSaml,
+  updateIgaWorkflows,
 };

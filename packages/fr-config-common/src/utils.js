@@ -114,6 +114,10 @@ function debugMode() {
   return getOption(COMMON_OPTIONS.DEBUG);
 }
 
+function dryRun() {
+  return getOption(COMMON_OPTIONS.DRY_RUN);
+}
+
 module.exports.saveJsonToFile = saveJsonToFile;
 module.exports.safeFileName = safeFileName;
 module.exports.esvToEnv = esvToEnv;
@@ -124,3 +128,4 @@ module.exports.journeyNodeNeedsScript = journeyNodeNeedsScript;
 module.exports.replaceAllInJson = replaceAllInJson;
 module.exports.safeFileNameUnderscore = safeFileNameUnderscore;
 module.exports.debugMode = debugMode;
+module.exports.dryRun = dryRun;

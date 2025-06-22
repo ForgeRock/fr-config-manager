@@ -33,6 +33,7 @@ const csp = require("./scripts/csp.js");
 const orgPrivileges = require("./scripts/orgPrivileges.js");
 const cookieDomains = require("./scripts/cookieDomains.js");
 const raw = require("./scripts/raw.js");
+const iga = require("./scripts/igaWorkflows.js");
 
 const yargs = require("yargs");
 const { showConfigMetadata } = require("./scripts/configMetadata.js");
@@ -66,6 +67,7 @@ const COMMAND = {
   IDM_ENDPOINTS: "endpoints",
   IDM_SCHEDULES: "schedules",
   IDM_ACCESS_CONFIG: "access-config",
+  IGA_WORKFLOWS: "iga-workflows",
   KBA: "kba",
   INTERNAL_ROLES: "internal-roles",
   SECRETS: "secrets",
@@ -589,6 +591,20 @@ async function getConfig(argv) {
     );
   }
 
+  if (matchCommand(argv, COMMAND.IGA_WORKFLOWS)) {
+    var includeImmutable =
+      argv[OPTION.INCLUDE_IMMUTABLE] ||
+      process.env.INCLUDE_IMMUTABLE === "true";
+
+    iga.exportIgaWorkflows(
+      configDir,
+      tenantUrl,
+      argv[OPTION.NAME],
+      token,
+      includeImmutable
+    );
+  }
+
   if (matchCommand(argv, COMMAND.CONFIG_METADATA)) {
     showConfigMetadata(tenantUrl, token);
   }
@@ -693,6 +709,12 @@ yargs
     command: COMMAND.IDM_ENDPOINTS,
     desc: "Get custom endpoints",
     builder: cliOptions([OPTION.NAME]),
+    handler: (argv) => getConfig(argv),
+  })
+  .command({
+    command: COMMAND.IGA_WORKFLOWS,
+    desc: "Get IGA workflows",
+    builder: cliOptions([OPTION.NAME, OPTION.INCLUDE_IMMUTABLE]),
     handler: (argv) => getConfig(argv),
   })
   .command({

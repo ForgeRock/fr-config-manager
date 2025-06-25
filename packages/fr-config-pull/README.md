@@ -38,6 +38,7 @@ Commands:
   fr-config-pull email-templates        Get email templates
   fr-config-pull endpoints              Get custom endpoints
   fr-config-pull internal-roles         Get internal roles
+  fr-config-pull iga-workflows          Get IGA workflows
   fr-config-pull journeys               Get journeys
   fr-config-pull kba                    Get KBA configuration
   fr-config-pull locales                Get locales
@@ -70,6 +71,7 @@ Options:
   -D, --debug              Run with debug output                          [boolean]
   -R, --retries            Retry HTTP connections <n> times on on failure  [number]
   -I, --retry-interval     Seconds to wait between retries                 [number]
+  -m, --include-immutable  Include immutable IGA workflows                [boolean]
 ```
 
 Notes on specific options:
@@ -120,3 +122,9 @@ fr-config-pull raw --path /am/json/realms/root/realms/alpha/realm-config/webhook
 ```
 
 If the `--path` option is not provided, then the tool pulls all config referenced in the file pointed to by the `RAW_CONFIG` environment setting.
+
+`fr-config-pull iga-workflows`
+
+The `--name` option may be used to specify a specific workflow by its name.
+
+If the `--include-immutable` option is provided, then both mutable and immutable workflows are pulled. Note that immutable workflows will be skipped when performing a `fr-config-push iga-workflows`.

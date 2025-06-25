@@ -36,6 +36,7 @@ Commands:
   fr-config-push email-provider         Update email provider settings
   fr-config-push email-templates        Update email templates
   fr-config-push endpoints              Update custom endpoints
+  fr-config-push iga-workflows          Update IGA workflows
   fr-config-push internal-roles         Update internal roles
   fr-config-push journeys               Update authentication journeys
   fr-config-push kba                    Update KBA configuration
@@ -75,6 +76,7 @@ Options:
   -D, --debug              Run with debug output                          [boolean]
   -R, --retries            Retry HTTP connections <n> times on on failure  [number]
   -I, --retry-interval     Seconds to wait between retries                 [number]
+  -r, --draft              Draft version                                  [boolean]
 ```
 
 Notes on specific options:
@@ -164,3 +166,9 @@ If no `--path` option is provided, then all config under the `/raw` directory is
 `fr-config-push secrets`
 
 The `--prune` option can be used with the `secrets` command to remove any unused versions of each secret being pushed. This will remove any versions that are not loaded (although note that because of the way the secrets API works, the latest version will not be removed, whether loaded or not).
+
+`fr-config-push iga-workflows`
+
+The `--name` option may be used to specify a specific workflow by its name.
+
+The `--draft` version pushes the workflow as a draft, which needs to be published before use. By default, workflows are pushed as published - i.e. live - versions.

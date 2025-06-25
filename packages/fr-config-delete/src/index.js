@@ -42,6 +42,12 @@ async function deleteConfig(argv) {
     process.exit(1);
   }
 
+  if (!process.env.ENABLE_DELETE) {
+    console.error(
+      "fr-config-delete is currently in beta. To enable it, set ENABLE_DELETE=true in your environment"
+    );
+    process.exit(2);
+  }
   const tenantUrl = process.env.TENANT_BASE_URL;
 
   const realms = argv.realm ? [argv.realm] : JSON.parse(process.env.REALMS);

@@ -2,11 +2,13 @@
 const authenticate = require("../../fr-config-common/src/authenticate.js");
 const { cliOptions, OPTION } = require("./helpers/cli-options.js");
 const journeys = require("./scripts/journeys");
+const scripts = require("./scripts/scripts");
 const yargs = require("yargs");
 require("dotenv").config();
 
 const COMMAND = {
   JOURNEYS: "journeys",
+  SCRIPTS: "scripts",
   TEST: "test",
 };
 
@@ -92,6 +94,21 @@ async function deleteConfig(argv) {
       argv[OPTION.DEBUG],
       token
     );
+  } else if (matchCommand(argv, COMMAND.SCRIPTS)) {
+    if (!argv[OPTION.NAME]) {
+      console.log("Deleting all scripts");
+    } else {
+      console.log("Deleting script", argv[OPTION.NAME]);
+    }
+
+    await scripts.deleteScripts(
+      tenantUrl,
+      realms,
+      scriptPrefixes,
+      argv[OPTION.NAME],
+      token,
+      argv[OPTION.DRY_RUN]
+    );
   }
 }
 
@@ -119,6 +136,12 @@ yargs
       OPTION.DRY_RUN,
       OPTION.DEBUG,
     ]),
+    (argv) => deleteConfig(argv)
+  )
+  .command(
+    COMMAND.SCRIPTS,
+    "Delete scripts",
+    cliOptions([OPTION.REALM, OPTION.NAME, OPTION.DRY_RUN]),
     (argv) => deleteConfig(argv)
   )
   .demandCommand()

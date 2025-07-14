@@ -112,17 +112,17 @@ async function httpRequest(
     request.httpsAgent = new HttpsProxyAgent(proxyUrl);
   }
 
-  if (dryRun()) {
-    console.log(
-      "============================== >> DRY RUN >> =============================="
-    );
-    console.log("Request");
-    console.log(JSON.stringify(request, null, 2));
-    console.log(
-      "============================== << DRY RUN << =============================="
-    );
-    return;
-  }
+  // if (dryRun() && !ignoreDryRun) {
+  //   console.log(
+  //     "============================== >> DRY RUN >> =============================="
+  //   );
+  //   console.log("Request");
+  //   console.log(JSON.stringify(request, null, 2));
+  //   console.log(
+  //     "============================== << DRY RUN << =============================="
+  //   );
+  //   return;
+  // }
 
   let attemptsLeft = 1 + (getOption(COMMON_OPTIONS.RETRIES) || 0);
   const retryInterval = getOption(COMMON_OPTIONS.RETRY_INTERVAL);

@@ -1,6 +1,6 @@
 {
   "name": "@forgerock/fr-config-manager",
-  "version": "1.5.6.beta-1",
+  "version": "1.5.7.beta-1",
   "description": "Sample tools for managing PingOne Advanced Identity Cloud configuration",
   "devDependencies": {
     "prettier": "2.8.2"
@@ -42,12 +42,14 @@
     "./packages/fr-config-pull",
     "./packages/fr-config-push",
     "./packages/fr-config-common",
-    "./packages/fr-config-promote"
+    "./packages/fr-config-promote",
+    "./packages/fr-config-delete"
   ],
   "bin": {
     "fr-config-pull": "./packages/fr-config-pull/src/index.js",
     "fr-config-push": "./packages/fr-config-push/src/index.js",
-    "fr-config-promote": "./packages/fr-config-promote/src/index.js"
+    "fr-config-promote": "./packages/fr-config-promote/src/index.js",
+    "fr-config-delete": "./packages/fr-config-delete/src/index.js"
   },
   "contributors": [
     {

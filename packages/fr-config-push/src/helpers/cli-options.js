@@ -17,6 +17,7 @@ const OPTION = {
   PRUNE: "prune",
   STDIN: STDIN_OPTION,
   DRAFT: "draft",
+  EXPAND_REQUIRES: "expand-requires",
 };
 
 const CLI_OPTIONS = {
@@ -86,6 +87,11 @@ const CLI_OPTIONS = {
   draft: {
     alias: "r",
     describe: "Draft version",
+    type: "boolean",
+  },
+  "expand-requires": {
+    alias: "e",
+    describe: "Expand require statements",
     type: "boolean",
   },
 };

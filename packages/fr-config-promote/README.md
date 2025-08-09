@@ -44,7 +44,7 @@ Options:
   -t, --ticket-reference           Ticket reference                                [string]
   -u, --unlock-after               Unlock after successful promotion              [boolean]
   -D, --debug                      Run with debug output                          [boolean]
-  -R, --retries                    Retry HTTP connections <n> times on on failure  [number]
+  -R, --retries                    Retry HTTP connections <n> times on failure     [number]
   -I, --retry-interval             Seconds to wait between retries                 [number]
 ```
 

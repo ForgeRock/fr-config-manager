@@ -32,13 +32,15 @@ Commands:
   fr-config-pull config-metadata        Show config metadata
   fr-config-pull connector-definitions  Get connector cefinitions
   fr-config-pull connector-mappings     Get connector mappings
+  fr-config-pull cookie-domains         Get cookie domain config
   fr-config-pull cors                   Get CORS configuration
   fr-config-pull csp                    Get content security policy
+  fr-config-pull custom-nodes           Get custom nodes
   fr-config-pull email-provider         Get email provider configuration
   fr-config-pull email-templates        Get email templates
   fr-config-pull endpoints              Get custom endpoints
-  fr-config-pull internal-roles         Get internal roles
   fr-config-pull iga-workflows          Get IGA workflows
+  fr-config-pull internal-roles         Get internal roles
   fr-config-pull journeys               Get journeys
   fr-config-pull kba                    Get KBA configuration
   fr-config-pull locales                Get locales
@@ -49,6 +51,7 @@ Commands:
   fr-config-pull raw                    Get raw config
   fr-config-pull remote-servers         Get remote connector servers
   fr-config-pull schedules              Get schedules
+  fr-config-pull saml                   Get SAML entities
   fr-config-pull scripts                Get authentication scripts
   fr-config-pull secrets                Get secrets
   fr-config-pull secret-mappings        Get secret mappings
@@ -69,9 +72,10 @@ Options:
   -x, --push-api-version   Configuration push API version                  [string]
   -v, --version            Show version number                            [boolean]
   -D, --debug              Run with debug output                          [boolean]
-  -R, --retries            Retry HTTP connections <n> times on on failure  [number]
+  -R, --retries            Retry HTTP connections <n> times on failure    [number]
   -I, --retry-interval     Seconds to wait between retries                 [number]
   -m, --include-immutable  Include immutable IGA workflows                [boolean]
+  -e, --contract-requires  Restore require statements                     [boolean]
 ```
 
 Notes on specific options:
@@ -128,3 +132,9 @@ If the `--path` option is not provided, then the tool pulls all config reference
 The `--name` option may be used to specify a specific workflow by its name.
 
 If the `--include-immutable` option is provided, then both mutable and immutable workflows are pulled. Note that immutable workflows will be skipped when performing a `fr-config-push iga-workflows`.
+
+`fr-config-pull custom-nodes`
+
+The `--name` option may be used to specify a specific custom node by its name.
+
+The `--contract-requires` will restore require statements which were expanded by the `fr-config-push custom-nodes --expand-requires` command.

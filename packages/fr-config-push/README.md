@@ -74,7 +74,7 @@ Options:
   -x, --prune              Prune configuration                            [boolean]
   -v, --version            Show version number                            [boolean]
   -D, --debug              Run with debug output                          [boolean]
-  -R, --retries            Retry HTTP connections <n> times on on failure  [number]
+  -R, --retries            Retry HTTP connections <n> times on failure     [number]
   -I, --retry-interval     Seconds to wait between retries                 [number]
   -r, --draft              Draft version                                  [boolean]
 ```

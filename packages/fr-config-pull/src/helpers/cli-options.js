@@ -17,6 +17,7 @@ const OPTION = {
   STDOUT: STDOUT_OPTION,
   CLEAN: "clean",
   INCLUDE_IMMUTABLE: "include-immutable",
+  CONTRACT_REQUIRES: "contract-requires",
 };
 
 const CLI_OPTIONS = {
@@ -78,6 +79,12 @@ const CLI_OPTIONS = {
     alias: "m",
     demandOption: false,
     describe: "Include immutable IGA workflows",
+    type: "boolean",
+  },
+  "contract-requires": {
+    alias: "e",
+    demandOption: false,
+    describe: "Restore require statements",
     type: "boolean",
   },
 };

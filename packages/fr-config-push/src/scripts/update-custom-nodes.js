@@ -13,11 +13,10 @@ const {
 async function handleCustomNode(dir, node, expand, libDir, baseUrl, token) {
   const data = fs.readFileSync(`${dir}/${node.script.file}`, "utf8");
   node.script = data;
-  if (expand) {
+  if (expand || process.env.EXPAND_REQUIRE === "true") {
     node.script = expandRequire(node.script, libDir);
   }
-  console.log(">>>  source");
-  console.log(node.script);
+
   const requestUrl = `${baseUrl}/${node._id}`;
   delete node._rev;
   await restUpsert(requestUrl, node, token, "protocol=2.0,resource=1.0");
@@ -27,7 +26,7 @@ const updateCustomNodes = async (argv, token) => {
   const { TENANT_BASE_URL, CONFIG_DIR, filenameFilter } = process.env;
 
   const requestedNodeName = argv[OPTION.NAME];
-  const expand = argv[OPTION.EXPAND_REQUIRES];
+  const expand = argv[OPTION.EXPAND_REQUIRE];
 
   if (requestedNodeName) {
     console.log("Updating custom node", requestedNodeName);

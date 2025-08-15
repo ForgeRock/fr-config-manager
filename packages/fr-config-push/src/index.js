@@ -262,7 +262,7 @@ async function getCommands() {
     .command({
       command: "custom-nodes",
       desc: "Update custom nodes",
-      builder: cliOptions([OPTION.NAME, OPTION.EXPAND_REQUIRES]),
+      builder: cliOptions([OPTION.NAME, OPTION.EXPAND_REQUIRE]),
       handler: (argv) =>
         checkNamed() &&
         getAccessToken().then((token) => updateCustomNodes(argv, token)),

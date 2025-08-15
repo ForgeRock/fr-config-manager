@@ -13,7 +13,7 @@ npm link
 
 ## Configuration
 
-The tool is configured via environment variables. Copy the sample `.env` file and configure as per the instructions in the [configuration README](../docs/environment.md).
+The tool is configured via environment variables. Copy the sample `.env` file and configure as per the instructions in the [configuration README](../../docs/environment.md).
 
 ## Usage
 
@@ -33,6 +33,7 @@ Commands:
   fr-config-push connector-mappings     Update connector mappings
   fr-config-push cors                   Update CORS configuration
   fr-config-push csp                    Update content security policy
+  fr-config-push custom-nodes           Update custom nodes
   fr-config-push email-provider         Update email provider settings
   fr-config-push email-templates        Update email templates
   fr-config-push endpoints              Update custom endpoints
@@ -77,6 +78,7 @@ Options:
   -R, --retries            Retry HTTP connections <n> times on failure     [number]
   -I, --retry-interval     Seconds to wait between retries                 [number]
   -r, --draft              Draft version                                  [boolean]
+  -e, --expand-require     Expand require statements                      [boolean]
 ```
 
 Notes on specific options:
@@ -172,3 +174,9 @@ The `--prune` option can be used with the `secrets` command to remove any unused
 The `--name` option may be used to specify a specific workflow by its name.
 
 The `--draft` version pushes the workflow as a draft, which needs to be published before use. By default, workflows are pushed as published - i.e. live - versions.
+
+`fr-config-push custom-nodes`
+
+The `--name` option may be used to specify a specific custom node by its name.
+
+The `--expand-require` option will convert `require` statements in custom node scripts, replacing each `require` statement to inline source from the referenced library file. Refer to the [custom nodes README](../../docs/custom-nodes.md) for details.

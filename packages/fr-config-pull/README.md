@@ -13,7 +13,7 @@ npm link
 
 ## Configuration
 
-The tool is configured via environment variables. Copy the sample `.env` file and configure as per the instructions in the [configuration README](../docs/environment.md).
+The tool is configured via environment variables. Copy the sample `.env` file and configure as per the instructions in the [configuration README](../../docs/environment.md).
 
 ## Usage
 
@@ -75,7 +75,7 @@ Options:
   -R, --retries            Retry HTTP connections <n> times on failure    [number]
   -I, --retry-interval     Seconds to wait between retries                 [number]
   -m, --include-immutable  Include immutable IGA workflows                [boolean]
-  -e, --contract-requires  Restore require statements                     [boolean]
+  -e, --contract-require   Restore require statements                     [boolean]
 ```
 
 Notes on specific options:
@@ -137,4 +137,4 @@ If the `--include-immutable` option is provided, then both mutable and immutable
 
 The `--name` option may be used to specify a specific custom node by its name.
 
-The `--contract-requires` will restore require statements which were expanded by the `fr-config-push custom-nodes --expand-requires` command.
+The `--contract-require` will restore require statements which were expanded by the `fr-config-push custom-nodes --expand-require` command. Refer to the [custom nodes README](../../docs/custom-nodes.md) for details.

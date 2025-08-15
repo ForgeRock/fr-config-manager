@@ -3,7 +3,8 @@ const PrivateKeyFormat = {
   PEM: "PEM",
 };
 
-const ACCESS_TOKEN_ENV_VAR = "TENANT_ACCESS_TOKEN";
+const ACCESS_TOKEN_ENV_VAR = "FCM_ACCESS_TOKEN";
+const ADMIN_COOKIE_ENV_VAR = "FCM_COOKIE";
 
 const THEME_HTML_FIELDS = [
   { name: "accountFooter", encoded: false },
@@ -39,3 +40,4 @@ module.exports.STDOUT_OPTION = STDOUT_OPTION;
 module.exports.STDOUT_OPTION_SHORT = STDOUT_OPTION_SHORT;
 module.exports.STDIN_OPTION = STDIN_OPTION;
 module.exports.STDIN_OPTION_SHORT = STDIN_OPTION_SHORT;
+module.exports.ADMIN_COOKIE_ENV_VAR = ADMIN_COOKIE_ENV_VAR;

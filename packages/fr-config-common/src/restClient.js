@@ -12,6 +12,7 @@ const { URL } = require("url");
 const path = require("path");
 const { getOption, COMMON_OPTIONS } = require("./cli-options");
 const { debugMode, dryRun } = require("./utils");
+const { ADMIN_COOKIE_ENV_VAR } = require("./constants");
 
 function wait(seconds) {
   return new Promise((resolve) => setTimeout(resolve, seconds * 1000));
@@ -104,6 +105,12 @@ async function httpRequest(
 
   if (requestParameters) {
     request.params = requestParameters;
+  }
+
+  const cookie = process.env[ADMIN_COOKIE_ENV_VAR];
+  if (cookie) {
+    console.log("Using admin cookie from environment");
+    request.headers["Cookie"] = cookie;
   }
 
   const proxyUrl = process.env.HTTP_PROXY_SERVER;

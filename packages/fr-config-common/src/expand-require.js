@@ -4,7 +4,7 @@ const path = require("path");
 function expandRequire(source, libDir) {
   // Match patterns like: var foo = require("moduleName").bar
   const requirePattern =
-    /const\s+(\w+)\s*=\s*require\(["']([^"']+)["']\)\.(\w+)\s*;/g;
+    /var\s+(\w+)\s*=\s*require\(["']([^"']+)["']\)\.(\w+)\s*;/g;
 
   const expandedSource = source.replace(
     requirePattern,
@@ -27,7 +27,7 @@ function expandRequire(source, libDir) {
           `// --EXPAND-FROM`,
           `// ${match}`,
           `// --EXPAND-TO`,
-          `const ${varName} = function(${args}) {`,
+          `var ${varName} = function(${args}) {`,
           `  ${body}`,
           `};`,
           `// --EXPAND-END`,
@@ -36,7 +36,7 @@ function expandRequire(source, libDir) {
 
       // Try to find a const value
       const constPattern = new RegExp(
-        `const\\s+${exportName}\\s*=\\s*([^;]+);`,
+        `var\\s+${exportName}\\s*=\\s*([^;]+);`,
         "m"
       );
       const constMatch = moduleCode.match(constPattern);
@@ -47,7 +47,7 @@ function expandRequire(source, libDir) {
           `// --EXPAND-FROM`,
           `// ${match}`,
           `// --EXPAND-TO`,
-          `const ${varName} = ${value};`,
+          `var ${varName} = ${value};`,
           `// --EXPAND-END`,
         ].join("\n");
       }

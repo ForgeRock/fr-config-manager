@@ -3,13 +3,22 @@ const fs = require("fs");
 const { saveJsonToFile } = utils;
 const { restGet } = require("../../../fr-config-common/src/restClient.js");
 const path = require("path");
+const {
+  contractRequire,
+} = require("../../../fr-config-common/src/expand-require");
 
 const CUSTOM_NODES_SUBDIR = "custom-nodes";
 
-function saveScriptToFile(node, nodeExportDir) {
+function saveScriptToFile(node, nodeExportDir, contract) {
   const scriptFilename = `${node._id}.js`;
 
-  const source = node.script.replace(/\\n/, "\n");
+  let source = node.script;
+
+  if (contract) {
+    source = contractRequire(source);
+  }
+
+  source = source.replace(/\\n/, "\n");
 
   fs.writeFileSync(`${nodeExportDir}/${scriptFilename}`, source);
   node.script = {
@@ -17,7 +26,7 @@ function saveScriptToFile(node, nodeExportDir) {
   };
 }
 
-function processCustomNodes(nodes, nodeExportDir, name) {
+function processCustomNodes(nodes, nodeExportDir, name, contract) {
   try {
     var nodeFound = false;
     nodes.forEach((node) => {
@@ -32,7 +41,7 @@ function processCustomNodes(nodes, nodeExportDir, name) {
 
       nodeFound = true;
 
-      saveScriptToFile(node, exportSubDir);
+      saveScriptToFile(node, exportSubDir, contract);
 
       const fileName = `${exportSubDir}/${nodeName}.json`;
       saveJsonToFile(node, fileName);
@@ -46,7 +55,7 @@ function processCustomNodes(nodes, nodeExportDir, name) {
   }
 }
 
-async function exportCustomNodes(exportDir, tenantUrl, name, token) {
+async function exportCustomNodes(exportDir, tenantUrl, name, contract, token) {
   try {
     const amEndpoint = `${tenantUrl}/am/json/node-designer/node-type`;
 
@@ -54,8 +63,8 @@ async function exportCustomNodes(exportDir, tenantUrl, name, token) {
 
     const nodes = response.data.result;
 
-    const fileDir = `${exportDir}/${CUSTOM_NODES_SUBDIR}`;
-    processCustomNodes(nodes, fileDir, name);
+    const fileDir = path.join(exportDir, CUSTOM_NODES_SUBDIR, "nodes");
+    processCustomNodes(nodes, fileDir, name, contract);
   } catch (err) {
     console.log(err);
   }

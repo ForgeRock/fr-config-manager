@@ -612,8 +612,12 @@ async function getConfig(argv) {
   }
 
   if (matchCommand(argv, COMMAND.CUSTOM_NODES)) {
-    const name = argv.name;
-    customNodes.exportCustomNodes(configDir, tenantUrl, name, token);
+    const name = argv[OPTION.NAME];
+    const contract =
+      argv[OPTION.CONTRACT_REQUIRE] || process.env.EXPAND_REQUIRE === "true"
+        ? true
+        : false;
+    customNodes.exportCustomNodes(configDir, tenantUrl, name, contract, token);
   }
 }
 
@@ -703,7 +707,7 @@ yargs
   .command({
     command: COMMAND.CUSTOM_NODES,
     desc: "Get custom nodes",
-    builder: cliOptions([OPTION.NAME, OPTION.CONTRACT_REQUIRES]),
+    builder: cliOptions([OPTION.NAME, OPTION.CONTRACT_REQUIRE]),
     handler: (argv) => getConfig(argv),
   })
   .command({

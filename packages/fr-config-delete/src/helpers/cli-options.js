@@ -7,8 +7,8 @@ const OPTION = {
   NAME: "name",
   REALM: "realm",
   DELETE_INNER_JOURNEYS: "delete-inner-journeys",
-  DEBUG: "debug",
-  DRY_RUN: "dry-run",
+  //DEBUG: "debug",
+  //DRY_RUN: "dry-run",
 };
 
 const CLI_OPTIONS = {
@@ -28,19 +28,7 @@ const CLI_OPTIONS = {
     demandOption: false,
     describe: "Delete inner journeys",
     type: "boolean",
-  },
-  "dry-run": {
-    alias: "D",
-    demandOption: false,
-    describe: "Dry run",
-    type: "boolean",
-  },
-  debug: {
-    alias: "d",
-    demandOption: false,
-    describe: "Debug",
-    type: "boolean",
-  },
+  }
 };
 
 const cliOptions = (requestedOptions) => {

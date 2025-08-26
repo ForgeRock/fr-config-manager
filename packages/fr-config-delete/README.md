@@ -25,7 +25,25 @@ Usage: fr-config-delete [arguments]
 Commands:
   fr-config-delete test      Test authentication
   fr-config-delete journeys  Delete a journey
-
+  fr-config-delete scripts           Delete scripts
+  fr-config-delete services          Delete authentication services
+  fr-config-delete cors              Delete cors
+  fr-config-delete secret-mappings   Delete secret mappings
+  fr-config-delete connectors        Delete connector cefinitions
+  fr-config-delete mappings          Delete connector mappings
+  fr-config-delete endpoints         Delete custom endpoints
+  fr-config-delete remote-servers    Delete remote connector servers
+  fr-config-delete schedules         Delete schedules
+  fr-config-delete terms-conditions  Delete terms and conditions
+  fr-config-delete locales           Delete locales
+  fr-config-delete email-provider    Delete email provider configuration
+  fr-config-delete email-templates   Delete email templates
+  fr-config-delete themes            Delete themes
+  fr-config-delete variables         Delete environment specific variables
+  fr-config-delete secrets           Delete secrets
+  fr-config-delete internal-roles    Delete internal roles
+  fr-config-delete tenant-config     Delete tenant config
+  fr-config-delete all-static        Delete static configuration
 Options:
   -h, --help     Show help                                             [boolean]
   -v, --version  Show version number                                   [boolean]
@@ -48,7 +66,7 @@ The `--delete-inner-journeys` option can be used with the `journeys` command to 
 fr-config-delete journeys --name "Customer Login" --realm alpha --delete-inner-journeys
 ```
 
-The `--dry-run` option can be used with the journey command to see what would be deleted. It can be combined with any of the other options
+The `--dry-run` option can be used with the command to see what would be deleted. It can be combined with any of the other options
 
 ```bash
 fr-config-delete journeys --dry-run

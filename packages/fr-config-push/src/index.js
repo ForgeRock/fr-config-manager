@@ -39,6 +39,7 @@ const {
   updateRawConfig,
   updateCookieDomains,
   updateSaml,
+  updateCustomNodes,
 } = require("./scripts");
 
 require("dotenv").config();
@@ -259,6 +260,14 @@ async function getCommands() {
         getAccessToken().then((token) => updateCsp(argv, token)),
     })
     .command({
+      command: "custom-nodes",
+      desc: "Update custom nodes",
+      builder: cliOptions([OPTION.NAME, OPTION.EXPAND_REQUIRE]),
+      handler: (argv) =>
+        checkNamed() &&
+        getAccessToken().then((token) => updateCustomNodes(argv, token)),
+    })
+    .command({
       command: "email-provider",
       desc: "Update email provider settings",
       builder: cliOptions([]),
@@ -470,7 +479,6 @@ async function getCommands() {
         getAccessToken().then((token) => updateVariables(argv, token)),
     })
     .option(COMMON_OPTIONS.DEBUG, COMMON_CLI_OPTIONS[COMMON_OPTIONS.DEBUG])
-    // .option(COMMON_OPTIONS.DRY_RUN, COMMON_CLI_OPTIONS[COMMON_OPTIONS.DRY_RUN])
     .option(COMMON_OPTIONS.RETRIES, COMMON_CLI_OPTIONS[COMMON_OPTIONS.RETRIES])
     .option(
       COMMON_OPTIONS.RETRY_INTERVAL,

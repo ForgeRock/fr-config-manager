@@ -36,6 +36,7 @@ const updateRawConfig = require("./update-raw");
 const updateCookieDomains = require("./update-cookie-domains");
 const { updateSaml } = require("./update-saml");
 const updateIgaWorkflows = require("./update-iga-workflows");
+const updateCustomNodes = require("./update-custom-nodes");
 
 module.exports = {
   updateAgents,
@@ -75,4 +76,5 @@ module.exports = {
   updateCookieDomains,
   updateSaml,
   updateIgaWorkflows,
+  updateCustomNodes,
 };

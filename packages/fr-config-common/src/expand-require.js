@@ -1,6 +1,35 @@
 const fs = require("fs");
 const path = require("path");
 
+function extractBalancedFunction(code, funcName) {
+  const funcDecl = `function ${funcName}`;
+  const startIndex = code.indexOf(funcDecl);
+  if (startIndex === -1) return null;
+
+  const openBraceIndex = code.indexOf("{", startIndex);
+  if (openBraceIndex === -1) return null;
+
+  let braceCount = 1;
+  let i = openBraceIndex + 1;
+
+  while (i < code.length && braceCount > 0) {
+    if (code[i] === "{") braceCount++;
+    else if (code[i] === "}") braceCount--;
+    i++;
+  }
+
+  const funcHeader = code.substring(startIndex, openBraceIndex).trim();
+  const funcBody = code.substring(openBraceIndex + 1, i - 1); // exclude outer braces
+
+  const argsMatch = funcHeader.match(/\(([^)]*)\)/);
+  const args = argsMatch ? argsMatch[1] : "";
+
+  return {
+    args,
+    body: funcBody.trim(),
+  };
+}
+
 function expandRequire(source, libDir) {
   // Match patterns like: var foo = require("moduleName").bar
   const requirePattern =
@@ -13,22 +42,19 @@ function expandRequire(source, libDir) {
       const modulePath = path.join(libDir, moduleName + ".js");
       const moduleCode = fs.readFileSync(modulePath, "utf8");
 
-      // Try to find a function definition
-      const funcPattern = new RegExp(
-        `function\\s+${exportName}\\s*\\(([^)]*)\\)\\s*{([\\s\\S]*?)}\\s*(?=module\\.exports|$)`,
-        "m"
-      );
-      const funcMatch = moduleCode.match(funcPattern);
+      // Try to extract function with balanced braces
+      const func = extractBalancedFunction(moduleCode, exportName);
 
-      if (funcMatch) {
-        const args = funcMatch[1];
-        const body = funcMatch[2].trim();
+      if (func) {
         return [
           `// --EXPAND-FROM`,
           `// ${match}`,
           `// --EXPAND-TO`,
-          `var ${varName} = function(${args}) {`,
-          `  ${body}`,
+          `var ${varName} = function(${func.args}) {`,
+          func.body
+            .split("\n")
+            .map((line) => "  " + line)
+            .join("\n"),
           `};`,
           `// --EXPAND-END`,
         ].join("\n");

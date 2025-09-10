@@ -75,7 +75,6 @@ Options:
   -R, --retries            Retry HTTP connections <n> times on failure    [number]
   -I, --retry-interval     Seconds to wait between retries                 [number]
   -m, --include-immutable  Include immutable IGA workflows                [boolean]
-  -e, --contract-require   Restore require statements                     [boolean]
 ```
 
 Notes on specific options:
@@ -137,4 +136,4 @@ If the `--include-immutable` option is provided, then both mutable and immutable
 
 The `--name` option may be used to specify a specific custom node by its name.
 
-The `--contract-require` will restore require statements which were expanded by the `fr-config-push custom-nodes --expand-require` command. Applied by default using the `EXPAND_REQUIRE=true` environment setting. Refer to the [custom nodes README](../../docs/custom-nodes.md) for details.
+Refer to the [custom nodes README](../../docs/custom-nodes.md) for more details on the `custom-nodes` command.

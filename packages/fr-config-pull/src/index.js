@@ -707,7 +707,7 @@ yargs
   .command({
     command: COMMAND.CUSTOM_NODES,
     desc: "Get custom nodes",
-    builder: cliOptions([OPTION.NAME, OPTION.CONTRACT_REQUIRE]),
+    builder: cliOptions([OPTION.NAME]),
     handler: (argv) => getConfig(argv),
   })
   .command({

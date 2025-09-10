@@ -4,19 +4,17 @@ const { saveJsonToFile } = utils;
 const { restGet } = require("../../../fr-config-common/src/restClient.js");
 const path = require("path");
 const {
-  contractRequire,
-} = require("../../../fr-config-common/src/expand-require");
+  revertLibraryReferences,
+} = require("../../../fr-config-common/src/expand-source.js");
 
 const CUSTOM_NODES_SUBDIR = "custom-nodes";
 
-function saveScriptToFile(node, nodeExportDir, contract) {
+function saveScriptToFile(node, nodeExportDir) {
   const scriptFilename = `${node._id}.js`;
 
   let source = node.script;
 
-  if (contract) {
-    source = contractRequire(source);
-  }
+  source = revertLibraryReferences(source);
 
   source = source.replace(/\\n/, "\n");
 
@@ -26,7 +24,7 @@ function saveScriptToFile(node, nodeExportDir, contract) {
   };
 }
 
-function processCustomNodes(nodes, nodeExportDir, name, contract) {
+function processCustomNodes(nodes, nodeExportDir, name) {
   try {
     var nodeFound = false;
     nodes.forEach((node) => {
@@ -41,7 +39,7 @@ function processCustomNodes(nodes, nodeExportDir, name, contract) {
 
       nodeFound = true;
 
-      saveScriptToFile(node, exportSubDir, contract);
+      saveScriptToFile(node, exportSubDir);
 
       const fileName = `${exportSubDir}/${nodeName}.json`;
       saveJsonToFile(node, fileName);
@@ -55,7 +53,7 @@ function processCustomNodes(nodes, nodeExportDir, name, contract) {
   }
 }
 
-async function exportCustomNodes(exportDir, tenantUrl, name, contract, token) {
+async function exportCustomNodes(exportDir, tenantUrl, name, token) {
   try {
     const amEndpoint = `${tenantUrl}/am/json/node-designer/node-type`;
 
@@ -64,7 +62,7 @@ async function exportCustomNodes(exportDir, tenantUrl, name, contract, token) {
     const nodes = response.data.result;
 
     const fileDir = path.join(exportDir, CUSTOM_NODES_SUBDIR, "nodes");
-    processCustomNodes(nodes, fileDir, name, contract);
+    processCustomNodes(nodes, fileDir, name);
   } catch (err) {
     console.log(err);
   }

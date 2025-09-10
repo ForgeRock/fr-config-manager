@@ -179,4 +179,4 @@ The `--draft` version pushes the workflow as a draft, which needs to be publishe
 
 The `--name` option may be used to specify a specific custom node by its name.
 
-The `--expand-require` option will convert `require` statements in custom node scripts, replacing each `require` statement to inline source from the referenced library file. Applied by default using the `EXPAND_REQUIRE=true` environment setting. Refer to the [custom nodes README](../../docs/custom-nodes.md) for details.
+Refer to the [custom nodes README](../../docs/custom-nodes.md) for more details on the custom-nodes command.

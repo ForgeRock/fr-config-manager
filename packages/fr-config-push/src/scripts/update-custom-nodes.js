@@ -7,15 +7,14 @@ const cliUtils = require("../helpers/cli-options");
 const { request } = require("http");
 const { OPTION } = cliUtils;
 const {
-  expandRequire,
-} = require("../../../fr-config-common/src/expand-require");
+  expandLibraryReferences,
+} = require("../../../fr-config-common/src/expand-source");
 
-async function handleCustomNode(dir, node, expand, libDir, baseUrl, token) {
+async function handleCustomNode(dir, node, baseUrl, token) {
   const data = fs.readFileSync(`${dir}/${node.script.file}`, "utf8");
   node.script = data;
-  if (expand || process.env.EXPAND_REQUIRE === "true") {
-    node.script = expandRequire(node.script, libDir);
-  }
+
+  node.script = expandLibraryReferences(node.script, dir);
 
   const requestUrl = `${baseUrl}/${node._id}`;
   delete node._rev;
@@ -26,7 +25,6 @@ const updateCustomNodes = async (argv, token) => {
   const { TENANT_BASE_URL, CONFIG_DIR, filenameFilter } = process.env;
 
   const requestedNodeName = argv[OPTION.NAME];
-  const expand = argv[OPTION.EXPAND_REQUIRE];
 
   if (requestedNodeName) {
     console.log("Updating custom node", requestedNodeName);
@@ -64,8 +62,6 @@ const updateCustomNodes = async (argv, token) => {
       await handleCustomNode(
         `${nodeDir}/${nodeSubDir}`,
         customNode,
-        expand,
-        libDir,
         `${TENANT_BASE_URL}/am/json/node-designer/node-type`,
         token
       );

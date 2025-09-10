@@ -78,7 +78,6 @@ Options:
   -R, --retries            Retry HTTP connections <n> times on failure     [number]
   -I, --retry-interval     Seconds to wait between retries                 [number]
   -r, --draft              Draft version                                  [boolean]
-  -e, --expand-require     Expand require statements                      [boolean]
 ```
 
 Notes on specific options:

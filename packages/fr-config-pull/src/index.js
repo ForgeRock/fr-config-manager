@@ -34,6 +34,7 @@ const orgPrivileges = require("./scripts/orgPrivileges.js");
 const cookieDomains = require("./scripts/cookieDomains.js");
 const raw = require("./scripts/raw.js");
 const iga = require("./scripts/igaWorkflows.js");
+const customNodes = require("./scripts/customNodes.js");
 
 const yargs = require("yargs");
 const { showConfigMetadata } = require("./scripts/configMetadata.js");
@@ -53,6 +54,7 @@ const COMMAND = {
   COOKIE_DOMAINS: "cookie-domains",
   CORS: "cors",
   CSP: "csp",
+  CUSTOM_NODES: "custom-nodes",
   MANAGED_OBJECTS: "managed-objects",
   EMAIL_TEMPLATES: "email-templates",
   EMAIL_PROVIDER: "email-provider",
@@ -608,6 +610,15 @@ async function getConfig(argv) {
   if (matchCommand(argv, COMMAND.CONFIG_METADATA)) {
     showConfigMetadata(tenantUrl, token);
   }
+
+  if (matchCommand(argv, COMMAND.CUSTOM_NODES)) {
+    const name = argv[OPTION.NAME];
+    const contract =
+      argv[OPTION.CONTRACT_REQUIRE] || process.env.EXPAND_REQUIRE === "true"
+        ? true
+        : false;
+    customNodes.exportCustomNodes(configDir, tenantUrl, name, contract, token);
+  }
 }
 
 yargs
@@ -690,6 +701,12 @@ yargs
   .command({
     command: COMMAND.CSP,
     desc: "Get content security policy",
+    builder: cliOptions([OPTION.NAME]),
+    handler: (argv) => getConfig(argv),
+  })
+  .command({
+    command: COMMAND.CUSTOM_NODES,
+    desc: "Get custom nodes",
     builder: cliOptions([OPTION.NAME]),
     handler: (argv) => getConfig(argv),
   })

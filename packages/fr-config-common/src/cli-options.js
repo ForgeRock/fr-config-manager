@@ -14,7 +14,7 @@ const COMMON_CLI_OPTIONS = {
   retries: {
     alias: "R",
     type: "number",
-    description: "Retry HTTP connections <n> times on on failure",
+    description: "Retry HTTP connections <n> times on failure",
   },
   "retry-interval": {
     alias: "I",

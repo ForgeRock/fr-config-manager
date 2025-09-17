@@ -12,6 +12,7 @@ const { URL } = require("url");
 const path = require("path");
 const { getOption, COMMON_OPTIONS } = require("./cli-options");
 const { debugMode, dryRun } = require("./utils");
+const { ADMIN_COOKIE_ENV_VAR } = require("./constants");
 
 function wait(seconds) {
   return new Promise((resolve) => setTimeout(resolve, seconds * 1000));
@@ -106,23 +107,17 @@ async function httpRequest(
     request.params = requestParameters;
   }
 
+  const cookie = process.env[ADMIN_COOKIE_ENV_VAR];
+  if (cookie) {
+    console.log("Using admin cookie from environment");
+    request.headers["Cookie"] = cookie;
+  }
+
   const proxyUrl = process.env.HTTP_PROXY_SERVER;
 
   if (proxyUrl) {
     request.httpsAgent = new HttpsProxyAgent(proxyUrl);
   }
-
-  // if (dryRun() && !ignoreDryRun) {
-  //   console.log(
-  //     "============================== >> DRY RUN >> =============================="
-  //   );
-  //   console.log("Request");
-  //   console.log(JSON.stringify(request, null, 2));
-  //   console.log(
-  //     "============================== << DRY RUN << =============================="
-  //   );
-  //   return;
-  // }
 
   let attemptsLeft = 1 + (getOption(COMMON_OPTIONS.RETRIES) || 0);
   const retryInterval = getOption(COMMON_OPTIONS.RETRY_INTERVAL);
@@ -153,13 +148,17 @@ async function httpRequest(
       console.log(
         "============================== >> DEBUG >> =============================="
       );
-      console.log("Request:");
-      console.log(JSON.stringify(response.config, null, 2));
-      console.log("Response:");
-      console.log(JSON.stringify(response.data, null, 2));
-      console.log(
-        "============================== << DEBUG << =============================="
-      );
+      if (response) {
+        console.log("Request:");
+        console.log(JSON.stringify(response.config, null, 2));
+        console.log("Response:");
+        console.log(JSON.stringify(response.data, null, 2));
+        console.log(
+          "============================== << DEBUG << =============================="
+        );
+      } else {
+        console.log("No response data");
+      }
     }
 
     return response;
@@ -248,7 +247,6 @@ async function restUpsert(requestUrl, body, token, apiVersion) {
     if (existingEntry) {
       return await restPut(requestUrl, body, token, apiVersion, true, "*");
     }
-
     return await restPut(requestUrl, body, token, apiVersion, true, null, "*");
   } catch (e) {
     logRestError(e);

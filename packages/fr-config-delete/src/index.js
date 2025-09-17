@@ -59,7 +59,6 @@ const COMMAND = {
     TERMS_AND_CONDITIONS: "terms-conditions",
     SECRETS: "secrets",
     ESVS: "variables",
-    INTERNAL_ROLES: "internal-roles",
     TEST: "test",
     ALL_STATIC: "all-static",
     TENANT_CONFIG: "tenant-config", // TO TEST
@@ -344,38 +343,9 @@ yargs
         deleteConfig(argv)
     )
     .command(
-        COMMAND.JOURNEYS,
-        "Delete a journey",
-        cliOptions([
-            OPTION.REALM,
-            OPTION.NAME,
-            OPTION.DELETE_INNER_JOURNEYS,
-            COMMON_OPTIONS.DRY_RUN
-        ]),
-        commandHandler
-    )
-    .command(
-        COMMAND.SCRIPTS,
-        "Delete scripts",
-        cliOptions([OPTION.REALM, OPTION.NAME, COMMON_OPTIONS.DRY_RUN]),
-        commandHandler
-    )
-    .command(
-        COMMAND.SERVICES,
-        "Delete authentication services",
-        cliOptions([OPTION.REALM, OPTION.NAME, COMMON_OPTIONS.DRY_RUN]),
-        commandHandler
-    )
-    .command(
-        COMMAND.CORS,
-        "Delete cors",
-        cliOptions([OPTION.NAME, COMMON_OPTIONS.DRY_RUN]),
-        commandHandler
-    )
-    .command(
-        COMMAND.SECRET_MAPPINGS,
-        "Delete secret mappings",
-        cliOptions([OPTION.REALM, OPTION.NAME, COMMON_OPTIONS.DRY_RUN]),
+        COMMAND.ALL_STATIC,
+        "Delete static configuration",
+        cliOptions([COMMON_OPTIONS.DRY_RUN]),
         commandHandler
     )
     .command(
@@ -385,38 +355,8 @@ yargs
         commandHandler
     )
     .command(
-        COMMAND.CONNECTOR_MAPPINGS,
-        "Delete connector mappings",
-        cliOptions([OPTION.NAME, COMMON_OPTIONS.DRY_RUN]),
-        commandHandler
-    )
-    .command(
-        COMMAND.IDM_ENDPOINTS,
-        "Delete custom endpoints",
-        cliOptions([OPTION.NAME, COMMON_OPTIONS.DRY_RUN]),
-        commandHandler
-    )
-    .command(
-        COMMAND.REMOTE_SERVERS,
-        "Delete remote connector servers",
-        cliOptions([OPTION.NAME, COMMON_OPTIONS.DRY_RUN]),
-        commandHandler
-    )
-    .command(
-        COMMAND.IDM_SCHEDULES,
-        "Delete schedules",
-        cliOptions([OPTION.NAME, COMMON_OPTIONS.DRY_RUN]),
-        commandHandler
-    )
-    .command(
-        COMMAND.TERMS_AND_CONDITIONS,
-        "Delete terms and conditions",
-        cliOptions([OPTION.NAME, COMMON_OPTIONS.DRY_RUN]),
-        commandHandler
-    )
-    .command(
-        COMMAND.LOCALES,
-        "Delete locales",
+        COMMAND.CORS,
+        "Delete cors",
         cliOptions([OPTION.NAME, COMMON_OPTIONS.DRY_RUN]),
         commandHandler
     )
@@ -433,6 +373,83 @@ yargs
         commandHandler
     )
     .command(
+        COMMAND.IDM_ENDPOINTS,
+        "Delete custom endpoints",
+        cliOptions([OPTION.NAME, COMMON_OPTIONS.DRY_RUN]),
+        commandHandler
+    )
+    .command(
+        COMMAND.JOURNEYS,
+        "Delete a journey",
+        cliOptions([
+            OPTION.REALM,
+            OPTION.NAME,
+            OPTION.DELETE_INNER_JOURNEYS,
+            COMMON_OPTIONS.DRY_RUN
+        ]),
+        commandHandler
+    )
+    .command(
+        COMMAND.LOCALES,
+        "Delete locales",
+        cliOptions([OPTION.NAME, COMMON_OPTIONS.DRY_RUN]),
+        commandHandler
+    )
+    .command(
+        COMMAND.CONNECTOR_MAPPINGS,
+        "Delete connector mappings",
+        cliOptions([OPTION.NAME, COMMON_OPTIONS.DRY_RUN]),
+        commandHandler
+    )
+    .command(
+        COMMAND.REMOTE_SERVERS,
+        "Delete remote connector servers",
+        cliOptions([OPTION.NAME, COMMON_OPTIONS.DRY_RUN]),
+        commandHandler
+    )
+    .command(
+        COMMAND.IDM_SCHEDULES,
+        "Delete schedules",
+        cliOptions([OPTION.NAME, COMMON_OPTIONS.DRY_RUN]),
+        commandHandler
+    )
+    .command(
+        COMMAND.SCRIPTS,
+        "Delete scripts",
+        cliOptions([OPTION.REALM, OPTION.NAME, COMMON_OPTIONS.DRY_RUN]),
+        commandHandler
+    )
+    .command(
+        COMMAND.SECRET_MAPPINGS,
+        "Delete secret mappings",
+        cliOptions([OPTION.REALM, OPTION.NAME, COMMON_OPTIONS.DRY_RUN]),
+        commandHandler
+    )
+    .command(
+        COMMAND.SECRETS,
+        "Delete secrets",
+        cliOptions([OPTION.NAME, COMMON_OPTIONS.DRY_RUN]),
+        commandHandler
+    )
+    .command(
+        COMMAND.SERVICES,
+        "Delete authentication services",
+        cliOptions([OPTION.REALM, OPTION.NAME, COMMON_OPTIONS.DRY_RUN]),
+        commandHandler
+    )
+    .command(
+        COMMAND.TENANT_CONFIG,
+        "Delete tenant config",
+        cliOptions([COMMON_OPTIONS.DRY_RUN]),
+        commandHandler
+    )
+    .command(
+        COMMAND.TERMS_AND_CONDITIONS,
+        "Delete terms and conditions",
+        cliOptions([OPTION.NAME, COMMON_OPTIONS.DRY_RUN]),
+        commandHandler
+    )
+    .command(
         COMMAND.THEMES,
         "Delete themes",
         cliOptions([OPTION.NAME, OPTION.REALM, COMMON_OPTIONS.DRY_RUN]),
@@ -444,30 +461,7 @@ yargs
         cliOptions([OPTION.NAME, COMMON_OPTIONS.DRY_RUN]),
         commandHandler
     )
-    .command(
-        COMMAND.SECRETS,
-        "Delete secrets",
-        cliOptions([OPTION.NAME, COMMON_OPTIONS.DRY_RUN]),
-        commandHandler
-    )
-    .command(
-        COMMAND.INTERNAL_ROLES,
-        "Delete internal roles",
-        cliOptions([OPTION.NAME, COMMON_OPTIONS.DRY_RUN]),
-        commandHandler
-    )
-    .command(
-        COMMAND.TENANT_CONFIG,
-        "Delete tenant config",
-        cliOptions([COMMON_OPTIONS.DRY_RUN]),
-        commandHandler
-    )
-    .command(
-        COMMAND.ALL_STATIC,
-        "Delete static configuration",
-        cliOptions([COMMON_OPTIONS.DRY_RUN]),
-        commandHandler
-    )
+
     //.option(COMMON_OPTIONS.DEBUG, COMMON_CLI_OPTIONS[COMMON_OPTIONS.DEBUG])
     .option(COMMON_OPTIONS.RETRIES, COMMON_CLI_OPTIONS[COMMON_OPTIONS.RETRIES])
     .option(COMMON_OPTIONS.RETRY_INTERVAL, COMMON_CLI_OPTIONS[COMMON_OPTIONS.RETRY_INTERVAL])

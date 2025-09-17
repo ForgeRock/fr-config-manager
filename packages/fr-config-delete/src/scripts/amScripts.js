@@ -117,7 +117,7 @@ async function deleteScripts(tenantUrl, realms, name, token, prefixes, dryRun) {
     );
   }
   if (!!name) {
-    await deleteScriptByName(tenantUrl, realms[0], name, token, dryRun);
+    await deleteScriptByName(tenantUrl, realms[0], token, name, dryRun);
     return;
   }
   let scriptPrefixes;

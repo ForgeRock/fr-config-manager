@@ -36,7 +36,6 @@ Commands:
   fr-config-delete schedules         Delete schedules
   fr-config-delete terms-conditions  Delete terms and conditions
   fr-config-delete locales           Delete locales
-  fr-config-delete email-provider    Delete email provider configuration
   fr-config-delete email-templates   Delete email templates
   fr-config-delete themes            Delete themes
   fr-config-delete variables         Delete environment specific variables

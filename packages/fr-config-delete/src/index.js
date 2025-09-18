@@ -48,7 +48,6 @@ const COMMAND = {
     SECRET_MAPPINGS: "secret-mappings",
     CONNECTOR_MAPPINGS: "mappings",
     EMAIL_TEMPLATES: "email-templates",
-    EMAIL_PROVIDER: "email-provider",
     KBA:"kba",
     CONNECTOR_DEFINITIONS: "connectors",
     REMOTE_SERVERS: "remote-servers",
@@ -195,11 +194,6 @@ async function deleteConfig(argv) {
             await remoteServers.deleteRemoteServers(tenantUrl, argv[OPTION.NAME], token, argv[COMMON_OPTIONS.DRY_RUN]);
             break;
 
-        case COMMAND.EMAIL_PROVIDER:
-            logDeletion("email-provider", argv[OPTION.NAME]);
-            await idmFlatConfig.deleteServiceConfig("external.email", tenantUrl, token, true, argv[COMMON_OPTIONS.DRY_RUN]);
-            break;
-
         case COMMAND.KBA:
             logDeletion("kba", argv[OPTION.NAME]);
             await idmFlatConfig.deleteServiceConfig("selfservice.kba", tenantUrl, token, true, argv[COMMON_OPTIONS.DRY_RUN]);
@@ -305,9 +299,6 @@ async function deleteConfig(argv) {
             logDeletion("connectors", argv[OPTION.NAME]);
             await idmServiceConfig.deleteServiceConfig(tenantUrl, argv[OPTION.NAME], token, "provisioner.openicf", argv[COMMON_OPTIONS.DRY_RUN]);
 
-            logDeletion("email-provider", null);
-            await idmFlatConfig.deleteServiceConfig("external.email", tenantUrl, token, true, argv[COMMON_OPTIONS.DRY_RUN]);
-
             logDeletion("remote-servers", null);
             await remoteServers.deleteRemoteServers(tenantUrl, null, token, argv[COMMON_OPTIONS.DRY_RUN]);
 
@@ -360,12 +351,7 @@ yargs
         cliOptions([OPTION.NAME, COMMON_OPTIONS.DRY_RUN]),
         commandHandler
     )
-    .command(
-        COMMAND.EMAIL_PROVIDER,
-        "Delete email provider configuration",
-        cliOptions([COMMON_OPTIONS.DRY_RUN]),
-        commandHandler
-    )
+
     .command(
         COMMAND.EMAIL_TEMPLATES,
         "Delete email templates",

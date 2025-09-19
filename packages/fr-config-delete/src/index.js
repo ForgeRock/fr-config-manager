@@ -263,12 +263,12 @@ async function deleteConfig(argv) {
             logDeletion("journeys", null);
             await journeys.deleteJourneys(tenantUrl, realms, null, token, argv[OPTION.DELETE_INNER_JOURNEYS], argv[COMMON_OPTIONS.DRY_RUN]);
 
-            logDeletion("scripts", null);
-            await scripts.deleteScripts(tenantUrl, realms, null, token, scriptPrefixes, argv[COMMON_OPTIONS.DRY_RUN]);
-            
             logDeletion("services", null);
             await amServices.deleteAmServices(tenantUrl, realms, null, token, argv[COMMON_OPTIONS.DRY_RUN]);
 
+            logDeletion("scripts", null);
+            await scripts.deleteScripts(tenantUrl, realms, null, token, scriptPrefixes, argv[COMMON_OPTIONS.DRY_RUN]);
+            
             logDeletion("cors", null);
             await cors.deleteCors(tenantUrl, token, null, argv[COMMON_OPTIONS.DRY_RUN]);
 

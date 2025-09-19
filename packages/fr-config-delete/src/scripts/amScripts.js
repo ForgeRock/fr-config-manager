@@ -43,7 +43,9 @@ async function processScripts(tenantUrl, realm, queryFilter, token, dryRun, coun
   } catch (err) {
     throw new Error(`Failed to fetch scripts: ${err}`);
   }
-  const scripts = response.data.result;
+  const scripts = response.data.result.sort((a, b) => {
+      return a.context > b.context ? 1 : -1;
+  });
   for (const script of scripts) {
     if (script.language !== "JAVASCRIPT") continue;
 

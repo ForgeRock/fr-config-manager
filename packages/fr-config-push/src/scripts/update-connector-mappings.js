@@ -62,6 +62,7 @@ const updateConnectorMappings = async (argv, token) => {
           "onUnlink",
           "validSource",
           "validTarget",
+          "result",
         ]) {
           const eventTrigger = mappingObject[eventName];
           if (!eventTrigger || !eventTrigger.file) {

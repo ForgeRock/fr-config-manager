@@ -50,7 +50,7 @@ const updateCustomNodes = async (argv, token) => {
         fs.readFileSync(path.join(nodeDir, nodeJsonFile))
       );
 
-      const nodeName = customNode._id;
+      const nodeName = customNode.displayName;
 
       if (requestedNodeName && requestedNodeName !== nodeName) {
         continue;

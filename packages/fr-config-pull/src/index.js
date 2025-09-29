@@ -613,11 +613,7 @@ async function getConfig(argv) {
 
   if (matchCommand(argv, COMMAND.CUSTOM_NODES)) {
     const name = argv[OPTION.NAME];
-    const contract =
-      argv[OPTION.CONTRACT_REQUIRE] || process.env.EXPAND_REQUIRE === "true"
-        ? true
-        : false;
-    customNodes.exportCustomNodes(configDir, tenantUrl, name, contract, token);
+    customNodes.exportCustomNodes(configDir, tenantUrl, name, token);
   }
 }
 

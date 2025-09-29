@@ -10,7 +10,7 @@ const {
 const CUSTOM_NODES_SUBDIR = "custom-nodes";
 
 function saveScriptToFile(node, nodeExportDir) {
-  const scriptFilename = `${node._id}.js`;
+  const scriptFilename = `${node.displayName}.js`;
 
   let source = node.script;
 
@@ -28,7 +28,7 @@ function processCustomNodes(nodes, nodeExportDir, name) {
   try {
     var nodeFound = false;
     nodes.forEach((node) => {
-      const nodeName = node._id;
+      const nodeName = node.displayName;
       const exportSubDir = path.join(nodeExportDir, nodeName);
       if (!fs.existsSync(exportSubDir)) {
         fs.mkdirSync(exportSubDir, { recursive: true });

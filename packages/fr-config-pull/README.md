@@ -64,17 +64,18 @@ Commands:
   fr-config-pull variables              Get environment specific variables
 
 Options:
-  -h, --help               Show help                                      [boolean]
-  -n, --name               Specific configuration item                     [string]
-  -r, --realm              Specific realm (overrides environment)          [string]
-  -d, --pull-dependencies  Pull dependencies                              [boolean]
-  -p, --path               Configuration path                              [string]
-  -x, --push-api-version   Configuration push API version                  [string]
-  -v, --version            Show version number                            [boolean]
-  -D, --debug              Run with debug output                          [boolean]
-  -R, --retries            Retry HTTP connections <n> times on failure    [number]
-  -I, --retry-interval     Seconds to wait between retries                 [number]
-  -m, --include-immutable  Include immutable IGA workflows                [boolean]
+  -h, --help                  Show help                                      [boolean]
+  -n, --name                  Specific configuration item                     [string]
+  -r, --realm                 Specific realm (overrides environment)          [string]
+  -d, --pull-dependencies     Pull dependencies                              [boolean]
+  -p, --path                  Configuration path                              [string]
+  -x, --push-api-version      Configuration push API version                  [string]
+  -v, --version               Show version number                            [boolean]
+  -D, --debug                 Run with debug output                          [boolean]
+  -R, --retries               Retry HTTP connections <n> times on failure    [number]
+  -I, --retry-interval        Seconds to wait between retries                 [number]
+  -m, --include-immutable     Include immutable IGA workflows                [boolean]
+  -u, --custom-relationships  Pull custom relationship schema                [boolean]
 ```
 
 Notes on specific options:
@@ -137,3 +138,9 @@ If the `--include-immutable` option is provided, then both mutable and immutable
 The `--name` option may be used to specify a specific custom node by its name.
 
 Refer to the [custom nodes README](../../docs/custom-nodes.md) for more details on the `custom-nodes` command.
+
+`fr-config-pull managed-objects`
+
+The `--name` option may be used to pull a specific managed object config.
+
+The `--custom-relationships` option is used to pull the schema for custom relationships. This enables push of custom relationships on a different target environment - i.e. when performing `fr-config-push managed-objects --custom-relationships` the push reads the schema config stored on the pull.

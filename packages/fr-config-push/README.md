@@ -62,22 +62,23 @@ Commands:
   fr-config-push variables              Update environment specific variables
 
 Options:
-  -h, --help               Show help                                      [boolean]
-  -n, --name               Specific configuration                          [string]
-  -r, --realm              Specific realm (overrides environment)          [string]
-  -d, --push-dependencies  Push dependencies                              [boolean]
-  -f, --filenameFilter     Filename filter                                 [string]
-  -m, --metadata           Configuration metadata
-  -c, --check              Check for changes
-  -w, --wait               Wait for completion
-  -s, --status             Check status
-  -p, --path               Push specific configuration                     [string]
-  -x, --prune              Prune configuration                            [boolean]
-  -v, --version            Show version number                            [boolean]
-  -D, --debug              Run with debug output                          [boolean]
-  -R, --retries            Retry HTTP connections <n> times on failure     [number]
-  -I, --retry-interval     Seconds to wait between retries                 [number]
-  -r, --draft              Draft version                                  [boolean]
+  -h, --help                  Show help                                      [boolean]
+  -n, --name                  Specific configuration                          [string]
+  -r, --realm                 Specific realm (overrides environment)          [string]
+  -d, --push-dependencies     Push dependencies                              [boolean]
+  -f, --filenameFilter        Filename filter                                 [string]
+  -m, --metadata              Configuration metadata
+  -c, --check                 Check for changes
+  -w, --wait                  Wait for completion
+  -s, --status                Check status
+  -p, --path                  Push specific configuration                     [string]
+  -x, --prune                 Prune configuration                            [boolean]
+  -v, --version               Show version number                            [boolean]
+  -D, --debug                 Run with debug output                          [boolean]
+  -R, --retries               Retry HTTP connections <n> times on failure     [number]
+  -I, --retry-interval        Seconds to wait between retries                 [number]
+  -r, --draft                 Draft version                                  [boolean]
+  -u, --custom-relationships  Refresh custom relationhsips                   [boolean]
 ```
 
 Notes on specific options:
@@ -179,3 +180,9 @@ The `--draft` version pushes the workflow as a draft, which needs to be publishe
 The `--name` option may be used to specify a specific custom node by its name.
 
 Refer to the [custom nodes README](../../docs/custom-nodes.md) for more details on the custom-nodes command.
+
+`fr-config-push managed-objects`
+
+The `--name` option may be used to push a specific managed object config.
+
+The `--custom-relationships` option is used to push the schema for custom relationships. This relies on an earlier pull with `fr-config-pull managed-objects --custom-relationships` to store the schema config. When pushing with this option, custom relationships are automatically assigned reference placeholders in `/openidm/config/repo.ds` when the schema is refreshed.

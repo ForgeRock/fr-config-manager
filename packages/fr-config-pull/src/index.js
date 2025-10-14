@@ -238,7 +238,13 @@ async function getConfig(argv) {
 
   if (matchCommand(argv, COMMAND.MANAGED_OBJECTS)) {
     console.log("Getting managed objects");
-    idm.exportManagedObjects(configDir, tenantUrl, argv[OPTION.NAME], token);
+    idm.exportManagedObjects(
+      configDir,
+      tenantUrl,
+      argv[OPTION.NAME],
+      argv[OPTION.CUSTOM_RELATIONSHIPS],
+      token
+    );
   }
 
   if (matchCommand(argv, COMMAND.SCRIPTS)) {
@@ -762,7 +768,7 @@ yargs
   .command({
     command: COMMAND.MANAGED_OBJECTS,
     desc: "Get managed objects",
-    builder: cliOptions([OPTION.NAME]),
+    builder: cliOptions([OPTION.NAME, OPTION.CUSTOM_RELATIONSHIPS]),
     handler: (argv) => getConfig(argv),
   })
   .command({

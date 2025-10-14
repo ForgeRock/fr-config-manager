@@ -37,6 +37,10 @@ function mergeScriptFile(value, managedObjectPath) {
   }
 }
 
+function wait(seconds) {
+  return new Promise((resolve) => setTimeout(resolve, seconds * 1000));
+}
+
 const updateManagedObjects = async (argv, token) => {
   const { TENANT_BASE_URL, CONFIG_DIR } = process.env;
   const SCRIPT_HOOKS = ["onStore", "onRetrieve", "onValidate"];
@@ -126,6 +130,58 @@ const updateManagedObjects = async (argv, token) => {
     };
 
     await restPut(requestUrl, requestBody, token);
+
+    // Refresh schema
+
+    if (argv[OPTION.CUSTOM_RELATIONSHIPS]) {
+      console.log("Refreshing custom relationships");
+
+      // Let /openidm/managed catch up
+      await wait(1);
+
+      await managedObjects.forEach((managedObject) => {
+        Object.keys(managedObject.schema.properties).forEach(async function (
+          propertyName
+        ) {
+          const property = managedObject.schema.properties[propertyName];
+          if (
+            !(
+              propertyName.startsWith("custom_") &&
+              (property.type === "relationship" ||
+                (property.type === "array" &&
+                  property.items.type === "relationship"))
+            )
+          ) {
+            return;
+          }
+          const schemaFilePath = path.join(
+            dir,
+            managedObject.name,
+            `${managedObject.name}.schema.${propertyName}.json`
+          );
+
+          if (!fs.existsSync(schemaFilePath)) {
+            console.log(
+              `Warning: no schema file found for custom relationship (${schemaFilePath})`
+            );
+            return;
+          }
+
+          console.log(
+            `Refreshing schema for ${managedObject.name}/${propertyName}`
+          );
+
+          const schemaJson = fs.readFileSync(schemaFilePath, {
+            encoding: "utf-8",
+          });
+
+          const schema = JSON.parse(schemaJson);
+
+          const schemaUrl = `${TENANT_BASE_URL}/openidm/schema/managed/${managedObject.name}/properties/${propertyName}`;
+          await restPut(schemaUrl, schema, token, "resource=2.0", false, "*");
+        });
+      });
+    }
   } catch (error) {
     console.error(error.message);
     process.exit(1);

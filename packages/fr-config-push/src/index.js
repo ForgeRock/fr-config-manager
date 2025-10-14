@@ -313,6 +313,7 @@ async function getCommands() {
         OPTION.NAME,
         OPTION.REALM,
         OPTION.PUSH_DEPENDENCIES,
+        OPTION.CHECK,
       ]),
       handler: (argv) =>
         checkNamed() &&
@@ -336,7 +337,7 @@ async function getCommands() {
     .command({
       command: "managed-objects",
       desc: "Update managed objects",
-      builder: cliOptions([OPTION.NAME]),
+      builder: cliOptions([OPTION.NAME, OPTION.CUSTOM_RELATIONSHIPS]),
       handler: (argv) =>
         checkNamed() &&
         getAccessToken().then((token) => updateManagedObjects(argv, token)),

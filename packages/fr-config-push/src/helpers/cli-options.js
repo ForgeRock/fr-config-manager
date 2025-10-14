@@ -17,6 +17,7 @@ const OPTION = {
   PRUNE: "prune",
   STDIN: STDIN_OPTION,
   DRAFT: "draft",
+  CUSTOM_RELATIONSHIPS: "custom-relationships",
 };
 
 const CLI_OPTIONS = {
@@ -86,6 +87,11 @@ const CLI_OPTIONS = {
   draft: {
     alias: "r",
     describe: "Draft version",
+    type: "boolean",
+  },
+  "custom-relationships": {
+    alias: "u",
+    describe: "Refresh custom relationhsips",
     type: "boolean",
   },
 };

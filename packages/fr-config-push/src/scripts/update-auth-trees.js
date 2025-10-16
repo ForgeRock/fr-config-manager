@@ -11,7 +11,6 @@ const { OPTION } = cliUtils;
 const {
   journeyNodeNeedsScript,
 } = require("../../../fr-config-common/src/utils.js");
-const { checkConfigSchema } = require("../helpers/schema.js");
 
 const INNER_TREE_ID = "InnerTreeEvaluatorNode";
 

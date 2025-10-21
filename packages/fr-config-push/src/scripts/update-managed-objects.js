@@ -136,13 +136,10 @@ const updateManagedObjects = async (argv, token) => {
     if (argv[OPTION.CUSTOM_RELATIONSHIPS]) {
       console.log("Refreshing custom relationships");
 
-      // Let /openidm/managed catch up
-      await wait(1);
-
-      await managedObjects.forEach((managedObject) => {
-        Object.keys(managedObject.schema.properties).forEach(async function (
-          propertyName
-        ) {
+      for (const managedObject of managedObjects) {
+        for (const propertyName of Object.keys(
+          managedObject.schema.properties
+        )) {
           const property = managedObject.schema.properties[propertyName];
           if (
             !(
@@ -152,7 +149,7 @@ const updateManagedObjects = async (argv, token) => {
                   property.items.type === "relationship"))
             )
           ) {
-            return;
+            continue;
           }
           const schemaFilePath = path.join(
             dir,
@@ -164,7 +161,7 @@ const updateManagedObjects = async (argv, token) => {
             console.log(
               `Warning: no schema file found for custom relationship (${schemaFilePath})`
             );
-            return;
+            continue;
           }
 
           console.log(
@@ -179,8 +176,8 @@ const updateManagedObjects = async (argv, token) => {
 
           const schemaUrl = `${TENANT_BASE_URL}/openidm/schema/managed/${managedObject.name}/properties/${propertyName}`;
           await restPut(schemaUrl, schema, token, "resource=2.0", false, "*");
-        });
-      });
+        }
+      }
     }
   } catch (error) {
     console.error(error.message);

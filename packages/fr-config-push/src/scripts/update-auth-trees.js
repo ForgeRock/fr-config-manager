@@ -1,9 +1,6 @@
 const fs = require("fs");
 const path = require("path");
-const {
-  restPut,
-  restPost,
-} = require("../../../fr-config-common/src/restClient");
+const { restPut } = require("../../../fr-config-common/src/restClient");
 const { globSync } = require("glob");
 const { pushScriptById } = require("./update-scripts");
 const cliUtils = require("../helpers/cli-options");
@@ -62,40 +59,6 @@ async function pushJourney(journey, baseUrl, token) {
   await restPut(requestUrl, journey, token, "protocol=2.1,resource=1.0");
 }
 
-let cachedJourneySchema = null;
-
-async function checkJourneySchema(journey, tenantBaseUrl, realm, token) {
-  if (!cachedJourneySchema) {
-    const schemaPath = `${tenantBaseUrl}/am/json/realms/root/realms/${realm}/realm-config/authentication/authenticationtrees/trees`;
-    const response = await restPost(
-      schemaPath,
-      {
-        _action: "schema",
-      },
-      null,
-      token,
-      "protocol=2.1,resource=1.0"
-    );
-
-    cachedJourneySchema = fixSchema(response.data);
-  }
-
-  return checkConfigSchema(journey, cachedJourneySchema);
-}
-
-function fixSchema(schema) {
-  ["nodes", "staticNodes"].forEach((nodeType) => {
-    ["x", "y"].forEach((axis) => {
-      schema.properties[nodeType].patternProperties[".*"].properties[
-        axis
-      ].type = "number";
-    });
-  });
-  schema.additionalProperties = false;
-
-  return schema;
-}
-
 async function handleJourney(
   configDir,
   journeyFile,
@@ -104,8 +67,7 @@ async function handleJourney(
   pushInnerJourneys,
   pushScripts,
   journeysProcessed,
-  token,
-  schemaCheck
+  token
 ) {
   const dir = path.join(configDir, `/realms/${realm}/journeys`);
   const journeyFullPath = path.join(dir, journeyFile);
@@ -118,24 +80,12 @@ async function handleJourney(
 
   const journey = JSON.parse(fs.readFileSync(journeyFullPath));
 
-  console.log(
-    `${schemaCheck ? "Verifying" : "Updating"} journey ${realm}/${journey._id}`
-  );
-
-  if (schemaCheck) {
-    const result = await checkJourneySchema(
-      journey,
-      tenantBaseUrl,
-      realm,
-      token
-    );
-    return;
-  }
-
   const baseUrl = `${tenantBaseUrl}/am/json/realms/root/realms/${realm}/realm-config/authentication/authenticationtrees`;
 
   const journeyDir = path.dirname(journeyFile);
   const nodeDir = `${dir}/${journeyDir}/nodes`;
+
+  console.log(`Pushing journey ${realm}/${journey._id}`);
 
   //paged nodes
   await handleNodes(
@@ -178,23 +128,21 @@ const updateAuthTrees = async (argv, token) => {
 
   const pushScripts = argv[OPTION.PUSH_DEPENDENCIES];
 
-  const schemaCheck = argv[OPTION.CHECK];
-  const action = schemaCheck ? "Verifying" : "Updating";
-
   if (journeyName) {
     if (realms.length !== 1) {
       console.error("Error: for a named journey, specify a single realm");
       process.exit(1);
     } else {
       console.log(
-        `${action} journey "${journeyName}"`,
+        "Updating journey",
+        `"${journeyName}"`,
         pushInnerJourneys ? "including inner journeys" : "",
         pushScripts ? "and scripts" : ""
       );
     }
   } else {
     console.log(
-      `${action} journeys`,
+      "Updating Journeys",
       pushInnerJourneys ? "including inner journeys" : "",
       pushScripts ? "and scripts" : ""
     );
@@ -228,8 +176,7 @@ const updateAuthTrees = async (argv, token) => {
           pushInnerJourneys,
           pushScripts,
           journeysProcessed,
-          token,
-          schemaCheck
+          token
         );
       }
     }

@@ -143,4 +143,4 @@ Refer to the [custom nodes README](../../docs/custom-nodes.md) for more details 
 
 The `--name` option may be used to pull a specific managed object config.
 
-The `--custom-relationships` option is used to pull the schema for custom relationships. This enables push of custom relationships on a different target environment - i.e. when performing `fr-config-push managed-objects --custom-relationships` the push reads the schema config stored on the pull.
+The `--custom-relationships` option is used to pull the schema for custom relationships. This enables push of custom relationships on a different target environment - i.e. when performing `fr-config-push managed-objects` the push reads the schema config stored by the pull and pushes it to the target environment.

@@ -54,6 +54,8 @@ const updateManagedObjects = async (argv, token) => {
   }
 
   try {
+    let customRelationshipSchema = [];
+
     // Combine managed object JSON files
     const dir = path.join(CONFIG_DIR, "/managed-objects");
     if (!fs.existsSync(dir)) {
@@ -110,6 +112,24 @@ const updateManagedObjects = async (argv, token) => {
         }
       );
 
+      // Store any custom relationship schema for post-push
+      const schemaDir = path.join(managedObjectPath, "schema");
+      if (fs.existsSync(schemaDir)) {
+        const schemaFiles = fs
+          .readdirSync(schemaDir)
+          .filter((name) => path.extname(name) === ".json");
+
+        for (const schemaFile of schemaFiles) {
+          var schema = JSON.parse(
+            fs.readFileSync(path.join(schemaDir, schemaFile), "utf8")
+          );
+          customRelationshipSchema.push({
+            object: managedObject.name,
+            schema: schema,
+          });
+        }
+      }
+
       managedObjects.push(managedObject);
     }
 
@@ -131,53 +151,19 @@ const updateManagedObjects = async (argv, token) => {
 
     await restPut(requestUrl, requestBody, token);
 
-    // Refresh schema
+    // Avoid 404
+    await restGet(requestUrl, null, token);
 
-    if (argv[OPTION.CUSTOM_RELATIONSHIPS]) {
-      console.log("Refreshing custom relationships");
-
-      for (const managedObject of managedObjects) {
-        for (const propertyName of Object.keys(
-          managedObject.schema.properties
-        )) {
-          const property = managedObject.schema.properties[propertyName];
-          if (
-            !(
-              propertyName.startsWith("custom_") &&
-              (property.type === "relationship" ||
-                (property.type === "array" &&
-                  property.items.type === "relationship"))
-            )
-          ) {
-            continue;
-          }
-          const schemaFilePath = path.join(
-            dir,
-            managedObject.name,
-            `${managedObject.name}.schema.${propertyName}.json`
-          );
-
-          if (!fs.existsSync(schemaFilePath)) {
-            console.log(
-              `Warning: no schema file found for custom relationship (${schemaFilePath})`
-            );
-            continue;
-          }
-
-          console.log(
-            `Refreshing schema for ${managedObject.name}/${propertyName}`
-          );
-
-          const schemaJson = fs.readFileSync(schemaFilePath, {
-            encoding: "utf-8",
-          });
-
-          const schema = JSON.parse(schemaJson);
-
-          const schemaUrl = `${TENANT_BASE_URL}/openidm/schema/managed/${managedObject.name}/properties/${propertyName}`;
-          await restPut(schemaUrl, schema, token, "resource=2.0", false, "*");
-        }
-      }
+    for (const relationshipSchema of customRelationshipSchema) {
+      const schemaUrl = `${TENANT_BASE_URL}/openidm/schema/managed/${relationshipSchema.object}/properties/${relationshipSchema.schema._id}`;
+      await restPut(
+        schemaUrl,
+        relationshipSchema.schema,
+        token,
+        "resource=2.0",
+        false,
+        "*"
+      );
     }
   } catch (error) {
     console.error(error.message);

@@ -337,7 +337,7 @@ async function getCommands() {
     .command({
       command: "managed-objects",
       desc: "Update managed objects",
-      builder: cliOptions([OPTION.NAME, OPTION.CUSTOM_RELATIONSHIPS]),
+      builder: cliOptions([OPTION.NAME]),
       handler: (argv) =>
         checkNamed() &&
         getAccessToken().then((token) => updateManagedObjects(argv, token)),

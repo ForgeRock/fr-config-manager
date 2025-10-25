@@ -184,5 +184,3 @@ Refer to the [custom nodes README](../../docs/custom-nodes.md) for more details 
 `fr-config-push managed-objects`
 
 The `--name` option may be used to push a specific managed object config.
-
-The `--custom-relationships` option is used to push the schema for custom relationships. This relies on an earlier pull with `fr-config-pull managed-objects --custom-relationships` to store the schema config. When pushing with this option, custom relationships are automatically assigned reference placeholders in `/openidm/config/repo.ds` when the schema is refreshed.

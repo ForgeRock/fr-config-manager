@@ -158,6 +158,7 @@ async function httpRequest(
         );
       } else {
         console.log("No response data");
+        console.log("Request", JSON.stringify(request, null, 2));
       }
     }
 

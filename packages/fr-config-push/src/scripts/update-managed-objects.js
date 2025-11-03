@@ -37,6 +37,10 @@ function mergeScriptFile(value, managedObjectPath) {
   }
 }
 
+function wait(seconds) {
+  return new Promise((resolve) => setTimeout(resolve, seconds * 1000));
+}
+
 const updateManagedObjects = async (argv, token) => {
   const { TENANT_BASE_URL, CONFIG_DIR } = process.env;
   const SCRIPT_HOOKS = ["onStore", "onRetrieve", "onValidate"];
@@ -50,6 +54,8 @@ const updateManagedObjects = async (argv, token) => {
   }
 
   try {
+    let customRelationshipSchema = [];
+
     // Combine managed object JSON files
     const dir = path.join(CONFIG_DIR, "/managed-objects");
     if (!fs.existsSync(dir)) {
@@ -106,6 +112,24 @@ const updateManagedObjects = async (argv, token) => {
         }
       );
 
+      // Store any custom relationship schema for post-push
+      const schemaDir = path.join(managedObjectPath, "schema");
+      if (fs.existsSync(schemaDir)) {
+        const schemaFiles = fs
+          .readdirSync(schemaDir)
+          .filter((name) => path.extname(name) === ".json");
+
+        for (const schemaFile of schemaFiles) {
+          var schema = JSON.parse(
+            fs.readFileSync(path.join(schemaDir, schemaFile), "utf8")
+          );
+          customRelationshipSchema.push({
+            object: managedObject.name,
+            schema: schema,
+          });
+        }
+      }
+
       managedObjects.push(managedObject);
     }
 
@@ -126,6 +150,21 @@ const updateManagedObjects = async (argv, token) => {
     };
 
     await restPut(requestUrl, requestBody, token);
+
+    // Avoid 404
+    await restGet(requestUrl, null, token);
+
+    for (const relationshipSchema of customRelationshipSchema) {
+      const schemaUrl = `${TENANT_BASE_URL}/openidm/schema/managed/${relationshipSchema.object}/properties/${relationshipSchema.schema._id}`;
+      await restPut(
+        schemaUrl,
+        relationshipSchema.schema,
+        token,
+        "resource=2.0",
+        false,
+        "*"
+      );
+    }
   } catch (error) {
     console.error(error.message);
     process.exit(1);

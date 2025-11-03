@@ -17,6 +17,7 @@ const OPTION = {
   STDOUT: STDOUT_OPTION,
   CLEAN: "clean",
   INCLUDE_IMMUTABLE: "include-immutable",
+  CUSTOM_RELATIONSHIPS: "custom-relationships",
 };
 
 const CLI_OPTIONS = {
@@ -78,6 +79,11 @@ const CLI_OPTIONS = {
     alias: "m",
     demandOption: false,
     describe: "Include immutable IGA workflows",
+    type: "boolean",
+  },
+  "custom-relationships": {
+    alias: "u",
+    describe: "Pull custom relationship schema",
     type: "boolean",
   },
 };

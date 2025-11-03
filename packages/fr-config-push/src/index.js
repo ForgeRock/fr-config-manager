@@ -313,6 +313,7 @@ async function getCommands() {
         OPTION.NAME,
         OPTION.REALM,
         OPTION.PUSH_DEPENDENCIES,
+        OPTION.CHECK,
       ]),
       handler: (argv) =>
         checkNamed() &&

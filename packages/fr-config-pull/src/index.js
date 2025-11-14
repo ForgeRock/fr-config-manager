@@ -123,6 +123,7 @@ const COMMAND_MAP = {
     COMMAND.SAML,
   ],
   "all-static": [
+    COMMAND.CUSTOM_NODES,
     COMMAND.AUTH_TREE,
     COMMAND.CONNECTOR_DEFINITIONS,
     COMMAND.CONNECTOR_MAPPINGS,
@@ -619,6 +620,7 @@ async function getConfig(argv) {
   }
 
   if (matchCommand(argv, COMMAND.CUSTOM_NODES)) {
+    console.log("Getting custom nodes");
     const name = argv[OPTION.NAME];
     customNodes.exportCustomNodes(configDir, tenantUrl, name, token);
   }

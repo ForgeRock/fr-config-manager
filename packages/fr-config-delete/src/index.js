@@ -12,6 +12,7 @@ const idmServiceConfig = require("./scripts/idmServiceConfig.js");
 // AM Static
 //const scripts = require("./scripts/scripts.js");
 const scripts = require("./scripts/amScripts.js");
+const customNodes = require("./scripts/amCustomNodes.js");
 //const journeys = require("./scripts/journeys.js");
 const journeys = require("./scripts/journeys-v2.js");
 const amServices = require("./scripts/amServices.js");
@@ -41,6 +42,7 @@ const yargs = require("yargs");
 require("dotenv").config();
 
 const COMMAND = {
+    CUSTOM_NODES: "custom-nodes",
     JOURNEYS: "journeys",
     SCRIPTS: "scripts",
     CORS: "cors",
@@ -229,6 +231,20 @@ async function deleteConfig(argv) {
             );
             break;
 
+        case COMMAND.CUSTOM_NODES:
+            if (argv[OPTION.NAME] && realms.length > 1) {
+                console.error("Error: Deleting a single custom node is only supported when specifying a single realm. Use the --realm option to select one.");
+                throw new Error("Configuration errors");
+            }
+            logDeletion("custom-nodes", argv[OPTION.NAME]);
+            await customNodes.deleteAmNodes(
+                tenantUrl,
+                argv[OPTION.ID],
+                token,
+                argv[COMMON_OPTIONS.DRY_RUN]
+            );
+            break;
+
         case COMMAND.SECRET_MAPPINGS:
             if (argv[OPTION.NAME] && realms.length > 1) {
                 console.error("Error: Deleting a single named service is only supported when specifying a single realm. Use the --realm option to select one.");
@@ -265,6 +281,9 @@ async function deleteConfig(argv) {
 
             logDeletion("services", null);
             await amServices.deleteAmServices(tenantUrl, realms, null, token, argv[COMMON_OPTIONS.DRY_RUN]);
+
+            logDeletion("custom-nodes", null);
+            await customNodes.deleteAmNodes(tenantUrl, null, token, argv[COMMON_OPTIONS.DRY_RUN]);
 
             logDeletion("scripts", null);
             await scripts.deleteScripts(tenantUrl, realms, null, token, scriptPrefixes, argv[COMMON_OPTIONS.DRY_RUN]);
@@ -421,6 +440,12 @@ yargs
         COMMAND.SERVICES,
         "Delete authentication services",
         cliOptions([OPTION.REALM, OPTION.NAME, COMMON_OPTIONS.DRY_RUN]),
+        commandHandler
+    )
+    .command(
+        COMMAND.CUSTOM_NODES,
+        "Delete custom nodes",
+        cliOptions([OPTION.ID, COMMON_OPTIONS.DRY_RUN]),
         commandHandler
     )
     .command(

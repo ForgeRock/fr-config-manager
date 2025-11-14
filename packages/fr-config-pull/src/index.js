@@ -619,6 +619,7 @@ async function getConfig(argv) {
   }
 
   if (matchCommand(argv, COMMAND.CUSTOM_NODES)) {
+    console.log("Getting custom nodes");
     const name = argv[OPTION.NAME];
     customNodes.exportCustomNodes(configDir, tenantUrl, name, token);
   }

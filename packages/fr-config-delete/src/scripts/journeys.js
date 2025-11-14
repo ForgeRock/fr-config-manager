@@ -226,6 +226,15 @@ async function deleteJourneys(tenantUrl, realms, name, token, deleteInnerJourney
         deletedOrphanNodes: 0
     };
 
+    if (!!name) {
+        if (realms.length > 1) {
+        console.error(
+            "Error: Cannot delete journey by name when multiple realms are provided"
+        );
+        process.exit(1);
+        }
+    }
+
     try {
         for (const realm of realms) {
 

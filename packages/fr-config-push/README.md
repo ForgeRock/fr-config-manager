@@ -31,6 +31,7 @@ Commands:
   fr-config-push config-metadata        Update configuration metadata
   fr-config-push connector-definitions  Update connector definitions
   fr-config-push connector-mappings     Update connector mappings
+  fr-config-push cookie-domains         Update cookie domain config
   fr-config-push cors                   Update CORS configuration
   fr-config-push csp                    Update content security policy
   fr-config-push custom-nodes           Update custom nodes
@@ -49,17 +50,20 @@ Commands:
   fr-config-push remote-servers         Update remote connector servers
   fr-config-push raw                    Update raw config
   fr-config-push restart                Restart tenant
+  fr-config-push saml                   Update SAML Entities
   fr-config-push schedules              Update schedules
   fr-config-push scripts                Update authentication scripts
   fr-config-push secrets                Update secrets
   fr-config-push secret-mappings        Update secret mappings
   fr-config-push service-objects        Update service objects
   fr-config-push services               Update authentication services
+  fr-config-push telemetry              Update telemetry config
   fr-config-push terms-and-conditions   Update terms and conditions
   fr-config-push test                   Test connection and authentication
   fr-config-push themes                 Update UI themes
   fr-config-push ui-config              Update UI configuration
   fr-config-push variables              Update environment specific variables
+
 
 Options:
   -h, --help                  Show help                                      [boolean]
@@ -67,10 +71,10 @@ Options:
   -r, --realm                 Specific realm (overrides environment)          [string]
   -d, --push-dependencies     Push dependencies                              [boolean]
   -f, --filenameFilter        Filename filter                                 [string]
-  -m, --metadata              Configuration metadata
-  -c, --check                 Check for changes
-  -w, --wait                  Wait for completion
-  -s, --status                Check status
+  -m, --metadata              Configuration metadata                          [string]
+  -c, --check                 Check for changes                              [boolean]
+  -w, --wait                  Wait for completion                            [boolean]
+  -s, --status                Check status                                   [boolean]
   -p, --path                  Push specific configuration                     [string]
   -x, --prune                 Prune configuration                            [boolean]
   -v, --version               Show version number                            [boolean]
@@ -79,6 +83,7 @@ Options:
   -I, --retry-interval        Seconds to wait between retries                 [number]
   -r, --draft                 Draft version                                  [boolean]
   -u, --custom-relationships  Refresh custom relationhsips                   [boolean]
+  -g, --category              Category                                        [string]
 ```
 
 Notes on specific options:
@@ -184,3 +189,30 @@ Refer to the [custom nodes README](../../docs/custom-nodes.md) for more details 
 `fr-config-push managed-objects`
 
 The `--name` option may be used to push a specific managed object config.
+
+`fr-config-push telemetry`
+
+Without any options, this command will push all telemetry config present in the local filesystem.
+
+To push a specific telemetry config, use the `--category` and `--name` options to specify the config to push - e.g.
+
+```bash
+fr-config-push telemetry --category otlp --name newrelic
+```
+
+Any values in the config enclosed in `${..}` will be substituted with environment variables - e.g.
+
+```
+{
+  "encoding": "PROTO",
+  "endpoint": "${DD_ENDPOINT}",
+  "headers": {
+    "dd-api-key": "${DD_API_KEY}"
+  },
+  "id": "datadog",
+  "sources": ["am-authentication"],
+  "type": "HTTP"
+}
+```
+
+The corresponding environment varables must be defined in the `.env` file or execution environment.

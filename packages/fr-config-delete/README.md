@@ -19,34 +19,40 @@ The tool is configured via environment variables. Copy the sample `.env` file an
 
 Run the `fr-config-delete` tool as follows to create an export of your Identity Cloud configuration on your local workstation.
 
-```bash
+````bash
 Usage: fr-config-delete [arguments]
 
 Commands:
-  fr-config-delete test      Test authentication
-  fr-config-delete journeys  Delete a journey
-  fr-config-delete scripts           Delete scripts
-  fr-config-delete services          Delete authentication services
-  fr-config-delete cors              Delete cors
-  fr-config-delete secret-mappings   Delete secret mappings
+  fr-config-delete all-static        Delete static configuration
   fr-config-delete connectors        Delete connector cefinitions
-  fr-config-delete mappings          Delete connector mappings
+  fr-config-delete cors              Delete cors
+  fr-config-delete email-templates   Delete email templates
   fr-config-delete endpoints         Delete custom endpoints
+  fr-config-delete journeys          Delete a journey
+  fr-config-delete locales           Delete locales
+  fr-config-delete mappings          Delete connector mappings
   fr-config-delete remote-servers    Delete remote connector servers
   fr-config-delete schedules         Delete schedules
+  fr-config-delete scripts           Delete scripts
+  fr-config-delete secrets           Delete secrets
+  fr-config-delete secret-mappings   Delete secret mappings
+  fr-config-delete services          Delete authentication services
+  fr-config-delete telemetry         Delete telemetry configuration
+  fr-config-delete tenant-config     Delete tenant config
   fr-config-delete terms-conditions  Delete terms and conditions
-  fr-config-delete locales           Delete locales
-  fr-config-delete email-templates   Delete email templates
+  fr-config-delete test              Test authentication
   fr-config-delete themes            Delete themes
   fr-config-delete variables         Delete environment specific variables
-  fr-config-delete secrets           Delete secrets
-  fr-config-delete internal-roles    Delete internal roles
-  fr-config-delete tenant-config     Delete tenant config
-  fr-config-delete all-static        Delete static configuration
+
 Options:
-  -h, --help     Show help                                             [boolean]
-  -v, --version  Show version number                                   [boolean]
-```
+  -h, --help            Show help                                      [boolean]
+  -R, --retries         Retry HTTP connections <n> times on failure     [number]
+  -I, --retry-interval  Seconds to wait between retries                 [number]
+  -Y, --dry-run         Dry run for REST requests                      [boolean]
+  -v, --version         Show version number                            [boolean]
+  -g, --category        Category                                        [string]
+  -n, --name            Only for specific name                          [string]
+
 
 Notes on specific options:
 
@@ -57,7 +63,7 @@ The `--name` option can be used with the `journeys` command to delete a specific
 
 ```bash
 fr-config-delete journeys --name "Customer Login" --realm alpha
-```
+````
 
 The `--delete-inner-journeys` option can be used with the `journeys` command to delete all inner journeys associated with the journey pulled. It can only be used together with the --name option. For example
 
@@ -83,4 +89,13 @@ Dry run: Deleting node 5350a2bd-3dbe-46e5-97f8-b3aca79d679e of type InnerTreeEva
 Dry run: Deleting node 81e4b33d-1d7b-405c-92d3-b00ad1bca881 of type PageNode
 Dry run: Deleting node 89366af6-d2fd-4a8e-bb77-e04eb0e636ef of type AccountLockoutNode
 Dry run: Deleting node eeed8849-add6-4188-b5f8-ba1fe9b46556 of type IdentityStoreDecisionNode
+```
+
+`fr-config-delete telemetry`
+Without any options, this command will delete all telemetry config from the tenant.
+
+To delete a specific telemetry config, use the `--category` and `--name` options to specify the config to delete - e.g.
+
+```bash
+fr-config-delete telemetry --category otlp --name newrelic
 ```

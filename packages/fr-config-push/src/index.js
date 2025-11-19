@@ -40,6 +40,7 @@ const {
   updateCookieDomains,
   updateSaml,
   updateCustomNodes,
+  updateTelemetry,
 } = require("./scripts");
 
 require("dotenv").config();
@@ -75,6 +76,7 @@ async function updateStatic(argv, token) {
   await updateAudit(argv, token);
   await updateConfigMetadata(argv, token);
   await updateOrgPrivileges(argv, token);
+  await updateTelemetry(argv, token);
 }
 
 const REQUIRED_CONFIG = [
@@ -441,6 +443,14 @@ async function getCommands() {
       handler: (argv) =>
         checkNamed() &&
         getAccessToken().then((token) => updateServices(argv, token)),
+    })
+    .command({
+      command: "telemetry",
+      desc: "Update telemetry config",
+      builder: cliOptions([OPTION.NAME, OPTION.CATEGORY]),
+      handler: (argv) =>
+        checkNamed() &&
+        getAccessToken().then((token) => updateTelemetry(argv, token)),
     })
     .command({
       command: "terms-and-conditions",

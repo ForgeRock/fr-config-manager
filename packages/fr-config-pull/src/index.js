@@ -35,6 +35,7 @@ const cookieDomains = require("./scripts/cookieDomains.js");
 const raw = require("./scripts/raw.js");
 const iga = require("./scripts/igaWorkflows.js");
 const customNodes = require("./scripts/customNodes.js");
+const telemetry = require("./scripts/telemetry.js");
 
 const yargs = require("yargs");
 const { showConfigMetadata } = require("./scripts/configMetadata.js");
@@ -86,6 +87,7 @@ const COMMAND = {
   ORG_PRIVILEGES: "org-privileges",
   RAW: "raw",
   SAML: "saml",
+  TELEMETRY: "telemetry",
 };
 
 const COMMAND_MAP = {
@@ -288,6 +290,30 @@ async function getConfig(argv) {
       argv[OPTION.NAME],
       argv[OPTION.PULL_DEPENDENCIES],
       argv[OPTION.CLEAN],
+      token
+    );
+  }
+
+  if (matchCommand(argv, COMMAND.TELEMETRY)) {
+    const name = argv[OPTION.NAME];
+    if (name && !argv[OPTION.CATEGORY]) {
+      console.error(
+        "Error: for a named provider, specify a category (e.g. --category otlp)"
+      );
+      process.exit(1);
+    }
+
+    if (name) {
+      console.log("Getting telemetry config for", name);
+    } else {
+      console.log("Getting telemetry config");
+    }
+
+    telemetry.exportConfig(
+      configDir,
+      tenantUrl,
+      name,
+      argv[OPTION.CATEGORY],
       token
     );
   }
@@ -844,6 +870,12 @@ yargs
     command: COMMAND.SERVICES,
     desc: "Get authentication services",
     builder: cliOptions([OPTION.REALM, OPTION.NAME]),
+    handler: (argv) => getConfig(argv),
+  })
+  .command({
+    command: COMMAND.TELEMETRY,
+    desc: "Get telemetry config",
+    builder: cliOptions([OPTION.NAME, OPTION.CATEGORY]),
     handler: (argv) => getConfig(argv),
   })
   .command({

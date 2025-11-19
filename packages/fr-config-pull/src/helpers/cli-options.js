@@ -18,6 +18,7 @@ const OPTION = {
   CLEAN: "clean",
   INCLUDE_IMMUTABLE: "include-immutable",
   CUSTOM_RELATIONSHIPS: "custom-relationships",
+  CATEGORY: "category",
 };
 
 const CLI_OPTIONS = {
@@ -85,6 +86,12 @@ const CLI_OPTIONS = {
     alias: "u",
     describe: "Pull custom relationship schema",
     type: "boolean",
+  },
+  category: {
+    alias: "g",
+    demandOption: false,
+    describe: "Category",
+    type: "string",
   },
 };
 

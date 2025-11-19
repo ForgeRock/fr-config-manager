@@ -17,6 +17,7 @@ const OPTION = {
   PRUNE: "prune",
   STDIN: STDIN_OPTION,
   DRAFT: "draft",
+  CATEGORY: "category",
 };
 
 const CLI_OPTIONS = {
@@ -87,6 +88,11 @@ const CLI_OPTIONS = {
     alias: "r",
     describe: "Draft version",
     type: "boolean",
+  },
+  category: {
+    alias: "g",
+    describe: "Category",
+    type: "string",
   },
 };
 

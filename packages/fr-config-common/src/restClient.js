@@ -64,7 +64,7 @@ async function httpRequest(
         headers["If-Match"] = ifMatch;
       }
       if (ifNoneMatch) {
-        headers["If-None-Match"] = ifMatch;
+        headers["If-None-Match"] = ifNoneMatch;
       }
       request = {
         method: "put",

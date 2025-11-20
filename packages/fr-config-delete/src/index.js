@@ -12,8 +12,7 @@ const idmServiceConfig = require("./scripts/idmServiceConfig.js");
 // AM Static
 const scripts = require("./scripts/amScripts.js");
 const customNodes = require("./scripts/amCustomNodes.js");
-//const journeys = require("./scripts/journeys.js");
-const journeys = require("./scripts/journeys-v2.js");
+const journeys = require("./scripts/journeys.js");
 const amServices = require("./scripts/amServices.js");
 const secretMappings = require("./scripts/secretMappings.js");
 const cors = require("./scripts/cors.js");

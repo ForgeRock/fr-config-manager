@@ -11,6 +11,7 @@ const idmFlatConfig = require("./scripts/idmFlatConfig.js");
 const idmServiceConfig = require("./scripts/idmServiceConfig.js");
 // AM Static
 const scripts = require("./scripts/amScripts.js");
+const customNodes = require("./scripts/amCustomNodes.js");
 const journeys = require("./scripts/journeys.js");
 const amServices = require("./scripts/amServices.js");
 const secretMappings = require("./scripts/secretMappings.js");
@@ -39,6 +40,7 @@ const yargs = require("yargs");
 require("dotenv").config();
 
 const COMMAND = {
+    CUSTOM_NODES: "custom-nodes",
     JOURNEYS: "journeys",
     SCRIPTS: "scripts",
     CORS: "cors",
@@ -211,6 +213,16 @@ async function deleteConfig(argv) {
             logDeletion("cors", argv[OPTION.NAME]);
             await cors.deleteCors(tenantUrl, token, argv[OPTION.NAME], argv[COMMON_OPTIONS.DRY_RUN]);
             break;
+        
+        case COMMAND.CUSTOM_NODES:
+            logDeletion("custom-nodes", argv[OPTION.NAME]);
+            await customNodes.deleteAmNodes(
+                tenantUrl,
+                argv[OPTION.NAME],
+                token,
+                argv[COMMON_OPTIONS.DRY_RUN]
+            );
+            break;
 
         case COMMAND.SERVICES:
             if (argv[OPTION.NAME] && realms.length > 1) {
@@ -263,6 +275,9 @@ async function deleteConfig(argv) {
 
             logDeletion("services", null);
             await amServices.deleteAmServices(tenantUrl, realms, null, token, argv[COMMON_OPTIONS.DRY_RUN]);
+
+            logDeletion("custom-nodes", null);
+            await customNodes.deleteAmNodes(tenantUrl, null, token, argv[COMMON_OPTIONS.DRY_RUN]);
 
             logDeletion("scripts", null);
             await scripts.deleteScripts(tenantUrl, realms, null, token, scriptPrefixes, argv[COMMON_OPTIONS.DRY_RUN]);
@@ -349,7 +364,12 @@ yargs
         cliOptions([OPTION.NAME, COMMON_OPTIONS.DRY_RUN]),
         commandHandler
     )
-
+    .command(
+        COMMAND.CUSTOM_NODES,
+        "Delete custom nodes",
+        cliOptions([OPTION.NAME, COMMON_OPTIONS.DRY_RUN]),
+        commandHandler
+    )
     .command(
         COMMAND.EMAIL_TEMPLATES,
         "Delete email templates",

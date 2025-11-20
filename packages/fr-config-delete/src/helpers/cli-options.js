@@ -6,7 +6,7 @@ const {
 const OPTION = {
   NAME: "name",
   REALM: "realm",
-  DELETE_INNER_JOURNEYS: "delete-inner-journeys",
+  DELETE_INNER_JOURNEYS: "delete-inner-journeys"
   //DEBUG: "debug",
   //DRY_RUN: "dry-run",
 };

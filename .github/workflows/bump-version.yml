@@ -1,0 +1,68 @@
+name: Version Bump
+
+on:
+  # Trigger 1: Automatic bump on merge to main
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - 'package.json' # Prevent infinite loops if the push is just the version bump
+      - 'CHANGELOG.md'
+
+  # Trigger 2: Manual release via GitHub UI
+  workflow_dispatch:
+    inputs:
+      release_type:
+        description: 'Version to bump (major, minor, patch, or specific version like 1.2.0)'
+        required: true
+        default: 'prerelease'
+
+jobs:
+  bump-version:
+    # specific check to ensure we don't bump if the commit was made by the bot itself (Double safety)
+    if: "!contains(github.event.head_commit.message, '[skip ci]')" 
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # Required to push changes back to the repo
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0 # Fetch full history to ensure git tags are visible
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Configure Git User
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+
+      # LOGIC: Determine which version bump to use
+      - name: Determine Version Strategy
+        id: strategy
+        run: |
+          if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
+            echo "VERSION_ARG=${{ github.event.inputs.release_type }}" >> $GITHUB_ENV
+            echo "Executing Manual Release"
+          else
+            # Default behavior for PR merges: bump the pre-release version
+            # e.g., 1.0.0-alpha.1 -> 1.0.0-alpha.2
+            echo "VERSION_ARG=prerelease --preid=alpha" >> $GITHUB_ENV
+            echo "Executing Auto Pre-release Bump"
+          fi
+
+      - name: Run npm version
+        run: |
+          # This command updates package.json, creates a git commit, and creates a tag.
+          # Adjust '--workspaces' if you aren't using npm workspaces.
+          npm version $VERSION_ARG --workspaces --include-workspace-root --force -m "chore(release): %s [skip ci]"
+
+      - name: Push changes
+        run: |
+          git push origin main --follow-tags

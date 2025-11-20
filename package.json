@@ -27,6 +27,8 @@
     "jest": "29.7.0"
   },
   "scripts": {
+    "sync-versions": "node scripts/update-versions.js",
+    "version": "npm run sync-versions && git add packages/*/package.json",
     "test": "npm run test --workspaces",
     "format-code": "npx prettier --write ."
   },

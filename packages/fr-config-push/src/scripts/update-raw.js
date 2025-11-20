@@ -41,6 +41,11 @@ async function uploadConfig(configJson, urlPath, token) {
   await restUpsert(requestUrl, configObject, token, apiVersionHeader);
 }
 
+// Handle Windows paths
+function normalisePath(path) {
+  return path.replace(/\\/g, "/");
+}
+
 const updateRawConfig = async (argv, token) => {
   const { TENANT_BASE_URL, CONFIG_DIR } = process.env;
 
@@ -74,10 +79,12 @@ const updateRawConfig = async (argv, token) => {
       return;
     }
 
-    const configFiles = globSync(`${baseDir}/**/*.json`);
+    const configFiles = globSync(`${normalisePath(baseDir)}/**/*.json`);
 
     for (const configFile of configFiles) {
-      const urlPath = configFile.slice(baseDir.length).replace(/.json$/, "");
+      const urlPath = normalisePath(
+        configFile.slice(baseDir.length).replace(/.json$/, "")
+      );
       if (requestedPath && !urlPath.startsWith(requestedPath)) {
         continue;
       }

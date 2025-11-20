@@ -6,8 +6,7 @@ const {
 const OPTION = {
   NAME: "name",
   REALM: "realm",
-  DELETE_INNER_JOURNEYS: "delete-inner-journeys",
-  ID: "id",
+  DELETE_INNER_JOURNEYS: "delete-inner-journeys"
   //DEBUG: "debug",
   //DRY_RUN: "dry-run",
 };
@@ -29,12 +28,6 @@ const CLI_OPTIONS = {
     demandOption: false,
     describe: "Delete inner journeys",
     type: "boolean",
-  },
-  id: {
-    alias: "i",
-    demandOption: false,
-    describe: "Only for specific id",
-    type: "string",
   }
 };
 

@@ -2,7 +2,7 @@ const { restGet, restDelete } = require("../../../fr-config-common/src/restClien
 
 const API_VERSION = "resource=1.0";
 
-async function deleteAmNodes(tenantUrl, id, token, dryRun) {
+async function deleteAmNodes(tenantUrl, name, token, dryRun) {
 
   let matchFound = false;
   try {
@@ -17,7 +17,7 @@ async function deleteAmNodes(tenantUrl, id, token, dryRun) {
         const nodeId = node._id;
         const nodeName = node.displayName;
 
-        if (id && id !== nodeId) {
+        if (name && name !== nodeName) {
             continue;
         }
 
@@ -35,8 +35,8 @@ async function deleteAmNodes(tenantUrl, id, token, dryRun) {
           }
       }
 
-      if (id && !matchFound) {
-        console.log(`Warning: Node '${nodeName}' not found.`);
+      if (name && !matchFound) {
+        console.log(`Warning: Node '${name}' not found.`);
       }
   } catch (err) {
     console.log(err);

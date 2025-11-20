@@ -224,7 +224,7 @@ async function deleteConfig(argv) {
             logDeletion("custom-nodes", argv[OPTION.NAME]);
             await customNodes.deleteAmNodes(
                 tenantUrl,
-                argv[OPTION.ID],
+                argv[OPTION.NAME],
                 token,
                 argv[COMMON_OPTIONS.DRY_RUN]
             );
@@ -445,7 +445,7 @@ yargs
     .command(
         COMMAND.CUSTOM_NODES,
         "Delete custom nodes",
-        cliOptions([OPTION.ID, COMMON_OPTIONS.DRY_RUN]),
+        cliOptions([OPTION.NAME, COMMON_OPTIONS.DRY_RUN]),
         commandHandler
     )
     .command(

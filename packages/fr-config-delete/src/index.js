@@ -364,7 +364,12 @@ yargs
         cliOptions([OPTION.NAME, COMMON_OPTIONS.DRY_RUN]),
         commandHandler
     )
-
+    .command(
+        COMMAND.CUSTOM_NODES,
+        "Delete custom nodes",
+        cliOptions([OPTION.NAME, COMMON_OPTIONS.DRY_RUN]),
+        commandHandler
+    )
     .command(
         COMMAND.EMAIL_TEMPLATES,
         "Delete email templates",
@@ -434,12 +439,6 @@ yargs
         COMMAND.SERVICES,
         "Delete authentication services",
         cliOptions([OPTION.REALM, OPTION.NAME, COMMON_OPTIONS.DRY_RUN]),
-        commandHandler
-    )
-    .command(
-        COMMAND.CUSTOM_NODES,
-        "Delete custom nodes",
-        cliOptions([OPTION.NAME, COMMON_OPTIONS.DRY_RUN]),
         commandHandler
     )
     .command(

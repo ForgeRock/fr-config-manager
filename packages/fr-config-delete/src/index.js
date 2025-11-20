@@ -217,10 +217,6 @@ async function deleteConfig(argv) {
             break;
         
         case COMMAND.CUSTOM_NODES:
-            if (argv[OPTION.NAME] && realms.length > 1) {
-                console.error("Error: Deleting a single custom node is only supported when specifying a single realm. Use the --realm option to select one.");
-                throw new Error("Configuration errors");
-            }
             logDeletion("custom-nodes", argv[OPTION.NAME]);
             await customNodes.deleteAmNodes(
                 tenantUrl,

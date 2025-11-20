@@ -10,7 +10,6 @@ const themes = require("./scripts/themes.js");
 const idmFlatConfig = require("./scripts/idmFlatConfig.js");
 const idmServiceConfig = require("./scripts/idmServiceConfig.js");
 // AM Static
-//const scripts = require("./scripts/scripts.js");
 const scripts = require("./scripts/amScripts.js");
 const customNodes = require("./scripts/amCustomNodes.js");
 //const journeys = require("./scripts/journeys.js");

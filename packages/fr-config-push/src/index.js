@@ -51,9 +51,11 @@ const {
 } = require("../../fr-config-common/src/cli-options.js");
 
 async function updateStatic(argv, token) {
+  await updateCustomNodes(argv, token);
   await updateScripts(argv, token);
   await updateAuthTrees(argv, token);
   await updateServices(argv, token);
+  await updateSecretMappings(argv, token);
   await updateRealmConfig(argv, "authentication", token);
   await updateManagedObjects(argv, token);
   await updateRemoteServers(argv, token);

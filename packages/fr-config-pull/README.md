@@ -57,6 +57,7 @@ Commands:
   fr-config-pull secret-mappings        Get secret mappings
   fr-config-pull service-objects        Get service objects
   fr-config-pull services               Get authentication services
+  fr-config-pull telemetry              Get telemetry config
   fr-config-pull themes                 Get UI themes
   fr-config-pull terms-and-conditions   Get terms and conditions
   fr-config-pull test                   Test connection and authentication
@@ -72,10 +73,11 @@ Options:
   -x, --push-api-version      Configuration push API version                  [string]
   -v, --version               Show version number                            [boolean]
   -D, --debug                 Run with debug output                          [boolean]
-  -R, --retries               Retry HTTP connections <n> times on failure    [number]
+  -R, --retries               Retry HTTP connections <n> times on failure     [number]
   -I, --retry-interval        Seconds to wait between retries                 [number]
   -m, --include-immutable     Include immutable IGA workflows                [boolean]
   -u, --custom-relationships  Pull custom relationship schema                [boolean]
+  -g, --category              Category                                        [string]
 ```
 
 Notes on specific options:
@@ -144,3 +146,31 @@ Refer to the [custom nodes README](../../docs/custom-nodes.md) for more details 
 The `--name` option may be used to pull a specific managed object config.
 
 The `--custom-relationships` option is used to pull the schema for custom relationships. This enables push of custom relationships on a different target environment - i.e. when performing `fr-config-push managed-objects` the push reads the schema config stored by the pull and pushes it to the target environment.
+
+`fr-config-pull telemetry`
+Without any options, this command will pull all telemetry config from the tenant.
+
+To pull a specific telemetry config, use the `--category` and `--name` options to specify the config to pull - e.g.
+
+```bash
+fr-config-pull telemetry --category otlp --name newrelic
+```
+
+When pulling telemetry config, any header values are returned empty. Therefore the pull command sets header values to an environment variable corresponding to the provider and header name - e.g.
+
+```
+{
+  "encoding": "PROTO",
+  "endpoint": "https://otlp.datadoghq.eu/v1/logs",
+  "headers": {
+    "dd-api-key": "${TELEMETRY_HEADER_OTLP_DATADOG_DD_API_KEY}"
+  },
+  "id": "datadog",
+  "sources": [
+    "am-authentication"
+  ],
+  "type": "HTTP"
+}
+```
+
+This variable name must be defined in the environment before pushing the config.

@@ -38,6 +38,7 @@ const { updateSaml } = require("./update-saml");
 const updateIgaWorkflows = require("./update-iga-workflows");
 const updateCustomNodes = require("./update-custom-nodes");
 const updateTelemetry = require("./update-telemetry");
+const updateIdmAuthenticationConfig = require("./update-idm-authentication-config");
 
 module.exports = {
   updateAgents,
@@ -79,4 +80,5 @@ module.exports = {
   updateIgaWorkflows,
   updateCustomNodes,
   updateTelemetry,
+  updateIdmAuthenticationConfig,
 };

@@ -38,6 +38,7 @@ Commands:
   fr-config-push email-provider         Update email provider settings
   fr-config-push email-templates        Update email templates
   fr-config-push endpoints              Update custom endpoints
+  fr-config-push idm-authentication     Update IDM authentication configuration
   fr-config-push iga-workflows          Update IGA workflows
   fr-config-push internal-roles         Update internal roles
   fr-config-push journeys               Update authentication journeys

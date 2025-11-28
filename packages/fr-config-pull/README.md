@@ -39,6 +39,7 @@ Commands:
   fr-config-pull email-provider         Get email provider configuration
   fr-config-pull email-templates        Get email templates
   fr-config-pull endpoints              Get custom endpoints
+  fr-config-pull idm-authentication     Get IDM authentication configuration
   fr-config-pull iga-workflows          Get IGA workflows
   fr-config-pull internal-roles         Get internal roles
   fr-config-pull journeys               Get journeys

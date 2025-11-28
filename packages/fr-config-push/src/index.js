@@ -41,6 +41,7 @@ const {
   updateSaml,
   updateCustomNodes,
   updateTelemetry,
+  updateIdmAuthenticationConfig,
 } = require("./scripts");
 
 require("dotenv").config();
@@ -76,6 +77,7 @@ async function updateStatic(argv, token) {
   await updateAudit(argv, token);
   await updateConfigMetadata(argv, token);
   await updateOrgPrivileges(argv, token);
+  await updateIdmAuthenticationConfig(argv, token);
 }
 
 const REQUIRED_CONFIG = [
@@ -292,6 +294,15 @@ async function getCommands() {
       handler: (argv) =>
         checkNamed() &&
         getAccessToken().then((token) => updateIdmEndpoints(argv, token)),
+    })
+    .command({
+      command: "idm-authentication",
+      desc: "Update IDM authentication configuration",
+      builder: cliOptions([]),
+      handler: (argv) =>
+        getAccessToken().then((token) =>
+          updateIdmAuthenticationConfig(argv, token)
+        ),
     })
     .command({
       command: "iga-workflows",

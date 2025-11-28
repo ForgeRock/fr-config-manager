@@ -88,6 +88,7 @@ const COMMAND = {
   RAW: "raw",
   SAML: "saml",
   TELEMETRY: "telemetry",
+  IDM_AUTHENTICATION: "idm-authentication",
 };
 
 const COMMAND_MAP = {
@@ -149,6 +150,7 @@ const COMMAND_MAP = {
     COMMAND.LOCALES,
     COMMAND.AUDIT,
     COMMAND.ORG_PRIVILEGES,
+    COMMAND.IDM_AUTHENTICATION,
   ],
 };
 
@@ -320,6 +322,17 @@ async function getConfig(argv) {
       "access",
       configDir,
       "access-config",
+      tenantUrl,
+      token
+    );
+  }
+
+  if (matchCommand(argv, COMMAND.IDM_AUTHENTICATION)) {
+    console.log("Getting IDM authentication config");
+    idmFlatConfig.exportConfig(
+      "authentication",
+      configDir,
+      "idm-authentication-config",
       tenantUrl,
       token
     );
@@ -757,6 +770,12 @@ yargs
     command: COMMAND.IDM_ENDPOINTS,
     desc: "Get custom endpoints",
     builder: cliOptions([OPTION.NAME]),
+    handler: (argv) => getConfig(argv),
+  })
+  .command({
+    command: COMMAND.IDM_AUTHENTICATION,
+    desc: "Get IDM authentication configuration",
+    builder: cliOptions([]),
     handler: (argv) => getConfig(argv),
   })
   .command({

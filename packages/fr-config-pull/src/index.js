@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 const authenticate = require("../../fr-config-common/src/authenticate.js");
+const platformAuthenticate = require("../../fr-config-common/src/authenticate-platform.js");
 const emailTemplates = require("./scripts/emailTemplates.js");
 const scripts = require("./scripts/scripts.js");
 const idm = require("./scripts/managed.js");
@@ -23,6 +24,7 @@ const secretMappings = require("./scripts/secretMappings.js");
 const saml = require("./scripts/saml.js");
 const {
   ORG_PRIVILEGES_CONFIG,
+  DEPLOYMENT_COMMANDS,
 } = require("../../fr-config-common/src/constants");
 const { cliOptions, OPTION } = require("./helpers/cli-options");
 const oauth2Agents = require("./scripts/oauth2Agents.js");
@@ -46,50 +48,7 @@ const {
 
 require("dotenv").config();
 
-const COMMAND = {
-  ALL: "all",
-  ALL_STATIC: "all-static",
-  AUTH_TREE: "journeys",
-  CONNECTOR_DEFINITIONS: "connector-definitions",
-  CONNECTOR_MAPPINGS: "connector-mappings",
-  COOKIE_DOMAINS: "cookie-domains",
-  CORS: "cors",
-  CSP: "csp",
-  CUSTOM_NODES: "custom-nodes",
-  MANAGED_OBJECTS: "managed-objects",
-  EMAIL_TEMPLATES: "email-templates",
-  EMAIL_PROVIDER: "email-provider",
-  THEMES: "themes",
-  REMOTE_SERVERS: "remote-servers",
-  SCRIPTS: "scripts",
-  SERVICES: "services",
-  AUTHENTICATION: "authentication",
-  TERMS_AND_CONDITIONS: "terms-and-conditions",
-  PASSWORD_POLICY: "password-policy",
-  UI_CONFIG: "ui-config",
-  IDM_ENDPOINTS: "endpoints",
-  IDM_SCHEDULES: "schedules",
-  IDM_ACCESS_CONFIG: "access-config",
-  IGA_WORKFLOWS: "iga-workflows",
-  KBA: "kba",
-  INTERNAL_ROLES: "internal-roles",
-  SECRETS: "secrets",
-  ESVS: "variables",
-  SECRET_MAPPINGS: "secret-mappings",
-  OAUTH2_AGENTS: "oauth2-agents",
-  AUTHZ_POLICIES: "authz-policies",
-  SERVICE_OBJECTS: "service-objects",
-  LOCALES: "locales",
-  AUDIT: "audit",
-  CONFIG_METADATA: "config-metadata",
-  VERSION: "version",
-  TEST: "test",
-  ORG_PRIVILEGES: "org-privileges",
-  RAW: "raw",
-  SAML: "saml",
-  TELEMETRY: "telemetry",
-  IDM_AUTHENTICATION: "idm-authentication",
-};
+const { COMMAND } = require("../../fr-config-common/src/constants.js");
 
 const COMMAND_MAP = {
   all: [
@@ -163,33 +122,7 @@ function matchCommand(argv, command) {
   );
 }
 
-const REQUIRED_CONFIG = [
-  "TENANT_BASE_URL",
-  "SERVICE_ACCOUNT_CLIENT_ID",
-  "SERVICE_ACCOUNT_ID",
-  "SERVICE_ACCOUNT_KEY",
-  "SERVICE_ACCOUNT_SCOPE",
-  "REALMS",
-];
-
-function checkConfig() {
-  var valid = true;
-
-  for (const parameter of REQUIRED_CONFIG) {
-    if (!process.env[parameter]) {
-      console.error("Required config", parameter, "not found");
-      valid = false;
-    }
-  }
-  return valid;
-}
-
 async function getConfig(argv) {
-  if (!checkConfig()) {
-    console.error("Configuration errors");
-    process.exit(1);
-  }
-
   const tenantUrl = process.env.TENANT_BASE_URL;
 
   const realms = argv.realm ? [argv.realm] : JSON.parse(process.env.REALMS);
@@ -197,14 +130,20 @@ async function getConfig(argv) {
   const configDir = process.env.CONFIG_DIR;
   const scriptPrefixes = process.env.SCRIPT_PREFIXES;
 
-  const clientConfig = {
-    clientId: process.env.SERVICE_ACCOUNT_CLIENT_ID,
-    jwtIssuer: process.env.SERVICE_ACCOUNT_ID,
-    privateKey: process.env.SERVICE_ACCOUNT_KEY,
-    scope: process.env.SERVICE_ACCOUNT_SCOPE,
-  };
+  const deploymentType = process.env.DEPLOYMENT_TYPE;
+  const command = argv._[0];
+  if (
+    deploymentType &&
+    DEPLOYMENT_COMMANDS[deploymentType] &&
+    !DEPLOYMENT_COMMANDS[deploymentType].includes(command)
+  ) {
+    console.error(
+      `Error: command ${command} not available for deployment type ${deploymentType}`
+    );
+    process.exit(1);
+  }
 
-  const token = await authenticate.getToken(tenantUrl, clientConfig);
+  const token = await authenticate.getToken();
 
   if (argv._.includes(COMMAND.TEST)) {
     console.log("Authenticated successfully");

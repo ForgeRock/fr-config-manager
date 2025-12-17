@@ -31,30 +31,7 @@ const {
 const yargs = require("yargs");
 require("dotenv").config();
 
-const COMMAND = {
-  CUSTOM_NODES: "custom-nodes",
-  JOURNEYS: "journeys",
-  SCRIPTS: "scripts",
-  CORS: "cors",
-  SERVICES: "services",
-  SECRET_MAPPINGS: "secret-mappings",
-  CONNECTOR_MAPPINGS: "mappings",
-  EMAIL_TEMPLATES: "email-templates",
-  KBA: "kba",
-  CONNECTOR_DEFINITIONS: "connectors",
-  REMOTE_SERVERS: "remote-servers",
-  THEMES: "themes",
-  IDM_ENDPOINTS: "endpoints",
-  IDM_SCHEDULES: "schedules",
-  LOCALES: "locales",
-  TERMS_AND_CONDITIONS: "terms-conditions",
-  SECRETS: "secrets",
-  ESVS: "variables",
-  TEST: "test",
-  ALL_STATIC: "all-static",
-  TENANT_CONFIG: "tenant-config",
-  TELEMETRY: "telemetry",
-};
+const { COMMAND } = require("../../fr-config-common/src/constants.js");
 
 const REQUIRED_CONFIG = [
   "TENANT_BASE_URL",
@@ -82,35 +59,13 @@ function logDeletion(itemType, name) {
   }
 }
 
-function checkConfig() {
-  for (const parameter of REQUIRED_CONFIG) {
-    if (!process.env[parameter]) {
-      throw new Error(`Required config ${parameter} not found`);
-    }
-  }
-
-  if (!process.env.ENABLE_DELETE) {
-    throw new Error(
-      "fr-config-delete is currently in beta. To enable it, set ENABLE_DELETE=true in your environment"
-    );
-  }
-}
-
 async function deleteConfig(argv) {
-  checkConfig();
-
   const tenantUrl = process.env.TENANT_BASE_URL;
   const realms = argv.realm ? [argv.realm] : JSON.parse(process.env.REALMS);
   const scriptPrefixes = process.env.SCRIPT_PREFIXES;
 
-  const clientConfig = {
-    clientId: process.env.SERVICE_ACCOUNT_CLIENT_ID,
-    jwtIssuer: process.env.SERVICE_ACCOUNT_ID,
-    privateKey: process.env.SERVICE_ACCOUNT_KEY,
-    scope: process.env.SERVICE_ACCOUNT_SCOPE,
-  };
+  const token = await authenticate.getToken();
 
-  const token = await authenticate.getToken(tenantUrl, clientConfig);
   const requestedCommand = argv._[0];
 
   if (requestedCommand === COMMAND.TEST) {

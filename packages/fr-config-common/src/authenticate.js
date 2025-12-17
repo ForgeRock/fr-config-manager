@@ -4,6 +4,7 @@ const uuid = require("uuid");
 const qs = require("qs");
 const constants = require("./constants");
 const { restForm } = require("./restClient");
+const { getSuperadminCreds } = require("./authenticate-platform");
 
 const { PrivateKeyFormat, ACCESS_TOKEN_ENV_VAR } = constants;
 
@@ -15,7 +16,82 @@ function getPrivateKeyFormat(privateKey) {
     : PrivateKeyFormat.JWK;
 }
 
-async function getToken(tenantUrl, clientConfig) {
+function checkConfig(requiredConfig) {
+  var valid = true;
+
+  for (const parameter of requiredConfig) {
+    if (!process.env[parameter]) {
+      console.error("Required config", parameter, "not found");
+      process.exit(1);
+    }
+  }
+  return valid;
+}
+
+async function getToken(tenantUrlOverride = null, clientConfigOverride = null) {
+  switch (process.env.DEPLOYMENT_TYPE) {
+    case "PLATFORM":
+      checkConfig([
+        "TENANT_BASE_URL",
+        "SUPERADMIN_USERNAME",
+        "SUPERADMIN_PASSWORD",
+        "SUPERADMIN_OAUTH2_CLIENT_ID",
+        "SUPERADMIN_OAUTH2_REDIRECT_URI",
+        "SUPERADMIN_OAUTH2_SCOPE",
+        "REALMS",
+      ]);
+
+      return await getSuperadminCreds(process.env.TENANT_BASE_URL, true, {
+        username: process.env.SUPERADMIN_USERNAME,
+        password: process.env.SUPERADMIN_PASSWORD,
+        clientId: process.env.SUPERADMIN_OAUTH2_CLIENT_ID,
+        redirectUri: process.env.SUPERADMIN_OAUTH2_REDIRECT_URI,
+        scope: process.env.SUPERADMIN_OAUTH2_SCOPE,
+      });
+
+    case "AM":
+      checkConfig([
+        "TENANT_BASE_URL",
+        "SUPERADMIN_USERNAME",
+        "SUPERADMIN_PASSWORD",
+        "REALMS",
+      ]);
+      const superadminConfig = {
+        username: process.env.SUPERADMIN_USERNAME,
+        password: process.env.SUPERADMIN_PASSWORD,
+        clientId: process.env.SUPERADMIN_OAUTH2_CLIENT_ID,
+        redirectUri: process.env.SUPERADMIN_OAUTH2_REDIRECT_URI,
+        scope: process.env.SUPERADMIN_OAUTH2_SCOPE,
+      };
+      return await getSuperadminCreds(process.env.TENANT_BASE_URL, false, {
+        username: process.env.SUPERADMIN_USERNAME,
+        password: process.env.SUPERADMIN_PASSWORD,
+      });
+
+    case "CLOUD":
+    default:
+      checkConfig([
+        "TENANT_BASE_URL",
+        "SERVICE_ACCOUNT_CLIENT_ID",
+        "SERVICE_ACCOUNT_ID",
+        "SERVICE_ACCOUNT_KEY",
+        "SERVICE_ACCOUNT_SCOPE",
+        "REALMS",
+      ]);
+      const clientConfig = clientConfigOverride || {
+        clientId: process.env.SERVICE_ACCOUNT_CLIENT_ID,
+        jwtIssuer: process.env.SERVICE_ACCOUNT_ID,
+        privateKey: process.env.SERVICE_ACCOUNT_KEY,
+        scope: process.env.SERVICE_ACCOUNT_SCOPE,
+      };
+      return await getServiceAccountToken(
+        tenantUrlOverride || process.env.TENANT_BASE_URL,
+        clientConfig
+      );
+  }
+}
+
+async function getServiceAccountToken(tenantUrl, clientConfig) {
   const envToken = process.env[ACCESS_TOKEN_ENV_VAR];
 
   if (envToken) {

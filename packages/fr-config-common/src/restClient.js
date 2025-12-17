@@ -13,6 +13,7 @@ const path = require("path");
 const { getOption, COMMON_OPTIONS } = require("./cli-options");
 const { debugMode, dryRun } = require("./utils");
 const { ADMIN_COOKIE_ENV_VAR } = require("./constants");
+const { getCookies } = require("./cookies");
 
 function wait(seconds) {
   return new Promise((resolve) => setTimeout(resolve, seconds * 1000));
@@ -27,7 +28,8 @@ async function httpRequest(
   apiVersion,
   ignoreNotFound = false,
   ifMatch = null,
-  ifNoneMatch = null
+  ifNoneMatch = null,
+  additionalHeaders = null
 ) {
   let request = null;
 
@@ -103,13 +105,19 @@ async function httpRequest(
     request.headers["Accept-API-Version"] = apiVersion;
   }
 
+  if (additionalHeaders) {
+    request.headers = { ...request.headers, ...additionalHeaders };
+  }
+
   if (requestParameters) {
     request.params = requestParameters;
   }
 
-  const cookie = process.env[ADMIN_COOKIE_ENV_VAR];
+  request.maxRedirects = 0;
+  request.validateStatus = (status) => status < 400;
+
+  const cookie = process.env[ADMIN_COOKIE_ENV_VAR] || getCookies();
   if (cookie) {
-    console.log("Using admin cookie from environment");
     request.headers["Cookie"] = cookie;
   }
 
@@ -151,7 +159,10 @@ async function httpRequest(
       if (response) {
         console.log("Request:");
         console.log(JSON.stringify(response.config, null, 2));
-        console.log("Response:");
+        console.log("Response status:", response.status);
+        console.log("Response headers:");
+        console.log(JSON.stringify(response.headers, null, 2));
+        console.log("Response body:");
         console.log(JSON.stringify(response.data, null, 2));
         console.log(
           "============================== << DEBUG << =============================="
@@ -255,6 +266,26 @@ async function restUpsert(requestUrl, body, token, apiVersion) {
   }
 }
 
+function restPlatformAuthenticate(
+  requestUrl,
+  username,
+  password,
+  journey = null
+) {
+  return httpRequest(
+    requestUrl,
+    journey ? { authIndexType: "service", authIndexValue: journey } : null,
+    REQUEST_TYPE.POST,
+    null,
+    null,
+    "protocol=1.0,resource=2.1",
+    false,
+    null,
+    null,
+    { "x-openam-username": username, "x-openam-password": password }
+  );
+}
+
 function logRestError(error) {
   console.error("Exception:", error.name);
   if (error.name === "AxiosError") {
@@ -273,3 +304,4 @@ module.exports.restPut = restPut;
 module.exports.restUpsert = restUpsert;
 module.exports.restDelete = restDelete;
 module.exports.logRestError = logRestError;
+module.exports.restPlatformAuthenticate = restPlatformAuthenticate;

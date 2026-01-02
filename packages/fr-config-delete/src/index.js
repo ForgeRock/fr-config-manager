@@ -61,6 +61,10 @@ function logDeletion(itemType, name) {
 
 async function deleteConfig(argv) {
   const tenantUrl = process.env.TENANT_BASE_URL;
+  if (!tenantUrl) {
+    console.error("Error: required config TENANT_BASE_URL not found");
+    process.exit(1);
+  }
   const realms = argv.realm ? [argv.realm] : JSON.parse(process.env.REALMS);
   const scriptPrefixes = process.env.SCRIPT_PREFIXES;
 

@@ -19,7 +19,7 @@ async function exportConfig(exportDir, tenantUrl, name, category, token) {
       telemetryEndpoint,
       null,
       token,
-      "protocol=1.0,resource=1.0"
+      "protocol=1.0,resource=1.0",
     );
 
     const targetDir = `${exportDir}/${EXPORT_SUBDIR}`;
@@ -53,13 +53,15 @@ async function exportConfig(exportDir, tenantUrl, name, category, token) {
           continue;
         }
         const fileName = `${jsonDir}/${provider.id}.json`;
-        Object.keys(provider.headers).forEach((headerName) => {
-          provider.headers[headerName] = headerEnvVariable(
-            telemetryCategory,
-            providerName,
-            headerName
-          );
-        });
+        if (provider.headers) {
+          Object.keys(provider.headers).forEach((headerName) => {
+            provider.headers[headerName] = headerEnvVariable(
+              telemetryCategory,
+              providerName,
+              headerName,
+            );
+          });
+        }
         saveJsonToFile(provider, fileName);
         configFound = true;
       }
@@ -68,7 +70,7 @@ async function exportConfig(exportDir, tenantUrl, name, category, token) {
     if (!configFound) {
       console.log(
         "No telemetry config found",
-        name ? ` for ${category}/${name}` : ""
+        name ? ` for ${category}/${name}` : "",
       );
     }
   } catch (err) {

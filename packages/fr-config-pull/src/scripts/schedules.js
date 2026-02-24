@@ -24,11 +24,12 @@ function processSchedules(schedules, fileDir, name) {
 
       if (
         schedule.invokeService === "script" &&
+        schedule.invokeContext.script &&
         schedule.invokeContext.script.source
       ) {
         fs.writeFileSync(
           `${scheduleDir}/${scriptFilename}`,
-          schedule.invokeContext.script.source
+          schedule.invokeContext.script.source,
         );
         delete schedule.invokeContext.script.source;
         schedule.invokeContext.script.file = `${scriptFilename}`;
@@ -38,7 +39,7 @@ function processSchedules(schedules, fileDir, name) {
       ) {
         fs.writeFileSync(
           `${scheduleDir}/${scriptFilename}`,
-          schedule.invokeContext.task.script.source
+          schedule.invokeContext.task.script.source,
         );
         delete schedule.invokeContext.task.script.source;
         schedule.invokeContext.task.script.file = `${scriptFilename}`;
@@ -59,7 +60,7 @@ async function exportSchedules(exportDir, tenantUrl, name, token) {
     const response = await restGet(
       idmEndpoint,
       { _queryFilter: '_id sw "schedule/"' },
-      token
+      token,
     );
 
     const schedules = response.data.result;

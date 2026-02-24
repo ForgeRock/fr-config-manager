@@ -30,7 +30,7 @@ const updateIdmSchedules = async (argv, token) => {
     for (const schedulePath of schedulePaths) {
       const scheduleDirName = path.parse(schedulePath).base;
       const schedule = JSON.parse(
-        fs.readFileSync(path.join(schedulePath, `${scheduleDirName}.json`))
+        fs.readFileSync(path.join(schedulePath, `${scheduleDirName}.json`)),
       );
 
       const scheduleName = schedule._id.split("/")[1];
@@ -41,11 +41,12 @@ const updateIdmSchedules = async (argv, token) => {
 
       if (
         schedule.invokeService === "script" &&
+        schedule.invokeContext.script &&
         schedule.invokeContext.script.file
       ) {
         const scriptData = fs.readFileSync(
           `${schedulePath}/${schedule.invokeContext.script.file}`,
-          "utf8"
+          "utf8",
         );
         schedule.invokeContext.script.source = scriptData;
         delete schedule.invokeContext.script.file;
@@ -55,7 +56,7 @@ const updateIdmSchedules = async (argv, token) => {
       ) {
         const scriptData = fs.readFileSync(
           `${schedulePath}/${schedule.invokeContext.task.script.file}`,
-          "utf8"
+          "utf8",
         );
         schedule.invokeContext.task.script.source = scriptData;
         delete schedule.invokeContext.task.script.file;

@@ -15,6 +15,50 @@ const { debugMode, dryRun } = require("./utils");
 const { ADMIN_COOKIE_ENV_VAR } = require("./constants");
 const { getCookies } = require("./cookies");
 
+const CUSTOM_HEADERS_ENV_VAR = "CUSTOM_HEADERS";
+let customHeadersWarningLogged = false;
+
+function logCustomHeadersWarning(message) {
+  if (!customHeadersWarningLogged) {
+    console.warn(message);
+    customHeadersWarningLogged = true;
+  }
+}
+
+function getGlobalRequestHeaders() {
+  const rawHeaders = process.env[CUSTOM_HEADERS_ENV_VAR];
+  if (!rawHeaders) {
+    return null;
+  }
+
+  try {
+    const parsedHeaders = JSON.parse(rawHeaders);
+
+    if (
+      !parsedHeaders ||
+      Array.isArray(parsedHeaders) ||
+      typeof parsedHeaders !== "object"
+    ) {
+      logCustomHeadersWarning(
+        `Ignoring ${CUSTOM_HEADERS_ENV_VAR}: expected a JSON object`
+      );
+      return null;
+    }
+
+    return Object.entries(parsedHeaders).reduce((headers, [name, value]) => {
+      if (value !== null && value !== undefined) {
+        headers[name] = String(value);
+      }
+      return headers;
+    }, {});
+  } catch (error) {
+    logCustomHeadersWarning(
+      `Ignoring ${CUSTOM_HEADERS_ENV_VAR}: invalid JSON value`
+    );
+    return null;
+  }
+}
+
 function wait(seconds) {
   return new Promise((resolve) => setTimeout(resolve, seconds * 1000));
 }
@@ -95,6 +139,11 @@ async function httpRequest(
     default:
       console.error("Unrecognised request type", requestType);
       process.exit(1);
+  }
+
+  const globalRequestHeaders = getGlobalRequestHeaders();
+  if (globalRequestHeaders) {
+    request.headers = { ...globalRequestHeaders, ...request.headers };
   }
 
   if (token) {
@@ -305,3 +354,4 @@ module.exports.restUpsert = restUpsert;
 module.exports.restDelete = restDelete;
 module.exports.logRestError = logRestError;
 module.exports.restPlatformAuthenticate = restPlatformAuthenticate;
+module.exports.getGlobalRequestHeaders = getGlobalRequestHeaders;

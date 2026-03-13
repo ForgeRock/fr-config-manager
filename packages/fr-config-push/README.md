@@ -84,6 +84,8 @@ Options:
   -r, --draft                 Draft version                                  [boolean]
   -u, --custom-relationships  Refresh custom relationhsips                   [boolean]
   -g, --category              Category                                        [string]
+  -H, --configuration-header-overrides  Configuration management header
+                                        overrides                             [string]
 ```
 
 Notes on specific options:

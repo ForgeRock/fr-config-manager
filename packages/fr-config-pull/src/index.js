@@ -142,7 +142,7 @@ async function getConfig(argv) {
     !DEPLOYMENT_COMMANDS[deploymentType].includes(command)
   ) {
     console.error(
-      `Error: command ${command} not available for deployment type ${deploymentType}`
+      `Error: command ${command} not available for deployment type ${deploymentType}`,
     );
     process.exit(1);
   }
@@ -170,7 +170,7 @@ async function getConfig(argv) {
       configDir,
       tenantUrl,
       argv[OPTION.NAME],
-      token
+      token,
     );
   }
 
@@ -181,7 +181,7 @@ async function getConfig(argv) {
       configDir,
       "email-provider",
       tenantUrl,
-      token
+      token,
     );
   }
 
@@ -192,7 +192,7 @@ async function getConfig(argv) {
       tenantUrl,
       argv[OPTION.NAME],
       argv[OPTION.CUSTOM_RELATIONSHIPS],
-      token
+      token,
     );
   }
 
@@ -213,7 +213,7 @@ async function getConfig(argv) {
       realms,
       scriptPrefixes,
       argv[OPTION.NAME],
-      token
+      token,
     );
   }
 
@@ -235,7 +235,7 @@ async function getConfig(argv) {
       argv[OPTION.NAME],
       argv[OPTION.PULL_DEPENDENCIES],
       argv[OPTION.CLEAN],
-      token
+      token,
     );
   }
 
@@ -266,7 +266,7 @@ async function getConfig(argv) {
       configDir,
       "access-config",
       tenantUrl,
-      token
+      token,
     );
   }
 
@@ -277,7 +277,7 @@ async function getConfig(argv) {
       configDir,
       "idm-authentication-config",
       tenantUrl,
-      token
+      token,
     );
   }
 
@@ -298,7 +298,7 @@ async function getConfig(argv) {
       realms,
       tenantUrl,
       argv[OPTION.NAME],
-      token
+      token,
     );
   }
 
@@ -308,7 +308,7 @@ async function getConfig(argv) {
       configDir,
       tenantUrl,
       argv[OPTION.NAME],
-      token
+      token,
     );
   }
 
@@ -319,7 +319,7 @@ async function getConfig(argv) {
       configDir,
       "kba",
       tenantUrl,
-      token
+      token,
     );
   }
 
@@ -339,7 +339,7 @@ async function getConfig(argv) {
       realms,
       tenantUrl,
       argv[OPTION.NAME],
-      token
+      token,
     );
   }
 
@@ -350,7 +350,7 @@ async function getConfig(argv) {
       realms,
       "authentication",
       tenantUrl,
-      token
+      token,
     );
   }
 
@@ -362,7 +362,7 @@ async function getConfig(argv) {
       RCS_SUB_DIR,
       tenantUrl,
       token,
-      true
+      true,
     );
   }
 
@@ -373,7 +373,7 @@ async function getConfig(argv) {
       configDir,
       "ui",
       tenantUrl,
-      token
+      token,
     );
   }
 
@@ -401,7 +401,7 @@ async function getConfig(argv) {
       tenantUrl,
       argv[OPTION.NAME],
       activeOnly,
-      token
+      token,
     );
   }
 
@@ -411,7 +411,7 @@ async function getConfig(argv) {
       tenantUrl,
       argv[OPTION.NAME],
       argv[OPTION.DUMP],
-      token
+      token,
     );
   }
 
@@ -419,7 +419,7 @@ async function getConfig(argv) {
     if (argv.name) {
       if (realms.length !== 1) {
         console.error(
-          "Error: for a named secret mapping, specify a single realm"
+          "Error: for a named secret mapping, specify a single realm",
         );
         process.exit(1);
       }
@@ -432,7 +432,7 @@ async function getConfig(argv) {
       realms,
       tenantUrl,
       argv[OPTION.NAME],
-      token
+      token,
     );
   }
 
@@ -449,7 +449,7 @@ async function getConfig(argv) {
   if (matchCommand(argv, COMMAND.OAUTH2_AGENTS)) {
     if (!process.env.OAUTH2_AGENTS_CONFIG) {
       console.log(
-        "Warning - no OAUTH2_AGENTS_CONFIG defined - skipping agents"
+        "Warning - no OAUTH2_AGENTS_CONFIG defined - skipping agents",
       );
     } else {
       console.log("Getting OAuth2 agents");
@@ -457,7 +457,7 @@ async function getConfig(argv) {
         configDir,
         process.env.OAUTH2_AGENTS_CONFIG,
         tenantUrl,
-        token
+        token,
       );
     }
   }
@@ -471,7 +471,7 @@ async function getConfig(argv) {
         configDir,
         process.env.AUTHZ_POLICY_SETS_CONFIG,
         tenantUrl,
-        token
+        token,
       );
     }
   }
@@ -487,7 +487,7 @@ async function getConfig(argv) {
   if (matchCommand(argv, COMMAND.SERVICE_OBJECTS)) {
     if (!process.env.SERVICE_OBJECTS_CONFIG) {
       console.log(
-        "Warning - no SERVICE_OBJECTS_CONFIG defined - skipping service objects"
+        "Warning - no SERVICE_OBJECTS_CONFIG defined - skipping service objects",
       );
     } else {
       console.log("Getting Service Objects");
@@ -495,7 +495,7 @@ async function getConfig(argv) {
         configDir,
         process.env.SERVICE_OBJECTS_CONFIG,
         tenantUrl,
-        token
+        token,
       );
     }
   }
@@ -507,7 +507,7 @@ async function getConfig(argv) {
       process.env.CSP_OVERRIDES,
       tenantUrl,
       argv[OPTION.NAME],
-      token
+      token,
     );
   }
 
@@ -535,7 +535,7 @@ async function getConfig(argv) {
     const rawConfigFile = process.env.RAW_CONFIG;
     if (!path && !rawConfigFile) {
       console.error(
-        `${COMMAND.RAW} requires the --path option or a configured RAW_CONFIG file`
+        `${COMMAND.RAW} requires the --path option or a configured RAW_CONFIG file`,
       );
       process.exit(1);
     }
@@ -544,7 +544,7 @@ async function getConfig(argv) {
 
     if (apiVersion && (!apiVersion.protocol || !apiVersion.resource)) {
       console.error(
-        `${COMMAND.RAW} --${OPTION.PUSH_API_VERSION} requires resource and protocol versions`
+        `${COMMAND.RAW} --${OPTION.PUSH_API_VERSION} requires resource and protocol versions`,
       );
       process.exit(1);
     }
@@ -555,7 +555,7 @@ async function getConfig(argv) {
       path,
       apiVersion,
       rawConfigFile,
-      token
+      token,
     );
   }
 
@@ -569,7 +569,7 @@ async function getConfig(argv) {
       tenantUrl,
       argv[OPTION.NAME],
       token,
-      includeImmutable
+      includeImmutable,
     );
   }
 
@@ -587,7 +587,7 @@ async function getConfig(argv) {
     const name = argv[OPTION.NAME];
     if (name && !argv[OPTION.CATEGORY]) {
       console.error(
-        "Error: for a named provider, specify a category (e.g. --category otlp)"
+        "Error: for a named provider, specify a category (e.g. --category otlp)",
       );
       process.exit(1);
     }
@@ -603,7 +603,7 @@ async function getConfig(argv) {
       tenantUrl,
       name,
       argv[OPTION.CATEGORY],
-      token
+      token,
     );
   }
 }
@@ -874,7 +874,11 @@ yargs
   .option(COMMON_OPTIONS.RETRIES, COMMON_CLI_OPTIONS[COMMON_OPTIONS.RETRIES])
   .option(
     COMMON_OPTIONS.RETRY_INTERVAL,
-    COMMON_CLI_OPTIONS[COMMON_OPTIONS.RETRY_INTERVAL]
+    COMMON_CLI_OPTIONS[COMMON_OPTIONS.RETRY_INTERVAL],
+  )
+  .option(
+    COMMON_OPTIONS.CONFIG_HEADER_OVERRIDES,
+    COMMON_CLI_OPTIONS[COMMON_OPTIONS.CONFIG_HEADER_OVERRIDES],
   )
   .demandCommand()
   .parse();

@@ -79,6 +79,8 @@ Options:
   -m, --include-immutable     Include immutable IGA workflows                [boolean]
   -u, --custom-relationships  Pull custom relationship schema                [boolean]
   -g, --category              Category                                        [string]
+  -H, --configuration-header-overrides  Configuration management header
+                                        overrides                             [string]
 ```
 
 Notes on specific options:

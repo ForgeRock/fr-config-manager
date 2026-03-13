@@ -16,6 +16,8 @@ const { ADMIN_COOKIE_ENV_VAR } = require("./constants");
 const { getCookies } = require("./cookies");
 
 const CUSTOM_HEADERS_ENV_VAR = "CUSTOM_HEADERS";
+const CUSTOM_CONFIG_HEADERS_ENV_VAR = "CUSTOM_CONFIG_HEADERS";
+
 let customHeadersWarningLogged = false;
 
 function logCustomHeadersWarning(message) {
@@ -26,7 +28,10 @@ function logCustomHeadersWarning(message) {
 }
 
 function getGlobalRequestHeaders() {
-  const rawHeaders = process.env[CUSTOM_HEADERS_ENV_VAR];
+  return parseRequestHeaders(process.env[CUSTOM_HEADERS_ENV_VAR]);
+}
+
+function parseRequestHeaders(rawHeaders) {
   if (!rawHeaders) {
     return null;
   }
@@ -40,7 +45,7 @@ function getGlobalRequestHeaders() {
       typeof parsedHeaders !== "object"
     ) {
       logCustomHeadersWarning(
-        `Ignoring ${CUSTOM_HEADERS_ENV_VAR}: expected a JSON object`
+        `Ignoring ${CUSTOM_HEADERS_ENV_VAR}: expected a JSON object`,
       );
       return null;
     }
@@ -53,7 +58,7 @@ function getGlobalRequestHeaders() {
     }, {});
   } catch (error) {
     logCustomHeadersWarning(
-      `Ignoring ${CUSTOM_HEADERS_ENV_VAR}: invalid JSON value`
+      `Ignoring ${CUSTOM_HEADERS_ENV_VAR}: invalid JSON value`,
     );
     return null;
   }
@@ -73,7 +78,7 @@ async function httpRequest(
   ignoreNotFound = false,
   ifMatch = null,
   ifNoneMatch = null,
-  additionalHeaders = null
+  additionalHeaders = null,
 ) {
   let request = null;
 
@@ -148,6 +153,17 @@ async function httpRequest(
 
   if (token) {
     request.headers.Authorization = `Bearer ${token}`;
+    const configHeaderConfig =
+      getOption(COMMON_OPTIONS.CONFIG_HEADER_OVERRIDES) ||
+      process.env[CUSTOM_CONFIG_HEADERS_ENV_VAR];
+    if (configHeaderConfig) {
+      const configRequestHeaders = parseRequestHeaders(configHeaderConfig);
+
+      if (configRequestHeaders) {
+        console.log("xxxx", JSON.stringify(configRequestHeaders));
+        request.headers = { ...configRequestHeaders, ...request.headers };
+      }
+    }
   }
 
   if (apiVersion) {
@@ -203,7 +219,7 @@ async function httpRequest(
 
     if (debugMode()) {
       console.log(
-        "============================== >> DEBUG >> =============================="
+        "============================== >> DEBUG >> ==============================",
       );
       if (response) {
         console.log("Request:");
@@ -214,7 +230,7 @@ async function httpRequest(
         console.log("Response body:");
         console.log(JSON.stringify(response.data, null, 2));
         console.log(
-          "============================== << DEBUG << =============================="
+          "============================== << DEBUG << ==============================",
         );
       } else {
         console.log("No response data");
@@ -234,7 +250,7 @@ function restGet(
   requestParameters,
   token,
   apiVersion,
-  ignoreNotFound = false
+  ignoreNotFound = false,
 ) {
   return httpRequest(
     requestUrl,
@@ -243,7 +259,7 @@ function restGet(
     null,
     token,
     apiVersion,
-    ignoreNotFound
+    ignoreNotFound,
   );
 }
 
@@ -258,7 +274,7 @@ function restPost(requestUrl, requestParameters, body, token, apiVersion) {
     REQUEST_TYPE.POST,
     body,
     token,
-    apiVersion
+    apiVersion,
   );
 }
 
@@ -269,7 +285,7 @@ function restPut(
   apiVersion,
   ignoreNotFound = false,
   ifMatch = null,
-  ifNoneMatch = null
+  ifNoneMatch = null,
 ) {
   return httpRequest(
     requestUrl,
@@ -280,7 +296,7 @@ function restPut(
     apiVersion,
     ignoreNotFound,
     ifMatch,
-    ifNoneMatch
+    ifNoneMatch,
   );
 }
 
@@ -292,7 +308,7 @@ function restDelete(requestUrl, token, apiVersion, ignoreNotFound = false) {
     null,
     token,
     apiVersion,
-    ignoreNotFound
+    ignoreNotFound,
   );
 }
 
@@ -303,7 +319,7 @@ async function restUpsert(requestUrl, body, token, apiVersion) {
       null,
       token,
       apiVersion,
-      true
+      true,
     );
     if (existingEntry) {
       return await restPut(requestUrl, body, token, apiVersion, true, "*");
@@ -319,7 +335,7 @@ function restPlatformAuthenticate(
   requestUrl,
   username,
   password,
-  journey = null
+  journey = null,
 ) {
   return httpRequest(
     requestUrl,
@@ -331,7 +347,7 @@ function restPlatformAuthenticate(
     false,
     null,
     null,
-    { "x-openam-username": username, "x-openam-password": password }
+    { "x-openam-username": username, "x-openam-password": password },
   );
 }
 

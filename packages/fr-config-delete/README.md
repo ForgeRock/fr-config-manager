@@ -49,6 +49,8 @@ Commands:
   Options:
   -h, --help     Show help                                             [boolean]
   -v, --version  Show version number                                   [boolean]
+  -H, --configuration-header-overrides  Configuration management header
+                                        overrides                       [string]
 ```
 
 Notes on specific options:

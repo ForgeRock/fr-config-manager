@@ -46,6 +46,8 @@ Options:
   -D, --debug                      Run with debug output                          [boolean]
   -R, --retries                    Retry HTTP connections <n> times on failure     [number]
   -I, --retry-interval             Seconds to wait between retries                 [number]
+  -H, --configuration-header-overrides  Configuration management header
+                                        overrides                                  [string]
 ```
 
 Notes on specific options:

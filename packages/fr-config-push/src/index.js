@@ -149,7 +149,7 @@ function checkAllowedCommand() {
     !DEPLOYMENT_COMMANDS[deploymentType].includes(command)
   ) {
     console.error(
-      `Error: command ${command} not available for deployment type ${deploymentType}`
+      `Error: command ${command} not available for deployment type ${deploymentType}`,
     );
     process.exit(1);
   }
@@ -219,7 +219,7 @@ async function getCommands() {
       builder: cliOptions([OPTION.REALM]),
       handler: (argv) =>
         getAccessToken().then((token) =>
-          updateRealmConfig(argv, "authentication", token)
+          updateRealmConfig(argv, "authentication", token),
         ),
     })
     .command({
@@ -243,7 +243,7 @@ async function getCommands() {
       handler: (argv) =>
         checkNamed() &&
         getAccessToken().then((token) =>
-          updateConnectorDefinitions(argv, token)
+          updateConnectorDefinitions(argv, token),
         ),
     })
     .command({
@@ -313,7 +313,7 @@ async function getCommands() {
       builder: cliOptions([]),
       handler: (argv) =>
         getAccessToken().then((token) =>
-          updateIdmAuthenticationConfig(argv, token)
+          updateIdmAuthenticationConfig(argv, token),
         ),
     })
     .command({
@@ -487,7 +487,7 @@ async function getCommands() {
       builder: cliOptions([]),
       handler: (argv) =>
         getAccessToken().then((token) =>
-          console.log("Connected and authenticated successfully")
+          console.log("Connected and authenticated successfully"),
         ),
     })
     .command({
@@ -517,7 +517,11 @@ async function getCommands() {
     .option(COMMON_OPTIONS.RETRIES, COMMON_CLI_OPTIONS[COMMON_OPTIONS.RETRIES])
     .option(
       COMMON_OPTIONS.RETRY_INTERVAL,
-      COMMON_CLI_OPTIONS[COMMON_OPTIONS.RETRY_INTERVAL]
+      COMMON_CLI_OPTIONS[COMMON_OPTIONS.RETRY_INTERVAL],
+    )
+    .option(
+      COMMON_OPTIONS.CONFIG_HEADER_OVERRIDES,
+      COMMON_CLI_OPTIONS[COMMON_OPTIONS.CONFIG_HEADER_OVERRIDES],
     )
     .demandCommand()
     .parse();

@@ -96,7 +96,7 @@ async function getCommands() {
       builder: cliOptions([OPTION.LOCAL_LOCK_ONLY]),
       handler: (argv) =>
         getAccessToken(tenantUpperUrl, upperClientConfig).then((token) =>
-          checkTenantsLocked(argv, token)
+          checkTenantsLocked(argv, token),
         ),
     })
     .command({
@@ -112,7 +112,7 @@ async function getCommands() {
         const provisional = argv[OPTION.PROVISIONAL];
         getAccessToken(
           provisional ? tenantLowerUrl : tenantUpperUrl,
-          provisional ? lowerClientConfig : upperClientConfig
+          provisional ? lowerClientConfig : upperClientConfig,
         ).then((token) => checkPromotionReports(argv, token));
       },
     })
@@ -122,7 +122,7 @@ async function getCommands() {
       builder: cliOptions([]),
       handler: (argv) =>
         getAccessToken(tenantUpperUrl, upperClientConfig).then((token) =>
-          checkPromotionStatus(argv, token)
+          checkPromotionStatus(argv, token),
         ),
     })
     .command({
@@ -131,7 +131,7 @@ async function getCommands() {
       builder: cliOptions([]),
       handler: (argv) =>
         getAccessToken(tenantUpperUrl, upperClientConfig).then((token) =>
-          lockTenants(argv, token)
+          lockTenants(argv, token),
         ),
     })
     .command({
@@ -145,7 +145,7 @@ async function getCommands() {
       ]),
       handler: (argv) =>
         getAccessToken(tenantUpperUrl, upperClientConfig).then((token) =>
-          rollbackPromotion(argv, token)
+          rollbackPromotion(argv, token),
         ),
     })
     .command({
@@ -160,7 +160,7 @@ async function getCommands() {
       ]),
       handler: (argv) =>
         getAccessToken(tenantUpperUrl, upperClientConfig).then((token) =>
-          runPromotion(argv, true, token)
+          runPromotion(argv, true, token),
         ),
     })
     .command({
@@ -175,7 +175,7 @@ async function getCommands() {
       ]),
       handler: (argv) =>
         getAccessToken(tenantUpperUrl, upperClientConfig).then((token) =>
-          runPromotion(argv, false, token)
+          runPromotion(argv, false, token),
         ),
     })
     .command({
@@ -184,14 +184,18 @@ async function getCommands() {
       builder: cliOptions([OPTION.ID]),
       handler: (argv) =>
         getAccessToken(tenantUpperUrl, upperClientConfig).then((token) =>
-          unlockTenants(argv, token)
+          unlockTenants(argv, token),
         ),
     })
     .option(COMMON_OPTIONS.DEBUG, COMMON_CLI_OPTIONS[COMMON_OPTIONS.DEBUG])
     .option(COMMON_OPTIONS.RETRIES, COMMON_CLI_OPTIONS[COMMON_OPTIONS.RETRIES])
     .option(
       COMMON_OPTIONS.RETRY_INTERVAL,
-      COMMON_CLI_OPTIONS[COMMON_OPTIONS.RETRY_INTERVAL]
+      COMMON_CLI_OPTIONS[COMMON_OPTIONS.RETRY_INTERVAL],
+    )
+    .option(
+      COMMON_OPTIONS.CONFIG_HEADER_OVERRIDES,
+      COMMON_CLI_OPTIONS[COMMON_OPTIONS.CONFIG_HEADER_OVERRIDES],
     )
     .demandCommand()
     .parse();

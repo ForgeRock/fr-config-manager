@@ -3,6 +3,7 @@ const COMMON_OPTIONS = {
   RETRIES: "retries",
   RETRY_INTERVAL: "retry-interval",
   DRY_RUN: "dry-run",
+  CONFIG_HEADER_OVERRIDES: "configuration-header-overrides",
 };
 
 const COMMON_CLI_OPTIONS = {
@@ -25,6 +26,11 @@ const COMMON_CLI_OPTIONS = {
     alias: "Y",
     type: "boolean",
     description: "Dry run for REST requests",
+  },
+  "configuration-header-overrides": {
+    alias: "H",
+    type: "string",
+    description: "Configuration management header overrides",
   },
 };
 

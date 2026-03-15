@@ -160,7 +160,6 @@ async function httpRequest(
       const configRequestHeaders = parseRequestHeaders(configHeaderConfig);
 
       if (configRequestHeaders) {
-        console.log("xxxx", JSON.stringify(configRequestHeaders));
         request.headers = { ...configRequestHeaders, ...request.headers };
       }
     }

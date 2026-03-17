@@ -555,6 +555,10 @@ async function getCommands() {
       COMMON_OPTIONS.CONFIG_HEADER_OVERRIDES,
       COMMON_CLI_OPTIONS[COMMON_OPTIONS.CONFIG_HEADER_OVERRIDES],
     )
+    .option(
+      COMMON_OPTIONS.DIRECT_CONTROL,
+      COMMON_CLI_OPTIONS[COMMON_OPTIONS.DIRECT_CONTROL],
+    )
     .demandCommand()
     .parse();
 }

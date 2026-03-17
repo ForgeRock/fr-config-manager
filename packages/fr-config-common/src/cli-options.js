@@ -4,6 +4,7 @@ const COMMON_OPTIONS = {
   RETRY_INTERVAL: "retry-interval",
   DRY_RUN: "dry-run",
   CONFIG_HEADER_OVERRIDES: "configuration-header-overrides",
+  DIRECT_CONTROL: "direct-control",
 };
 
 const COMMON_CLI_OPTIONS = {
@@ -31,6 +32,11 @@ const COMMON_CLI_OPTIONS = {
     alias: "H",
     type: "string",
     description: "Configuration management header overrides",
+  },
+  "direct-control": {
+    alias: "C",
+    type: "boolean",
+    description: "Set X-Configuration-Type=mutable header for all config requests",
   },
 };
 

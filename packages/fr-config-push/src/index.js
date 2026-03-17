@@ -511,9 +511,9 @@ async function getCommands() {
     .command({
       command: COMMAND.DIRECT_CONTROL_APPLY,
       desc: "Apply any changes made during the current Direct Configuration session",
-      builder: cliOptions([]),
+      builder: cliOptions([OPTION.WAIT]),
       handler: (argv) =>
-        getAccessToken().then((token) => applySession(tenantUrl, token)),
+        getAccessToken().then((token) => applySession(tenantUrl, token, argv[OPTION.WAIT])),
     })
     .command({
       command: COMMAND.DIRECT_CONTROL_ABORT,

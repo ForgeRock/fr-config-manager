@@ -39,6 +39,12 @@ const updateIgaWorkflows = require("./update-iga-workflows");
 const updateCustomNodes = require("./update-custom-nodes");
 const updateTelemetry = require("./update-telemetry");
 const updateIdmAuthenticationConfig = require("./update-idm-authentication-config");
+const {
+  initSession,
+  getSessionState,
+  applySession,
+  abortSession,
+} = require("./update-direct-control");
 
 module.exports = {
   updateAgents,
@@ -81,4 +87,8 @@ module.exports = {
   updateCustomNodes,
   updateTelemetry,
   updateIdmAuthenticationConfig,
+  initSession,
+  getSessionState,
+  applySession,
+  abortSession,
 };

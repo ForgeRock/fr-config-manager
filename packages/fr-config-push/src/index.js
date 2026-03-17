@@ -42,6 +42,10 @@ const {
   updateCustomNodes,
   updateTelemetry,
   updateIdmAuthenticationConfig,
+  initSession,
+  getSessionState,
+  applySession,
+  abortSession,
 } = require("./scripts");
 
 require("dotenv").config();
@@ -489,6 +493,34 @@ async function getCommands() {
         getAccessToken().then((token) =>
           console.log("Connected and authenticated successfully"),
         ),
+    })
+    .command({
+      command: COMMAND.DIRECT_CONTROL_INIT,
+      desc: "Initialise a new Direct Configuration session",
+      builder: cliOptions([]),
+      handler: (argv) =>
+        getAccessToken().then((token) => initSession(tenantUrl, token)),
+    })
+    .command({
+      command: COMMAND.DIRECT_CONTROL_STATE,
+      desc: "Get current Direct Configuration session state",
+      builder: cliOptions([]),
+      handler: (argv) =>
+        getAccessToken().then((token) => getSessionState(tenantUrl, token)),
+    })
+    .command({
+      command: COMMAND.DIRECT_CONTROL_APPLY,
+      desc: "Apply any changes made during the current Direct Configuration session",
+      builder: cliOptions([]),
+      handler: (argv) =>
+        getAccessToken().then((token) => applySession(tenantUrl, token)),
+    })
+    .command({
+      command: COMMAND.DIRECT_CONTROL_ABORT,
+      desc: "Abort the current Direct Configuration session",
+      builder: cliOptions([]),
+      handler: (argv) =>
+        getAccessToken().then((token) => abortSession(tenantUrl, token)),
     })
     .command({
       command: COMMAND.THEMES,

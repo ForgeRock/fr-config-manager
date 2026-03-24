@@ -61,6 +61,10 @@ Commands:
   fr-config-push telemetry              Update telemetry config
   fr-config-push terms-and-conditions   Update terms and conditions
   fr-config-push test                   Test connection and authentication
+  fr-config-push direct-control-init    Initialise a new Direct Configuration session
+  fr-config-push direct-control-state   Get current Direct Configuration session state
+  fr-config-push direct-control-apply   Apply any changes made during the current Direct Configuration session
+  fr-config-push direct-control-abort   Abort the current Direct Configuration session
   fr-config-push themes                 Update UI themes
   fr-config-push ui-config              Update UI configuration
   fr-config-push variables              Update environment specific variables

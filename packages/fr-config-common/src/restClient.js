@@ -68,6 +68,45 @@ function wait(seconds) {
   return new Promise((resolve) => setTimeout(resolve, seconds * 1000));
 }
 
+const CONFIG_TYPE_HEADER_EXCLUDED_COMMAND_RULES = [
+  { type: "prefix", value: "direct-control-" },
+   { type: "prefix", value: "iga" },
+  { type: "exact", value: "variables" },
+  { type: "exact", value: "secrets" },
+  { type: "exact", value: "saml" },
+  { type: "exact", value: "test" },
+  { type: "exact", value: "oauth2-agents" },
+];
+
+function isConfigurationTypeHeaderExcludedCommand() {
+  const command = process.argv[2];
+  if (!command) {
+    return false;
+  }
+
+  return CONFIG_TYPE_HEADER_EXCLUDED_COMMAND_RULES.some((rule) => {
+    if (rule.type === "prefix") {
+      return command.startsWith(rule.value);
+    }
+    if (rule.type === "exact") {
+      return command === rule.value;
+    }
+    return false;
+  });
+}
+
+function stripConfigurationTypeHeader(headers) {
+  if (!headers) {
+    return;
+  }
+
+  Object.keys(headers).forEach((headerName) => {
+    if (headerName.toLowerCase() === "x-configuration-type") {
+      delete headers[headerName];
+    }
+  });
+}
+
 async function httpRequest(
   requestUrl,
   requestParameters,
@@ -153,6 +192,9 @@ async function httpRequest(
 
   if (token) {
     request.headers.Authorization = `Bearer ${token}`;
+    if (getOption(COMMON_OPTIONS.DIRECT_CONTROL)) {
+      request.headers["X-Configuration-Type"] = "mutable";
+    }
     const configHeaderConfig =
       getOption(COMMON_OPTIONS.CONFIG_HEADER_OVERRIDES) ||
       process.env[CUSTOM_CONFIG_HEADERS_ENV_VAR];
@@ -171,6 +213,10 @@ async function httpRequest(
 
   if (additionalHeaders) {
     request.headers = { ...request.headers, ...additionalHeaders };
+  }
+
+  if (isConfigurationTypeHeaderExcludedCommand()) {
+    stripConfigurationTypeHeader(request.headers);
   }
 
   if (requestParameters) {

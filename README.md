@@ -58,7 +58,7 @@ cd ~/identity-cloud
 git clone https://github.com/ForgeRock/fr-config-manager
 cd fr-config-manager
 git checkout `git describe --abbrev=0`
-npm i
+npm clean-install
 npm link
 ```
 

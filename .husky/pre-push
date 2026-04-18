@@ -1,0 +1,17 @@
+
+#!/usr/bin/env sh
+
+
+echo "➡️ Checking lockfile integrity..."
+npm run security:lockfile || { 
+  echo "❌ Lockfile validation failed. Someone may have tampered with package-lock.json."
+  echo "Delete package-lock.json, run 'npm install' to regenerate it safely, and try again."
+  exit 1 
+}
+
+echo "➡️ Checking for high/critical vulnerabilities..."
+npm run security:audit || { 
+  echo "❌ High or Critical vulnerabilities found!"
+  echo "Run 'npm audit fix' or update the flagged dependencies before pushing."
+  exit 1 
+}

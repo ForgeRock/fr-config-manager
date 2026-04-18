@@ -3,6 +3,8 @@
   "version": "1.5.13-0",
   "description": "Sample tools for managing PingOne Advanced Identity Cloud configuration",
   "devDependencies": {
+    "husky": "^9.1.7",
+    "lockfile-lint": "^5.0.0",
     "prettier": "2.8.2"
   },
   "dependencies": {
@@ -12,6 +14,7 @@
     "fs-extra": "^11.2.0",
     "glob": "^13.0.5",
     "https-proxy-agent": "^7.0.5",
+    "jest": "^30.1.3",
     "jsonwebtoken": "^9.0.0",
     "lodash": "^4.18.0",
     "node-fetch": "^3.3.2",
@@ -22,14 +25,16 @@
     "slugify": "^1.6.5",
     "uglify-js": "^3.14.3",
     "uuid": "^10.0.0",
-    "yargs": "^17.7.2",
-    "jest": "^30.1.3"
+    "yargs": "^17.7.2"
   },
   "scripts": {
     "sync-versions": "node scripts/update-versions.js",
     "version": "npm run sync-versions && git add packages/*/package.json",
     "test": "npm run test --workspaces",
-    "format-code": "npx prettier --write ."
+    "format-code": "npx prettier --write .",
+    "prepare": "husky",
+    "security:audit": "npm audit --audit-level=high",
+    "security:lockfile": "lockfile-lint --path package-lock.json --allowed-hosts npm --validate-https"
   },
   "repository": {
     "type": "git",

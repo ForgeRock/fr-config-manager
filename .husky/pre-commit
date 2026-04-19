@@ -1,1 +1,15 @@
-npm test
+#!/usr/bin/env sh
+
+echo "Formatting and linting staged files..."
+npx lint-staged || {
+  echo "❌ Linting failed. Please fix the errors above and try committing again."
+  exit 1
+}
+
+echo "Running tests..."
+npm test || {
+  echo "❌ Tests failed. Please fix the errors above and try committing again."
+  exit 1
+}
+
+echo "Staged files formatted and linted successfully."

@@ -3,9 +3,14 @@
   "version": "1.5.13-0",
   "description": "Sample tools for managing PingOne Advanced Identity Cloud configuration",
   "devDependencies": {
+    "@commitlint/cli": "^20.5.0",
+    "@commitlint/config-conventional": "^20.5.0",
+    "@eslint/js": "^10.0.1",
+    "eslint": "^10.2.1",
     "husky": "^9.1.7",
+    "lint-staged": "^16.4.0",
     "lockfile-lint": "^5.0.0",
-    "prettier": "2.8.2"
+    "prettier": "^2.8.2"
   },
   "dependencies": {
     "axios": "^1.15.0",
@@ -32,9 +37,19 @@
     "version": "npm run sync-versions && git add packages/*/package.json",
     "test": "npm run test --workspaces",
     "format-code": "npx prettier --write .",
+    "lint": "eslint .",
     "prepare": "husky",
     "security:audit": "npm audit --audit-level=high",
     "security:lockfile": "lockfile-lint --path package-lock.json --allowed-hosts npm --validate-https"
+  },
+  "lint-staged": {
+    "*.js": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "*.{json,md,yml,yaml}": [
+      "prettier --write"
+    ]
   },
   "repository": {
     "type": "git",

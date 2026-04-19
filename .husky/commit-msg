@@ -1,0 +1,8 @@
+#!/usr/bin/env sh
+
+echo "Validating commit message format..."
+npx --no-install commitlint --edit "$1" || {
+  echo "❌ Invalid commit message format."
+  echo "Example: 'feat: add user login' or 'fix: resolve crash on startup'"
+  exit 1
+}

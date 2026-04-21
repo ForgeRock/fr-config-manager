@@ -1,7 +1,6 @@
 const path = require("path");
 const { readFile } = require("fs/promises");
 const { restPut } = require("../../../fr-config-common/src/restClient");
-const replaceSensitiveValues = require("../helpers/replace-sensitive-values");
 const fs = require("fs");
 const cliUtils = require("../helpers/cli-options");
 const { OPTION } = cliUtils;
@@ -37,7 +36,6 @@ const updateTermsAndConditions = async (argv, token) => {
       return;
     }
 
-    await replaceSensitiveValues(dir);
 
     const fileContent = JSON.parse(
       await readFile(`${dir}/terms-conditions.json`)

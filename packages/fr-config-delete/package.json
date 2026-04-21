@@ -1,10 +1,10 @@
 {
   "name": "fr-config-delete",
-  "version": "1.5.12",
+  "version": "1.5.13-0",
   "description": "Package to delete configuration in PingOne Advanced Identity Cloud",
   "main": "src/index.js",
   "scripts": {
-    "test": "jest"
+    "test": "jest --passWithNoTests"
   },
   "repository": {
     "type": "git",

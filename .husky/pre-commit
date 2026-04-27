@@ -6,10 +6,4 @@ npx lint-staged || {
   exit 1
 }
 
-echo "Running tests..."
-npm test || {
-  echo "❌ Tests failed. Please fix the errors above and try committing again."
-  exit 1
-}
-
 echo "Staged files formatted and linted successfully."

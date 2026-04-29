@@ -1,5 +1,5 @@
 const axios = require("axios");
-const jose = require("node-jose");
+const jose = require("jose");
 const uuid = require("uuid");
 const qs = require("qs");
 const constants = require("./constants");
@@ -109,27 +109,23 @@ async function getServiceAccountToken(tenantUrl, clientConfig) {
       exp: Math.floor(new Date().getTime() / 1000) + JWT_VALIDITY_SECONDS,
     };
 
-    var key;
+
 
     if (!clientConfig.privateKey) {
       console.error("Private key not defined");
       process.exit(1);
     }
 
+    let key;
     if (getPrivateKeyFormat(clientConfig.privateKey) === PrivateKeyFormat.JWK) {
-      key = await jose.JWK.asKey(JSON.parse(clientConfig.privateKey));
+      key = await jose.importJWK(JSON.parse(clientConfig.privateKey), "RS256");
     } else {
-      var keystore = jose.JWK.createKeyStore();
-      key = await keystore.add(clientConfig.privateKey, "pem");
+      key = await jose.importPKCS8(clientConfig.privateKey, "RS256");
     }
 
-    const jwt = await jose.JWS.createSign(
-      { alg: "RS256", compact: true, fields: {} },
-      { key, reference: false }
-    )
-      .update(JSON.stringify(payload))
-      .final();
-
+    const jwt = await new jose.SignJWT(payload)
+      .setProtectedHeader({ alg: "RS256" })
+      .sign(key);
     const formData = {
       grant_type: "urn:ietf:params:oauth:grant-type:jwt-bearer",
       client_id: clientConfig.clientId,

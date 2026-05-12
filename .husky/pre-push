@@ -15,3 +15,9 @@ npm run security:audit || {
   echo "Run 'npm audit fix' or update the flagged dependencies before pushing."
   exit 1 
 }
+
+echo "Running tests..."
+npm test --passWithNoTests || {
+  echo "❌ Tests failed. Please fix the errors above and try committing again."
+  exit 1
+}

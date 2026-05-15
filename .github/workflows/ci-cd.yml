@@ -1,0 +1,92 @@
+name: CI/CD Pipeline
+
+on:
+  pull_request:
+    branches:
+      - main
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+  pull-requests: read
+
+jobs:
+  validate:
+    name: Validate PR
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: ".nvmrc"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      # Todo: Re-enable linting once we have a clean codebase
+      # - name: Run linting
+      #   run: npx eslint . --format=unix
+
+      - name: Run security audit
+        run: npm run security:audit
+
+      - name: Run security lockfile check
+        run: npm run security:lockfile
+
+      - name: Run tests
+        run: npm test --passWithNoTests
+
+  release:
+    name: Release & Publish
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    permissions:
+      contents: write
+      pull-requests: write
+      id-token: write
+    steps:
+      - uses: googleapis/release-please-action@v4
+        id: release
+        with:
+          config-file: .release-please-config.json
+          manifest-file: .release-please-manifest.json
+
+      - uses: actions/checkout@v4
+        if: steps.release.outputs.release_created
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        if: steps.release.outputs.release_created
+        with:
+          node-version-file: ".nvmrc"
+          cache: "npm"
+          registry-url: "https://registry.npmjs.org"
+
+      - name: Install dependencies
+        if: steps.release.outputs.release_created
+        run: npm ci
+
+      - name: Run final tests
+        if: steps.release.outputs.release_created
+        run: npm test
+
+      - name: Publish to npm
+        if: steps.release.outputs.release_created
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+          VERSION=$(node -p "require('./package.json').version")
+          if [[ "$VERSION" == *-* ]]; then
+            TAG=$(node -p "const version = require('./package.json').version; const prerelease = version.split('-')[1].split('.')[0]; /^\\d+$/.test(prerelease) ? 'next' : prerelease")
+            npm publish --dry-run --tag "$TAG" --workspaces
+          else
+            npm publish --dry-run --workspaces
+          fi

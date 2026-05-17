@@ -118,6 +118,22 @@ function dryRun() {
   return getOption(COMMON_OPTIONS.DRY_RUN);
 }
 
+async function parallelMap(items, concurrency, callback) {
+  const results = new Array(items.length);
+  const workerCount = Math.min(concurrency, items.length);
+  let currentIndex = 0;
+  await Promise.all(
+    Array.from({ length: workerCount }, async () => {
+      let i;
+      while ((i = currentIndex++) < items.length) {
+        results[i] = await callback(items[i], i);
+      }
+    })
+  );
+
+  return results;
+}
+
 module.exports.saveJsonToFile = saveJsonToFile;
 module.exports.safeFileName = safeFileName;
 module.exports.esvToEnv = esvToEnv;
@@ -129,3 +145,4 @@ module.exports.replaceAllInJson = replaceAllInJson;
 module.exports.safeFileNameUnderscore = safeFileNameUnderscore;
 module.exports.debugMode = debugMode;
 module.exports.dryRun = dryRun;
+module.exports.parallelMap = parallelMap;

@@ -6,6 +6,8 @@ Variables are configured with a single value, which can be read and writen direc
 
 After updating variables or secrets, the tenant needs to be restarted for the new value to take effect. This can be done via the `fr-config-push restart` command.
 
+The push commands fan out per-ESV requests in parallel. The maximum concurrent requests is controlled by the `ESV_PUSH_CONCURRENCY` environment variable (default `8`). Lower it if AIC starts returning rate-limit errors; raise it on tenants where the per-request latency dominates.
+
 ## Variables
 
 The `fr-config-pull variables` command reads the variables currently defined in the tenant, and creates a configuration file for each variable in the local directory `esvs/variables`. The value of the variable is substituted with a placeholder to represent a local environment variable - e.g.

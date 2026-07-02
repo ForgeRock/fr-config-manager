@@ -5,9 +5,7 @@ const { globSync } = require("glob");
 const { pushScriptById } = require("./update-scripts");
 const cliUtils = require("../helpers/cli-options");
 const { OPTION } = cliUtils;
-const {
-  journeyNodeNeedsScript,
-} = require("../../../fr-config-common/src/utils.js");
+const { journeyNodeNeedsScript } = require("../../../fr-config-common/src/utils.js");
 
 const INNER_TREE_ID = "InnerTreeEvaluatorNode";
 
@@ -28,7 +26,6 @@ async function handleNodes(
   for (const nodeFile of nodeFiles) {
     const node = JSON.parse(fs.readFileSync(path.join(dir, nodeFile)));
     if (node._type._id === INNER_TREE_ID && pushInnerJourneys) {
-      const journeyDir = path.resolve(dir, "../../");
       const journeyFile = `${node.tree}/${node.tree}.json`;
       await handleJourney(
         configDir,
@@ -48,9 +45,10 @@ async function handleNodes(
 }
 
 async function pushNode(baseUrl, node, token) {
-  const nodeRequestUrl = `${baseUrl}/nodes/${node._type._id}/${node._id}`;
+  console.log("Pushing", JSON.stringify(node));
+  const nodeRequestUrl = `${baseUrl}/nodes/${node._type._id}/${node._type.version}/${node._id}`;
   delete node._rev;
-  await restPut(nodeRequestUrl, node, token, "protocol=2.1,resource=1.0");
+  await restPut(nodeRequestUrl, node, token, "protocol=2.1,resource=3.0");
 }
 
 async function pushJourney(journey, baseUrl, token) {

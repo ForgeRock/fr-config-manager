@@ -12,24 +12,39 @@ const NODES_SUB_DIR = "nodes";
 
 let journeyCache = [];
 
-async function cacheNodesByType(nodeCache, nodeType, tenantUrl, realm, token) {
-  if (nodeCache[nodeType]) {
-    return nodeCache;
+async function getCachedNode(nodeCache, nodeId, nodeType, nodeVersion, tenantUrl, realm, token) {
+  if (nodeCache[nodeType] && nodeCache[nodeType][nodeVersion]) {
+    const node = nodeCache[nodeType][nodeVersion].find(({ _id }) => _id === nodeId);
+    if (node) {
+      return node;
+    }
   }
 
-  const amEndpoint = `${tenantUrl}/am/json/realms/root/realms/${realm}/realm-config/authentication/authenticationtrees/nodes/${nodeType}`;
+  if (!nodeCache[nodeType]) {
+    nodeCache[nodeType] = {};
+  }
+
+  const amEndpoint = `${tenantUrl}/am/json/realms/root/realms/${realm}/realm-config/authentication/authenticationtrees/nodes/${nodeType}/${nodeVersion}`;
 
   const response = await restGet(
     amEndpoint,
     {
       _queryFilter: "true",
     },
-    token
+    token,
+    "resource=3.0"
   );
 
-  nodeCache[nodeType] = response.data.result;
+  nodeCache[nodeType][nodeVersion] = response.data.result;
 
-  return nodeCache;
+  const node = nodeCache[nodeType][nodeVersion].find(({ _id }) => _id === nodeId);
+
+  if (!node) {
+    console.error("Could not find node id", nodeId);
+    process.exit(1);
+  }
+
+  return node;
 }
 
 function fileNameFromNode(displayName, id) {
@@ -81,19 +96,18 @@ async function processJourneys(
 
       for (const [nodeId, nodeInfo] of Object.entries(journey.nodes)) {
         const nodeType = nodeInfo.nodeType;
-        nodeCache = await cacheNodesByType(
+        const nodeVersion = nodeInfo.version;
+        const node = await getCachedNode(
           nodeCache,
+          nodeId,
           nodeType,
+          nodeVersion,
           tenantUrl,
           realm,
           token
         );
-        const node = nodeCache[nodeType].find(({ _id }) => _id === nodeId);
 
-        const nodeFileNameRoot = `${nodeDir}/${fileNameFromNode(
-          nodeInfo.displayName,
-          nodeId
-        )}`;
+        const nodeFileNameRoot = `${nodeDir}/${fileNameFromNode(nodeInfo.displayName, nodeId)}`;
 
         if (node._type._id === "PageNode") {
           if (!fs.existsSync(nodeFileNameRoot)) {
@@ -101,38 +115,28 @@ async function processJourneys(
           }
 
           for (const subNode of node.nodes) {
-            nodeCache = await cacheNodesByType(
+            const subNodeSpec = await getCachedNode(
               nodeCache,
+              subNode._id,
               subNode.nodeType,
+              subNode.nodeVersion,
               tenantUrl,
               realm,
               token
             );
-            const subNodeSpec = nodeCache[subNode.nodeType].find(
-              ({ _id }) => _id === subNode._id
-            );
+
             const subNodeFilename = `${nodeFileNameRoot}/${fileNameFromNode(
               subNode.displayName,
               subNodeSpec._id
             )}.json`;
             saveJsonToFile(subNodeSpec, subNodeFilename, true);
             if (pullDependencies && journeyNodeNeedsScript(subNodeSpec)) {
-              exportScriptById(
-                exportDir,
-                tenantUrl,
-                realm,
-                subNodeSpec.script,
-                token
-              );
+              exportScriptById(exportDir, tenantUrl, realm, subNodeSpec.script, token);
             }
           }
         } else if (pullDependencies && journeyNodeNeedsScript(node)) {
           exportScriptById(exportDir, tenantUrl, realm, node.script, token);
-        } else if (
-          !!name &&
-          pullDependencies &&
-          node._type._id === "InnerTreeEvaluatorNode"
-        ) {
+        } else if (!!name && pullDependencies && node._type._id === "InnerTreeEvaluatorNode") {
           processJourneys(
             journeys,
             realm,
@@ -156,15 +160,7 @@ async function processJourneys(
   }
 }
 
-async function exportJourneys(
-  exportDir,
-  tenantUrl,
-  realms,
-  name,
-  pullDependencies,
-  clean,
-  token
-) {
+async function exportJourneys(exportDir, tenantUrl, realms, name, pullDependencies, clean, token) {
   for (const realm of realms) {
     try {
       const amEndpoint = `${tenantUrl}/am/json/realms/root/realms/${realm}/realm-config/authentication/authenticationtrees/trees?_queryFilter=true`;
@@ -173,16 +169,7 @@ async function exportJourneys(
 
       const journeys = response.data.result;
 
-      processJourneys(
-        journeys,
-        realm,
-        name,
-        pullDependencies,
-        tenantUrl,
-        token,
-        exportDir,
-        clean
-      );
+      processJourneys(journeys, realm, name, pullDependencies, tenantUrl, token, exportDir, clean);
     } catch (err) {
       console.log(err);
     }

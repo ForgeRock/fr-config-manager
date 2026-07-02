@@ -2,10 +2,14 @@ const mockGetSuperadminCreds = jest.fn();
 const mockRestForm = jest.fn();
 const mockImportJWK = jest.fn();
 const mockImportPKCS8 = jest.fn();
-const mockSignJWT = jest.fn();
 const mockSetProtectedHeader = jest.fn();
 const mockSign = jest.fn();
 const mockV4 = jest.fn(() => "test-uuid");
+const mockReadFileSync = jest.fn();
+
+jest.mock("fs", () => ({
+  readFileSync: mockReadFileSync,
+}));
 
 jest.mock("../src/authenticate-platform", () => ({
   getSuperadminCreds: mockGetSuperadminCreds,
@@ -97,6 +101,7 @@ describe("getToken - CLOUD deployment", () => {
   afterEach(() => {
     clearEnv(REQUIRED_CLOUD_ENV);
     delete process.env.FCM_ACCESS_TOKEN;
+    delete process.env.SERVICE_ACCOUNT_KEY_PATH;
     exitSpy.mockRestore();
     errorSpy.mockRestore();
     jest.clearAllMocks();
@@ -135,10 +140,7 @@ describe("getToken - CLOUD deployment", () => {
 
     await getToken();
 
-    expect(jose.importPKCS8).toHaveBeenCalledWith(
-      process.env.SERVICE_ACCOUNT_KEY,
-      "RS256"
-    );
+    expect(jose.importPKCS8).toHaveBeenCalledWith(process.env.SERVICE_ACCOUNT_KEY, "RS256");
   });
 
   test("returns token from FCM_ACCESS_TOKEN env var without making network call", async () => {
@@ -204,6 +206,47 @@ describe("getToken - CLOUD deployment", () => {
 
   test("calls process.exit on restForm error", async () => {
     mockRestForm.mockRejectedValue(new Error("network error"));
+    const { getToken } = loadAuthenticate();
+
+    await expect(getToken()).rejects.toThrow("process.exit called");
+    expect(exitSpy).toHaveBeenCalledWith(1);
+  });
+
+  test("loads JWK key from SERVICE_ACCOUNT_KEY_PATH when set", async () => {
+    const keyFromFile = JSON.stringify({ kty: "RSA", kid: "file-key" });
+    process.env.SERVICE_ACCOUNT_KEY_PATH = "/path/to/key.jwk";
+    mockReadFileSync.mockReturnValue(keyFromFile);
+
+    const { getToken } = loadAuthenticate();
+    const jose = require("jose");
+    const fs = require("fs");
+
+    await getToken();
+
+    expect(fs.readFileSync).toHaveBeenCalledWith("/path/to/key.jwk", "utf8");
+    expect(jose.importJWK).toHaveBeenCalledWith(JSON.parse(keyFromFile), "RS256");
+  });
+
+  test("SERVICE_ACCOUNT_KEY_PATH takes precedence over SERVICE_ACCOUNT_KEY", async () => {
+    const keyFromFile = JSON.stringify({ kty: "RSA", kid: "file-key" });
+    process.env.SERVICE_ACCOUNT_KEY_PATH = "/path/to/key.jwk";
+    process.env.SERVICE_ACCOUNT_KEY = JSON.stringify({ kty: "RSA", kid: "env-key" });
+    mockReadFileSync.mockReturnValue(keyFromFile);
+
+    const { getToken } = loadAuthenticate();
+    const jose = require("jose");
+
+    await getToken();
+
+    expect(jose.importJWK).toHaveBeenCalledWith(JSON.parse(keyFromFile), "RS256");
+    expect(jose.importJWK).not.toHaveBeenCalledWith(
+      JSON.parse(process.env.SERVICE_ACCOUNT_KEY),
+      "RS256"
+    );
+  });
+
+  test("calls process.exit when neither SERVICE_ACCOUNT_KEY nor SERVICE_ACCOUNT_KEY_PATH is set", async () => {
+    delete process.env.SERVICE_ACCOUNT_KEY;
     const { getToken } = loadAuthenticate();
 
     await expect(getToken()).rejects.toThrow("process.exit called");

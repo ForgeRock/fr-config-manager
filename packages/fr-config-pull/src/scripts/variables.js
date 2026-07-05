@@ -4,20 +4,17 @@ const {
   saveJsonToFile,
   esvToEnv,
   escapePlaceholders,
+  csvEscape,
+  friendlyTimestamp,
 } = require("../../../fr-config-common/src/utils.js");
 
 const EXPORT_SUBDIR = "esvs/variables";
 
-async function exportConfig(exportDir, tenantUrl, name, dump, token) {
+async function exportConfig(exportDir, tenantUrl, name, dump, report, token) {
   try {
     const envEndpoint = `${tenantUrl}/environment/variables`;
 
-    const response = await restGet(
-      envEndpoint,
-      null,
-      token,
-      "protocol=1.0,resource=1.0"
-    );
+    const response = await restGet(envEndpoint, null, token, "protocol=1.0,resource=1.0");
 
     const targetDir = `${exportDir}/${EXPORT_SUBDIR}`;
     if (!fs.existsSync(targetDir)) {
@@ -26,10 +23,30 @@ async function exportConfig(exportDir, tenantUrl, name, dump, token) {
 
     const variables = response.data.result;
 
+    let reportFirstLine = true;
+
     variables.forEach((variable) => {
       if (name && name !== variable._id) {
         return;
       }
+
+      if (report) {
+        if (reportFirstLine) {
+          reportFirstLine = false;
+          console.log("Name, Description, Type, Value, Last Changed");
+        }
+        const value = Buffer.from(variable.valueBase64, "base64");
+        const fields = [
+          variable._id,
+          csvEscape(variable.description),
+          variable.expressionType,
+          csvEscape(value),
+          friendlyTimestamp(variable.lastChangeDate),
+        ];
+        console.log(fields.join(","));
+        return;
+      }
+
       const envVariable = esvToEnv(variable._id);
       const variableObject = {
         _id: variable._id,

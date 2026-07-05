@@ -47,9 +47,9 @@ function deepMerge(targetObj, sourceObj) {
   if (typeof sourceObj === "object" && typeof targetObj === "object") {
     // Iterate over all properties in the source object
     for (const key in sourceObj) {
-      if (sourceObj.hasOwnProperty(key)) {
+      if (Object.hasOwn(sourceObj, key)) {
         // If the target object also has a property with this key, merge them
-        if (targetObj.hasOwnProperty(key)) {
+        if (Object.hasOwn(targetObj, key)) {
           targetObj[key] = deepMerge(targetObj[key], sourceObj[key]);
         } else {
           // Otherwise, add the property from the source object to the target object
@@ -96,10 +96,7 @@ function unescapePlaceholders(content) {
 }
 
 function journeyNodeNeedsScript(node) {
-  return (
-    node.hasOwnProperty("script") &&
-    (!node.hasOwnProperty("useScript") || node.useScript)
-  );
+  return Object.hasOwn(node, "script") && (!Object.hasOwn(node, "useScript") || node.useScript);
 }
 function replaceAllInJson(content, replacements) {
   let contentString = JSON.stringify(content);
@@ -134,6 +131,15 @@ async function parallelMap(items, concurrency, callback) {
   return results;
 }
 
+function csvEscape(value) {
+  value = String(value);
+  return /[",\n\r]/.test(value) ? `"${value.replace(/"/g, '""')}"` : value;
+}
+
+function friendlyTimestamp(timestamp) {
+  return timestamp.slice(0, 19).replace("T", " ");
+}
+
 module.exports.saveJsonToFile = saveJsonToFile;
 module.exports.safeFileName = safeFileName;
 module.exports.esvToEnv = esvToEnv;
@@ -146,3 +152,5 @@ module.exports.safeFileNameUnderscore = safeFileNameUnderscore;
 module.exports.debugMode = debugMode;
 module.exports.dryRun = dryRun;
 module.exports.parallelMap = parallelMap;
+module.exports.csvEscape = csvEscape;
+module.exports.friendlyTimestamp = friendlyTimestamp;

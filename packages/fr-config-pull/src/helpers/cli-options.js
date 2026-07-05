@@ -2,9 +2,6 @@ const {
   STDOUT_OPTION,
   STDOUT_OPTION_SHORT,
 } = require("../../../fr-config-common/src/constants.js");
-const {
-  COMMON_OPTIONS,
-} = require("../../../fr-config-common/src/cli-options.js");
 
 const OPTION = {
   NAME: "name",
@@ -19,6 +16,7 @@ const OPTION = {
   INCLUDE_IMMUTABLE: "include-immutable",
   CUSTOM_RELATIONSHIPS: "custom-relationships",
   CATEGORY: "category",
+  REPORT: "report",
 };
 
 const CLI_OPTIONS = {
@@ -93,13 +91,16 @@ const CLI_OPTIONS = {
     describe: "Category",
     type: "string",
   },
+  report: {
+    alias: "t",
+    demandOption: false,
+    describe: "Print report CSV",
+    type: "boolean",
+  },
 };
 
 const cliOptions = (requestedOptions) => {
-  return requestedOptions.reduce(
-    (acc, curr) => ({ ...acc, [curr]: CLI_OPTIONS[curr] }),
-    {}
-  );
+  return requestedOptions.reduce((acc, curr) => ({ ...acc, [curr]: CLI_OPTIONS[curr] }), {});
 };
 
 module.exports.cliOptions = cliOptions;

@@ -81,6 +81,7 @@ Options:
   -g, --category              Category                                        [string]
   -H, --configuration-header-overrides  Configuration management header
                                         overrides                             [string]
+  -t, --report                Print report CSV                               [boolean]
 ```
 
 Notes on specific options:
@@ -177,3 +178,10 @@ When pulling telemetry config, any header values are returned empty. Therefore t
 ```
 
 This variable name must be defined in the environment before pushing the config.
+
+```bash
+fr-config-pull variables --report
+fr-config-pull secrets --report
+```
+
+When pulling variables or secrets, use the `--report` flag to write a CSV report to the console, without creating ESV template files.

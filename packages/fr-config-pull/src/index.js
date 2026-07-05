@@ -1,7 +1,6 @@
 #!/usr/bin/env node
 
 const authenticate = require("../../fr-config-common/src/authenticate.js");
-const platformAuthenticate = require("../../fr-config-common/src/authenticate-platform.js");
 const emailTemplates = require("./scripts/emailTemplates.js");
 const scripts = require("./scripts/scripts.js");
 const idm = require("./scripts/managed.js");
@@ -41,10 +40,7 @@ const telemetry = require("./scripts/telemetry.js");
 
 const yargs = require("yargs");
 const { showConfigMetadata } = require("./scripts/configMetadata.js");
-const {
-  COMMON_OPTIONS,
-  COMMON_CLI_OPTIONS,
-} = require("../../fr-config-common/src/cli-options.js");
+const { COMMON_OPTIONS, COMMON_CLI_OPTIONS } = require("../../fr-config-common/src/cli-options.js");
 
 require("dotenv").config();
 
@@ -117,8 +113,7 @@ function matchCommand(argv, command) {
   const requestedCommand = argv._[0];
   return (
     requestedCommand === command ||
-    (COMMAND_MAP[requestedCommand] &&
-      COMMAND_MAP[requestedCommand].includes(command))
+    (COMMAND_MAP[requestedCommand] && COMMAND_MAP[requestedCommand].includes(command))
   );
 }
 
@@ -141,9 +136,7 @@ async function getConfig(argv) {
     DEPLOYMENT_COMMANDS[deploymentType] &&
     !DEPLOYMENT_COMMANDS[deploymentType].includes(command)
   ) {
-    console.error(
-      `Error: command ${command} not available for deployment type ${deploymentType}`,
-    );
+    console.error(`Error: command ${command} not available for deployment type ${deploymentType}`);
     process.exit(1);
   }
 
@@ -166,23 +159,12 @@ async function getConfig(argv) {
       console.log("Getting email templates");
     }
 
-    emailTemplates.exportEmailTemplates(
-      configDir,
-      tenantUrl,
-      argv[OPTION.NAME],
-      token,
-    );
+    emailTemplates.exportEmailTemplates(configDir, tenantUrl, argv[OPTION.NAME], token);
   }
 
   if (matchCommand(argv, COMMAND.EMAIL_PROVIDER)) {
     console.log("Getting email provider settings");
-    idmFlatConfig.exportConfig(
-      "external.email",
-      configDir,
-      "email-provider",
-      tenantUrl,
-      token,
-    );
+    idmFlatConfig.exportConfig("external.email", configDir, "email-provider", tenantUrl, token);
   }
 
   if (matchCommand(argv, COMMAND.MANAGED_OBJECTS)) {
@@ -192,7 +174,7 @@ async function getConfig(argv) {
       tenantUrl,
       argv[OPTION.NAME],
       argv[OPTION.CUSTOM_RELATIONSHIPS],
-      token,
+      token
     );
   }
 
@@ -213,7 +195,7 @@ async function getConfig(argv) {
       realms,
       scriptPrefixes,
       argv[OPTION.NAME],
-      token,
+      token
     );
   }
 
@@ -235,7 +217,7 @@ async function getConfig(argv) {
       argv[OPTION.NAME],
       argv[OPTION.PULL_DEPENDENCIES],
       argv[OPTION.CLEAN],
-      token,
+      token
     );
   }
 
@@ -261,13 +243,7 @@ async function getConfig(argv) {
 
   if (matchCommand(argv, COMMAND.IDM_ACCESS_CONFIG)) {
     console.log("Getting access config");
-    idmFlatConfig.exportConfig(
-      "access",
-      configDir,
-      "access-config",
-      tenantUrl,
-      token,
-    );
+    idmFlatConfig.exportConfig("access", configDir, "access-config", tenantUrl, token);
   }
 
   if (matchCommand(argv, COMMAND.IDM_AUTHENTICATION)) {
@@ -277,7 +253,7 @@ async function getConfig(argv) {
       configDir,
       "idm-authentication-config",
       tenantUrl,
-      token,
+      token
     );
   }
 
@@ -293,34 +269,17 @@ async function getConfig(argv) {
 
   if (matchCommand(argv, COMMAND.THEMES)) {
     console.log("Getting themes");
-    themes.exportThemes(
-      realmConfigDir,
-      realms,
-      tenantUrl,
-      argv[OPTION.NAME],
-      token,
-    );
+    themes.exportThemes(realmConfigDir, realms, tenantUrl, argv[OPTION.NAME], token);
   }
 
   if (matchCommand(argv, COMMAND.TERMS_AND_CONDITIONS)) {
     console.log("Getting terms and conditions");
-    termsAndConditions.exportTerms(
-      configDir,
-      tenantUrl,
-      argv[OPTION.NAME],
-      token,
-    );
+    termsAndConditions.exportTerms(configDir, tenantUrl, argv[OPTION.NAME], token);
   }
 
   if (matchCommand(argv, COMMAND.KBA)) {
     console.log("Getting KBA");
-    idmFlatConfig.exportConfig(
-      "selfservice.kba",
-      configDir,
-      "kba",
-      tenantUrl,
-      token,
-    );
+    idmFlatConfig.exportConfig("selfservice.kba", configDir, "kba", tenantUrl, token);
   }
 
   if (matchCommand(argv, COMMAND.SERVICES)) {
@@ -334,24 +293,12 @@ async function getConfig(argv) {
       console.log("Getting services");
     }
 
-    amServices.exportConfig(
-      realmConfigDir,
-      realms,
-      tenantUrl,
-      argv[OPTION.NAME],
-      token,
-    );
+    amServices.exportConfig(realmConfigDir, realms, tenantUrl, argv[OPTION.NAME], token);
   }
 
   if (matchCommand(argv, COMMAND.AUTHENTICATION)) {
     console.log("Getting authentication config");
-    amRealmConfig.exportConfig(
-      realmConfigDir,
-      realms,
-      "authentication",
-      tenantUrl,
-      token,
-    );
+    amRealmConfig.exportConfig(realmConfigDir, realms, "authentication", tenantUrl, token);
   }
 
   if (matchCommand(argv, COMMAND.REMOTE_SERVERS)) {
@@ -362,19 +309,13 @@ async function getConfig(argv) {
       RCS_SUB_DIR,
       tenantUrl,
       token,
-      true,
+      true
     );
   }
 
   if (matchCommand(argv, COMMAND.UI_CONFIG)) {
     console.log("Getting UI config");
-    idmFlatConfig.exportConfig(
-      "ui-configuration",
-      configDir,
-      "ui",
-      tenantUrl,
-      token,
-    );
+    idmFlatConfig.exportConfig("ui-configuration", configDir, "ui", tenantUrl, token);
   }
 
   if (matchCommand(argv, COMMAND.INTERNAL_ROLES)) {
@@ -383,25 +324,15 @@ async function getConfig(argv) {
   }
 
   if (matchCommand(argv, COMMAND.SECRETS)) {
-    if (argv.name) {
-      if (realms.length !== 1) {
-        console.error("Error: for a named secret, specify a single realm");
-        process.exit(1);
-      }
-      console.log("Getting secret", argv.name, "in realm", realms[0]);
-    } else {
-      console.log("Getting secrets");
-    }
-
-    var activeOnly =
-      argv[OPTION.ACTIVE_ONLY] || process.env.ACTIVE_ONLY_SECRETS === "true";
+    var activeOnly = argv[OPTION.ACTIVE_ONLY] || process.env.ACTIVE_ONLY_SECRETS === "true";
 
     secrets.exportConfig(
       configDir,
       tenantUrl,
       argv[OPTION.NAME],
       activeOnly,
-      token,
+      argv[OPTION.REPORT],
+      token
     );
   }
 
@@ -411,29 +342,22 @@ async function getConfig(argv) {
       tenantUrl,
       argv[OPTION.NAME],
       argv[OPTION.DUMP],
-      token,
+      argv[OPTION.REPORT],
+      token
     );
   }
 
   if (matchCommand(argv, COMMAND.SECRET_MAPPINGS)) {
     if (argv.name) {
       if (realms.length !== 1) {
-        console.error(
-          "Error: for a named secret mapping, specify a single realm",
-        );
+        console.error("Error: for a named secret mapping, specify a single realm");
         process.exit(1);
       }
       console.log("Getting secret mapping", argv.name, "in realm", realms[0]);
     } else {
       console.log("Getting secret mappings");
     }
-    secretMappings.exportConfig(
-      realmConfigDir,
-      realms,
-      tenantUrl,
-      argv[OPTION.NAME],
-      token,
-    );
+    secretMappings.exportConfig(realmConfigDir, realms, tenantUrl, argv[OPTION.NAME], token);
   }
 
   if (matchCommand(argv, COMMAND.LOCALES)) {
@@ -448,17 +372,10 @@ async function getConfig(argv) {
 
   if (matchCommand(argv, COMMAND.OAUTH2_AGENTS)) {
     if (!process.env.OAUTH2_AGENTS_CONFIG) {
-      console.log(
-        "Warning - no OAUTH2_AGENTS_CONFIG defined - skipping agents",
-      );
+      console.log("Warning - no OAUTH2_AGENTS_CONFIG defined - skipping agents");
     } else {
       console.log("Getting OAuth2 agents");
-      oauth2Agents.exportConfig(
-        configDir,
-        process.env.OAUTH2_AGENTS_CONFIG,
-        tenantUrl,
-        token,
-      );
+      oauth2Agents.exportConfig(configDir, process.env.OAUTH2_AGENTS_CONFIG, tenantUrl, token);
     }
   }
 
@@ -467,12 +384,7 @@ async function getConfig(argv) {
       console.log("Warning - no AUTHZ_POLICY_SETS defined - skipping policies");
     } else {
       console.log("Getting Authorization Policies");
-      authzPolicies.exportConfig(
-        configDir,
-        process.env.AUTHZ_POLICY_SETS_CONFIG,
-        tenantUrl,
-        token,
-      );
+      authzPolicies.exportConfig(configDir, process.env.AUTHZ_POLICY_SETS_CONFIG, tenantUrl, token);
     }
   }
 
@@ -486,29 +398,16 @@ async function getConfig(argv) {
   }
   if (matchCommand(argv, COMMAND.SERVICE_OBJECTS)) {
     if (!process.env.SERVICE_OBJECTS_CONFIG) {
-      console.log(
-        "Warning - no SERVICE_OBJECTS_CONFIG defined - skipping service objects",
-      );
+      console.log("Warning - no SERVICE_OBJECTS_CONFIG defined - skipping service objects");
     } else {
       console.log("Getting Service Objects");
-      systemUsers.exportConfig(
-        configDir,
-        process.env.SERVICE_OBJECTS_CONFIG,
-        tenantUrl,
-        token,
-      );
+      systemUsers.exportConfig(configDir, process.env.SERVICE_OBJECTS_CONFIG, tenantUrl, token);
     }
   }
 
   if (matchCommand(argv, COMMAND.CSP)) {
     console.log("Getting CSP config");
-    csp.exportCsp(
-      configDir,
-      process.env.CSP_OVERRIDES,
-      tenantUrl,
-      argv[OPTION.NAME],
-      token,
-    );
+    csp.exportCsp(configDir, process.env.CSP_OVERRIDES, tenantUrl, argv[OPTION.NAME], token);
   }
 
   if (matchCommand(argv, COMMAND.ORG_PRIVILEGES)) {
@@ -534,9 +433,7 @@ async function getConfig(argv) {
     const path = argv.path;
     const rawConfigFile = process.env.RAW_CONFIG;
     if (!path && !rawConfigFile) {
-      console.error(
-        `${COMMAND.RAW} requires the --path option or a configured RAW_CONFIG file`,
-      );
+      console.error(`${COMMAND.RAW} requires the --path option or a configured RAW_CONFIG file`);
       process.exit(1);
     }
 
@@ -544,33 +441,19 @@ async function getConfig(argv) {
 
     if (apiVersion && (!apiVersion.protocol || !apiVersion.resource)) {
       console.error(
-        `${COMMAND.RAW} --${OPTION.PUSH_API_VERSION} requires resource and protocol versions`,
+        `${COMMAND.RAW} --${OPTION.PUSH_API_VERSION} requires resource and protocol versions`
       );
       process.exit(1);
     }
 
-    raw.exportRawConfig(
-      configDir,
-      tenantUrl,
-      path,
-      apiVersion,
-      rawConfigFile,
-      token,
-    );
+    raw.exportRawConfig(configDir, tenantUrl, path, apiVersion, rawConfigFile, token);
   }
 
   if (matchCommand(argv, COMMAND.IGA_WORKFLOWS)) {
     var includeImmutable =
-      argv[OPTION.INCLUDE_IMMUTABLE] ||
-      process.env.INCLUDE_IMMUTABLE === "true";
+      argv[OPTION.INCLUDE_IMMUTABLE] || process.env.INCLUDE_IMMUTABLE === "true";
 
-    iga.exportIgaWorkflows(
-      configDir,
-      tenantUrl,
-      argv[OPTION.NAME],
-      token,
-      includeImmutable,
-    );
+    iga.exportIgaWorkflows(configDir, tenantUrl, argv[OPTION.NAME], token, includeImmutable);
   }
 
   if (matchCommand(argv, COMMAND.CONFIG_METADATA)) {
@@ -586,9 +469,7 @@ async function getConfig(argv) {
   if (matchCommand(argv, COMMAND.TELEMETRY)) {
     const name = argv[OPTION.NAME];
     if (name && !argv[OPTION.CATEGORY]) {
-      console.error(
-        "Error: for a named provider, specify a category (e.g. --category otlp)",
-      );
+      console.error("Error: for a named provider, specify a category (e.g. --category otlp)");
       process.exit(1);
     }
 
@@ -598,13 +479,7 @@ async function getConfig(argv) {
       console.log("Getting telemetry config");
     }
 
-    telemetry.exportConfig(
-      configDir,
-      tenantUrl,
-      name,
-      argv[OPTION.CATEGORY],
-      token,
-    );
+    telemetry.exportConfig(configDir, tenantUrl, name, argv[OPTION.CATEGORY], token);
   }
 }
 
@@ -736,12 +611,7 @@ yargs
   .command({
     command: COMMAND.AUTH_TREE,
     desc: "Get journeys",
-    builder: cliOptions([
-      OPTION.NAME,
-      OPTION.REALM,
-      OPTION.PULL_DEPENDENCIES,
-      OPTION.CLEAN,
-    ]),
+    builder: cliOptions([OPTION.NAME, OPTION.REALM, OPTION.PULL_DEPENDENCIES, OPTION.CLEAN]),
     handler: (argv) => getConfig(argv),
   })
   .command({
@@ -813,7 +683,7 @@ yargs
   .command({
     command: COMMAND.SECRETS,
     desc: "Get secrets",
-    builder: cliOptions([OPTION.NAME, OPTION.ACTIVE_ONLY]),
+    builder: cliOptions([OPTION.NAME, OPTION.ACTIVE_ONLY, OPTION.REPORT]),
     handler: (argv) => getConfig(argv),
   })
   .command({
@@ -867,18 +737,15 @@ yargs
   .command({
     command: COMMAND.ESVS,
     desc: "Get environment specific variables",
-    builder: cliOptions([OPTION.NAME, OPTION.DUMP]),
+    builder: cliOptions([OPTION.NAME, OPTION.DUMP, OPTION.REPORT]),
     handler: (argv) => getConfig(argv),
   })
   .option(COMMON_OPTIONS.DEBUG, COMMON_CLI_OPTIONS[COMMON_OPTIONS.DEBUG])
   .option(COMMON_OPTIONS.RETRIES, COMMON_CLI_OPTIONS[COMMON_OPTIONS.RETRIES])
-  .option(
-    COMMON_OPTIONS.RETRY_INTERVAL,
-    COMMON_CLI_OPTIONS[COMMON_OPTIONS.RETRY_INTERVAL],
-  )
+  .option(COMMON_OPTIONS.RETRY_INTERVAL, COMMON_CLI_OPTIONS[COMMON_OPTIONS.RETRY_INTERVAL])
   .option(
     COMMON_OPTIONS.CONFIG_HEADER_OVERRIDES,
-    COMMON_CLI_OPTIONS[COMMON_OPTIONS.CONFIG_HEADER_OVERRIDES],
+    COMMON_CLI_OPTIONS[COMMON_OPTIONS.CONFIG_HEADER_OVERRIDES]
   )
   .demandCommand()
   .parse();

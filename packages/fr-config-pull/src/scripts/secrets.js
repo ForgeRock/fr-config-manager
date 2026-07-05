@@ -1,24 +1,20 @@
 const fs = require("fs");
 const { restGet } = require("../../../fr-config-common/src/restClient.js");
-const { env } = require("process");
 const {
   saveJsonToFile,
   esvToEnv,
   escapePlaceholders,
+  csvEscape,
+  friendlyTimestamp,
 } = require("../../../fr-config-common/src/utils.js");
 
 const EXPORT_SUBDIR = "esvs/secrets";
 
-async function exportConfig(exportDir, tenantUrl, name, activeOnly, token) {
+async function exportConfig(exportDir, tenantUrl, name, activeOnly, report, token) {
   try {
     const envEndpoint = `${tenantUrl}/environment/secrets`;
 
-    const response = await restGet(
-      envEndpoint,
-      null,
-      token,
-      "protocol=1.0,resource=1.0"
-    );
+    const response = await restGet(envEndpoint, null, token, "protocol=1.0,resource=1.0");
 
     const secrets = response.data.result;
 
@@ -27,9 +23,28 @@ async function exportConfig(exportDir, tenantUrl, name, activeOnly, token) {
       fs.mkdirSync(targetDir, { recursive: true });
     }
 
+    let reportFirstLine = true;
+
     for (const secret of secrets) {
       if (name && name !== secret._id) {
         return;
+      }
+
+      if (report) {
+        if (reportFirstLine) {
+          reportFirstLine = false;
+          console.log("Name, Description, Encoding, Use in Placeholders, Last Changed");
+        }
+
+        const fields = [
+          secret._id,
+          csvEscape(secret.description),
+          secret.encoding,
+          secret.useInPlaceholders,
+          friendlyTimestamp(secret.lastChangeDate),
+        ];
+        console.log(fields.join(","));
+        continue;
       }
 
       let secretObject = {

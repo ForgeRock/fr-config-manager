@@ -27,7 +27,7 @@ async function exportConfig(exportDir, tenantUrl, name, activeOnly, report, toke
 
     for (const secret of secrets) {
       if (name && name !== secret._id) {
-        return;
+        continue;
       }
 
       if (report) {

@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.8.1](https://github.com/ForgeRock/fr-config-manager/compare/fr-config-manager-v1.8.0...fr-config-manager-v1.8.1) (2026-08-11)
+
+
+### Bug Fixes
+
+* pull named secret correctly ([#391](https://github.com/ForgeRock/fr-config-manager/issues/391)) ([92595d0](https://github.com/ForgeRock/fr-config-manager/commit/92595d06546b220d49d4884143de9f05411e25e9))
+
 ## [1.8.0](https://github.com/ForgeRock/fr-config-manager/compare/fr-config-manager-v1.7.0...fr-config-manager-v1.8.0) (2026-07-05)
 
 

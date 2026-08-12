@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.8.2](https://github.com/ForgeRock/fr-config-manager/compare/fr-config-manager-v1.8.1...fr-config-manager-v1.8.2) (2026-08-12)
+
+
+### Bug Fixes
+
+* issue with versioning in node URLs ([#394](https://github.com/ForgeRock/fr-config-manager/issues/394)) ([713bbbb](https://github.com/ForgeRock/fr-config-manager/commit/713bbbb64e764da991b48202933f165acd97635f))
+
 ## [1.8.1](https://github.com/ForgeRock/fr-config-manager/compare/fr-config-manager-v1.8.0...fr-config-manager-v1.8.1) (2026-08-11)
 
 

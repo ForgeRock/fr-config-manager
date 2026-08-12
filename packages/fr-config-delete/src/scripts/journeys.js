@@ -1,6 +1,6 @@
 const { restGet, restDelete, restPost } = require("../../../fr-config-common/src/restClient");
 
-const API_VERSION = "protocol=2.0,resource=1.0";
+const API_VERSION = "resource=3.0";
 const INNER_NODE = "InnerTreeEvaluatorNode";
 const AUTH_TREE_PATH = "realm-config/authentication/authenticationtrees";
 
@@ -100,7 +100,7 @@ async function processJourney(
         token,
         nodeId,
         nodeInfo.nodeType,
-        nodeInfo.nodeVersion
+        nodeInfo.version
       );
       if (node.tree) {
         await retrieveInnerTreeData(
@@ -144,7 +144,7 @@ async function processJourney(
       counters.deletedNodes++;
     } else {
       try {
-        await deleteNode(tenantUrl, realm, token, nodeId, nodeInfo.nodeType, nodeInfo.nodeVersion);
+        await deleteNode(tenantUrl, realm, token, nodeId, nodeInfo.nodeType, nodeInfo.version);
         console.log(`Deleting journey ${journey._id} node: ${nodeId} of type ${nodeInfo.nodeType}`);
         counters.deletedNodes++;
       } catch (err) {
@@ -208,31 +208,35 @@ async function processJourneys(
 async function cleanupNodes(tenantUrl, realm, token, dryRun, counters) {
   const response = await getNodeTypes(tenantUrl, realm, token);
   for (const nodeType of response) {
-    const amEndpoint = constructAmEndpoint(
-      tenantUrl,
-      realm,
-      `${AUTH_TREE_PATH}/nodes/${nodeType._id}/${nodeType.version}`
-    );
+    for (const version of nodeType.versions) {
+      const amEndpoint = constructAmEndpoint(
+        tenantUrl,
+        realm,
+        `${AUTH_TREE_PATH}/nodes/${nodeType._id}/${version}`
+      );
 
-    const response = await restGet(
-      amEndpoint,
-      {
-        _queryFilter: "true",
-      },
-      token,
-      "protocol=2.1,resource=3.0"
-    );
+      const response = await restGet(
+        amEndpoint,
+        {
+          _queryFilter: "true",
+        },
+        token,
+        API_VERSION
+      );
 
-    const nodes = response.data.result;
+      const nodes = response.data.result;
 
-    for (const node of nodes) {
-      if (dryRun) {
-        console.log(`Dry run: Deleting orphan node ${node._id} of type ${nodeType._id}`);
+      for (const node of nodes) {
+        if (dryRun) {
+          console.log(
+            `Dry run: Deleting orphan node ${node._id} of type ${nodeType._id} version ${version}`
+          );
+          counters.deletedOrphanNodes++;
+          continue;
+        }
+        await deleteNode(tenantUrl, realm, token, node._id, nodeType._id, version);
         counters.deletedOrphanNodes++;
-        continue;
       }
-      await deleteNode(tenantUrl, realm, token, node._id, nodeType._id, nodeType.nodeVersion);
-      counters.deletedOrphanNodes++;
     }
   }
   console.log(`Deleted all orphan nodes`);
@@ -245,7 +249,7 @@ async function deleteNode(tenantUrl, realm, token, nodeId, nodeType, nodeVersion
   const nodeUrl = constructAmEndpoint(
     tenantUrl,
     realm,
-    `${AUTH_TREE_PATH}/nodes/${nodeType}/${nodeId}/${nodeVersion}`
+    `${AUTH_TREE_PATH}/nodes/${nodeType}/${nodeVersion}/${nodeId}`
   );
   try {
     await restDelete(nodeUrl, token, API_VERSION, true);

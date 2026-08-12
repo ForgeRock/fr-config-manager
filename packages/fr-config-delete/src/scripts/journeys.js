@@ -132,7 +132,7 @@ async function processJourney(
       counters.deletedJourneys++;
       console.log(`Deleting journey ${realm}/${journey._id}`);
     } catch (err) {
-      console.error(`Failed to delete journey ${realm}/${journey._id}: `, err);
+      console.error(`Failed to delete journey ${realm}/${journey._id}: ${err.message}`);
     }
   }
 
@@ -149,8 +149,7 @@ async function processJourney(
         counters.deletedNodes++;
       } catch (err) {
         console.error(
-          `Failed to delete journey ${journey._id} node ${nodeId} of type ${nodeInfo.nodeType}:`,
-          err
+          `Failed to delete journey ${journey._id} node ${nodeId} of type ${nodeInfo.nodeType}: ${err.message}`
         );
       }
     }
@@ -193,7 +192,7 @@ async function processJourneys(
         counters
       );
     } catch (err) {
-      console.error(`Failed to delete journey ${journeyName} in /'${realm}':`, err);
+      console.error(`Failed to delete journey ${journeyName} in /'${realm}': ${err.message}`);
     }
   }
 
@@ -255,7 +254,7 @@ async function deleteNode(tenantUrl, realm, token, nodeId, nodeType, nodeVersion
     await restDelete(nodeUrl, token, API_VERSION, true);
     console.log(`Deleting node ${nodeId} of type ${nodeType}`);
   } catch (err) {
-    console.error(`Error deleting node ${nodeId}: ${err}`);
+    console.error(`Error deleting node ${nodeId}: ${err.message}`);
   }
 }
 
@@ -315,7 +314,7 @@ async function deleteJourneys(tenantUrl, realms, name, token, deleteInnerJourney
       console.log(`Orphan Nodes deleted: ${counters.deletedOrphanNodes}`);
     }
   } catch (err) {
-    console.log(err);
+    console.error(`An unexpected error occurred: ${err.message}`);
   }
 }
 

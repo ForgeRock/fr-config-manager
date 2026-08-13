@@ -247,7 +247,6 @@ async function httpRequest(
         return null;
       } else {
         console.error(`Exception processing request to ${requestUrl}`);
-        console.error(error.response?.data);
         console.error(JSON.stringify(error, null, 2));
         responseError = true;
       }

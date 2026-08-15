@@ -23,24 +23,12 @@ const telemetry = require("./scripts/telemetry.js");
 
 const { cliOptions, OPTION } = require("./helpers/cli-options");
 
-const {
-  COMMON_OPTIONS,
-  COMMON_CLI_OPTIONS,
-} = require("../../fr-config-common/src/cli-options.js");
+const { COMMON_OPTIONS, COMMON_CLI_OPTIONS } = require("../../fr-config-common/src/cli-options.js");
 
 const yargs = require("yargs");
 require("dotenv").config();
 
 const { COMMAND } = require("../../fr-config-common/src/constants.js");
-
-const REQUIRED_CONFIG = [
-  "TENANT_BASE_URL",
-  "SERVICE_ACCOUNT_CLIENT_ID",
-  "SERVICE_ACCOUNT_ID",
-  "SERVICE_ACCOUNT_KEY",
-  "SERVICE_ACCOUNT_SCOPE",
-  "REALMS",
-];
 
 const commandHandler = async (argv) => {
   try {
@@ -86,7 +74,7 @@ async function deleteConfig(argv) {
         argv[OPTION.NAME],
         token,
         argv[OPTION.DELETE_INNER_JOURNEYS],
-        argv[COMMON_OPTIONS.DRY_RUN],
+        argv[COMMON_OPTIONS.DRY_RUN]
       );
       break;
 
@@ -98,7 +86,7 @@ async function deleteConfig(argv) {
         argv[OPTION.NAME],
         token,
         scriptPrefixes,
-        argv[COMMON_OPTIONS.DRY_RUN],
+        argv[COMMON_OPTIONS.DRY_RUN]
       );
       break;
 
@@ -108,7 +96,7 @@ async function deleteConfig(argv) {
         tenantUrl,
         argv[OPTION.NAME],
         token,
-        argv[COMMON_OPTIONS.DRY_RUN],
+        argv[COMMON_OPTIONS.DRY_RUN]
       );
       break;
 
@@ -118,7 +106,7 @@ async function deleteConfig(argv) {
         tenantUrl,
         argv[OPTION.NAME],
         token,
-        argv[COMMON_OPTIONS.DRY_RUN],
+        argv[COMMON_OPTIONS.DRY_RUN]
       );
       break;
 
@@ -128,7 +116,7 @@ async function deleteConfig(argv) {
         tenantUrl,
         argv[OPTION.NAME],
         token,
-        argv[COMMON_OPTIONS.DRY_RUN],
+        argv[COMMON_OPTIONS.DRY_RUN]
       );
       break;
 
@@ -139,7 +127,7 @@ async function deleteConfig(argv) {
         tenantUrl,
         argv[OPTION.NAME],
         token,
-        argv[COMMON_OPTIONS.DRY_RUN],
+        argv[COMMON_OPTIONS.DRY_RUN]
       );
       break;
 
@@ -150,7 +138,7 @@ async function deleteConfig(argv) {
         argv[OPTION.NAME],
         token,
         "provisioner.openicf",
-        argv[COMMON_OPTIONS.DRY_RUN],
+        argv[COMMON_OPTIONS.DRY_RUN]
       );
       break;
 
@@ -161,7 +149,7 @@ async function deleteConfig(argv) {
         argv[OPTION.NAME],
         token,
         "emailTemplate",
-        argv[COMMON_OPTIONS.DRY_RUN],
+        argv[COMMON_OPTIONS.DRY_RUN]
       );
       break;
 
@@ -172,7 +160,7 @@ async function deleteConfig(argv) {
         argv[OPTION.NAME],
         token,
         "uilocale",
-        argv[COMMON_OPTIONS.DRY_RUN],
+        argv[COMMON_OPTIONS.DRY_RUN]
       );
       break;
 
@@ -183,7 +171,7 @@ async function deleteConfig(argv) {
         argv[OPTION.NAME],
         token,
         "schedule",
-        argv[COMMON_OPTIONS.DRY_RUN],
+        argv[COMMON_OPTIONS.DRY_RUN]
       );
       break;
 
@@ -193,7 +181,7 @@ async function deleteConfig(argv) {
         tenantUrl,
         argv[OPTION.NAME],
         token,
-        argv[COMMON_OPTIONS.DRY_RUN],
+        argv[COMMON_OPTIONS.DRY_RUN]
       );
       break;
 
@@ -204,28 +192,25 @@ async function deleteConfig(argv) {
         tenantUrl,
         token,
         true,
-        argv[COMMON_OPTIONS.DRY_RUN],
+        argv[COMMON_OPTIONS.DRY_RUN]
       );
       break;
 
-    case COMMAND.INTERNAL_ROLES:
-      logDeletion("internal roles", argv[OPTION.NAME]);
-      await internalRoles.deleteInternalRoles(
-        tenantUrl,
-        argv[OPTION.NAME],
-        token,
-        argv[COMMON_OPTIONS.DRY_RUN],
-      );
-      break;
+    // Not yet implemented
+    //
+    // case COMMAND.INTERNAL_ROLES:
+    //   logDeletion("internal roles", argv[OPTION.NAME]);
+    //   await internalRoles.deleteInternalRoles(
+    //     tenantUrl,
+    //     argv[OPTION.NAME],
+    //     token,
+    //     argv[COMMON_OPTIONS.DRY_RUN]
+    //   );
+    //   break;
 
     case COMMAND.CORS:
       logDeletion("cors", argv[OPTION.NAME]);
-      await cors.deleteCors(
-        tenantUrl,
-        token,
-        argv[OPTION.NAME],
-        argv[COMMON_OPTIONS.DRY_RUN],
-      );
+      await cors.deleteCors(tenantUrl, token, argv[OPTION.NAME], argv[COMMON_OPTIONS.DRY_RUN]);
       break;
 
     case COMMAND.CUSTOM_NODES:
@@ -234,14 +219,14 @@ async function deleteConfig(argv) {
         tenantUrl,
         argv[OPTION.NAME],
         token,
-        argv[COMMON_OPTIONS.DRY_RUN],
+        argv[COMMON_OPTIONS.DRY_RUN]
       );
       break;
 
     case COMMAND.SERVICES:
       if (argv[OPTION.NAME] && realms.length > 1) {
         console.error(
-          "Error: Deleting a single named service is only supported when specifying a single realm. Use the --realm option to select one.",
+          "Error: Deleting a single named service is only supported when specifying a single realm. Use the --realm option to select one."
         );
         throw new Error("Configuration errors");
       }
@@ -251,14 +236,14 @@ async function deleteConfig(argv) {
         realms,
         argv[OPTION.NAME],
         token,
-        argv[COMMON_OPTIONS.DRY_RUN],
+        argv[COMMON_OPTIONS.DRY_RUN]
       );
       break;
 
     case COMMAND.SECRET_MAPPINGS:
       if (argv[OPTION.NAME] && realms.length > 1) {
         console.error(
-          "Error: Deleting a single named service is only supported when specifying a single realm. Use the --realm option to select one.",
+          "Error: Deleting a single named service is only supported when specifying a single realm. Use the --realm option to select one."
         );
         throw new Error("Configuration errors");
       }
@@ -268,7 +253,7 @@ async function deleteConfig(argv) {
         realms,
         argv[OPTION.NAME],
         token,
-        argv[COMMON_OPTIONS.DRY_RUN],
+        argv[COMMON_OPTIONS.DRY_RUN]
       );
       break;
 
@@ -278,7 +263,7 @@ async function deleteConfig(argv) {
         tenantUrl,
         argv[OPTION.NAME],
         token,
-        argv[COMMON_OPTIONS.DRY_RUN],
+        argv[COMMON_OPTIONS.DRY_RUN]
       );
       break;
 
@@ -288,7 +273,7 @@ async function deleteConfig(argv) {
         tenantUrl,
         argv[OPTION.NAME],
         token,
-        argv[COMMON_OPTIONS.DRY_RUN],
+        argv[COMMON_OPTIONS.DRY_RUN]
       );
       break;
 
@@ -300,7 +285,7 @@ async function deleteConfig(argv) {
         null,
         token,
         argv[OPTION.DELETE_INNER_JOURNEYS],
-        argv[COMMON_OPTIONS.DRY_RUN],
+        argv[COMMON_OPTIONS.DRY_RUN]
       );
 
       logDeletion("services", null);
@@ -309,16 +294,11 @@ async function deleteConfig(argv) {
         realms,
         null,
         token,
-        argv[COMMON_OPTIONS.DRY_RUN],
+        argv[COMMON_OPTIONS.DRY_RUN]
       );
 
       logDeletion("custom-nodes", null);
-      await customNodes.deleteAmNodes(
-        tenantUrl,
-        null,
-        token,
-        argv[COMMON_OPTIONS.DRY_RUN],
-      );
+      await customNodes.deleteAmNodes(tenantUrl, null, token, argv[COMMON_OPTIONS.DRY_RUN]);
 
       logDeletion("scripts", null);
       await scripts.deleteScripts(
@@ -327,16 +307,11 @@ async function deleteConfig(argv) {
         null,
         token,
         scriptPrefixes,
-        argv[COMMON_OPTIONS.DRY_RUN],
+        argv[COMMON_OPTIONS.DRY_RUN]
       );
 
       logDeletion("cors", null);
-      await cors.deleteCors(
-        tenantUrl,
-        token,
-        null,
-        argv[COMMON_OPTIONS.DRY_RUN],
-      );
+      await cors.deleteCors(tenantUrl, token, null, argv[COMMON_OPTIONS.DRY_RUN]);
 
       logDeletion("secret-mappings", null);
       await secretMappings.deleteSecretMappings(
@@ -344,41 +319,20 @@ async function deleteConfig(argv) {
         realms,
         null,
         token,
-        argv[COMMON_OPTIONS.DRY_RUN],
+        argv[COMMON_OPTIONS.DRY_RUN]
       );
 
       logDeletion("sync mappings", null);
-      await mappings.deleteMappings(
-        tenantUrl,
-        null,
-        token,
-        argv[COMMON_OPTIONS.DRY_RUN],
-      );
+      await mappings.deleteMappings(tenantUrl, null, token, argv[COMMON_OPTIONS.DRY_RUN]);
 
       logDeletion("themes", null);
-      await themes.deleteThemes(
-        realms,
-        tenantUrl,
-        null,
-        token,
-        argv[COMMON_OPTIONS.DRY_RUN],
-      );
+      await themes.deleteThemes(realms, tenantUrl, null, token, argv[COMMON_OPTIONS.DRY_RUN]);
 
       logDeletion("terms-conditions", null);
-      await termsAndConditions.deleteTerms(
-        tenantUrl,
-        null,
-        token,
-        argv[COMMON_OPTIONS.DRY_RUN],
-      );
+      await termsAndConditions.deleteTerms(tenantUrl, null, token, argv[COMMON_OPTIONS.DRY_RUN]);
 
       logDeletion("endpoints", null);
-      await endpoints.deleteEndpoints(
-        tenantUrl,
-        null,
-        token,
-        argv[COMMON_OPTIONS.DRY_RUN],
-      );
+      await endpoints.deleteEndpoints(tenantUrl, null, token, argv[COMMON_OPTIONS.DRY_RUN]);
 
       logDeletion("schedules", null);
       await idmServiceConfig.deleteServiceConfig(
@@ -386,7 +340,7 @@ async function deleteConfig(argv) {
         argv[OPTION.NAME],
         token,
         "schedule",
-        argv[COMMON_OPTIONS.DRY_RUN],
+        argv[COMMON_OPTIONS.DRY_RUN]
       );
 
       logDeletion("locales", null);
@@ -395,7 +349,7 @@ async function deleteConfig(argv) {
         argv[OPTION.NAME],
         token,
         "uilocale",
-        argv[COMMON_OPTIONS.DRY_RUN],
+        argv[COMMON_OPTIONS.DRY_RUN]
       );
 
       logDeletion("email-templates", null);
@@ -404,7 +358,7 @@ async function deleteConfig(argv) {
         argv[OPTION.NAME],
         token,
         "emailTemplate",
-        argv[COMMON_OPTIONS.DRY_RUN],
+        argv[COMMON_OPTIONS.DRY_RUN]
       );
 
       logDeletion("connectors", argv[OPTION.NAME]);
@@ -413,43 +367,26 @@ async function deleteConfig(argv) {
         argv[OPTION.NAME],
         token,
         "provisioner.openicf",
-        argv[COMMON_OPTIONS.DRY_RUN],
+        argv[COMMON_OPTIONS.DRY_RUN]
       );
 
       logDeletion("remote-servers", null);
-      await remoteServers.deleteRemoteServers(
-        tenantUrl,
-        null,
-        token,
-        argv[COMMON_OPTIONS.DRY_RUN],
-      );
+      await remoteServers.deleteRemoteServers(tenantUrl, null, token, argv[COMMON_OPTIONS.DRY_RUN]);
 
       break;
 
     case COMMAND.TENANT_CONFIG:
       logDeletion("secrets", null);
-      await secrets.deleteSecrets(
-        tenantUrl,
-        null,
-        token,
-        argv[COMMON_OPTIONS.DRY_RUN],
-      );
+      await secrets.deleteSecrets(tenantUrl, null, token, argv[COMMON_OPTIONS.DRY_RUN]);
 
       logDeletion("variables", null);
-      await variables.deleteVariables(
-        tenantUrl,
-        null,
-        token,
-        argv[COMMON_OPTIONS.DRY_RUN],
-      );
+      await variables.deleteVariables(tenantUrl, null, token, argv[COMMON_OPTIONS.DRY_RUN]);
 
       break;
 
     case COMMAND.TELEMETRY:
       if (argv[OPTION.NAME] && !argv[OPTION.CATEGORY]) {
-        console.error(
-          "Error: Named telemetry config requires a category (e.g. --category otlp).",
-        );
+        console.error("Error: Named telemetry config requires a category (e.g. --category otlp).");
         throw new Error("Usage error");
       }
 
@@ -459,7 +396,7 @@ async function deleteConfig(argv) {
         argv[OPTION.CATEGORY],
         argv[OPTION.NAME],
         token,
-        argv[COMMON_OPTIONS.DRY_RUN],
+        argv[COMMON_OPTIONS.DRY_RUN]
       );
       break;
 
@@ -480,144 +417,134 @@ yargs
     "camel-case-expansion": false,
   })
   .strict()
-  .command(COMMAND.TEST, "Test authentication", cliOptions([]), (argv) =>
-    deleteConfig(argv),
-  )
+  .command(COMMAND.TEST, "Test authentication", cliOptions([]), (argv) => deleteConfig(argv))
   .command(
     COMMAND.ALL_STATIC,
     "Delete static configuration",
     cliOptions([COMMON_OPTIONS.DRY_RUN]),
-    commandHandler,
+    commandHandler
   )
   .command(
     COMMAND.CONNECTOR_DEFINITIONS,
     "Delete connector cefinitions ",
     cliOptions([OPTION.NAME, COMMON_OPTIONS.DRY_RUN]),
-    commandHandler,
+    commandHandler
   )
   .command(
     COMMAND.CORS,
     "Delete cors",
     cliOptions([OPTION.NAME, COMMON_OPTIONS.DRY_RUN]),
-    commandHandler,
+    commandHandler
   )
   .command(
     COMMAND.CUSTOM_NODES,
     "Delete custom nodes",
     cliOptions([OPTION.NAME, COMMON_OPTIONS.DRY_RUN]),
-    commandHandler,
+    commandHandler
   )
   .command(
     COMMAND.EMAIL_TEMPLATES,
     "Delete email templates",
     cliOptions([OPTION.NAME, COMMON_OPTIONS.DRY_RUN]),
-    commandHandler,
+    commandHandler
   )
   .command(
     COMMAND.IDM_ENDPOINTS,
     "Delete custom endpoints",
     cliOptions([OPTION.NAME, COMMON_OPTIONS.DRY_RUN]),
-    commandHandler,
+    commandHandler
   )
   .command(
     COMMAND.JOURNEYS,
     "Delete a journey",
-    cliOptions([
-      OPTION.REALM,
-      OPTION.NAME,
-      OPTION.DELETE_INNER_JOURNEYS,
-      COMMON_OPTIONS.DRY_RUN,
-    ]),
-    commandHandler,
+    cliOptions([OPTION.REALM, OPTION.NAME, OPTION.DELETE_INNER_JOURNEYS, COMMON_OPTIONS.DRY_RUN]),
+    commandHandler
   )
   .command(
     COMMAND.LOCALES,
     "Delete locales",
     cliOptions([OPTION.NAME, COMMON_OPTIONS.DRY_RUN]),
-    commandHandler,
+    commandHandler
   )
   .command(
     COMMAND.CONNECTOR_MAPPINGS,
     "Delete connector mappings",
     cliOptions([OPTION.NAME, COMMON_OPTIONS.DRY_RUN]),
-    commandHandler,
+    commandHandler
   )
   .command(
     COMMAND.REMOTE_SERVERS,
     "Delete remote connector servers",
     cliOptions([OPTION.NAME, COMMON_OPTIONS.DRY_RUN]),
-    commandHandler,
+    commandHandler
   )
   .command(
     COMMAND.IDM_SCHEDULES,
     "Delete schedules",
     cliOptions([OPTION.NAME, COMMON_OPTIONS.DRY_RUN]),
-    commandHandler,
+    commandHandler
   )
   .command(
     COMMAND.SCRIPTS,
     "Delete scripts",
     cliOptions([OPTION.REALM, OPTION.NAME, COMMON_OPTIONS.DRY_RUN]),
-    commandHandler,
+    commandHandler
   )
   .command(
     COMMAND.SECRET_MAPPINGS,
     "Delete secret mappings",
     cliOptions([OPTION.REALM, OPTION.NAME, COMMON_OPTIONS.DRY_RUN]),
-    commandHandler,
+    commandHandler
   )
   .command(
     COMMAND.SECRETS,
     "Delete secrets",
     cliOptions([OPTION.NAME, COMMON_OPTIONS.DRY_RUN]),
-    commandHandler,
+    commandHandler
   )
   .command(
     COMMAND.SERVICES,
     "Delete authentication services",
     cliOptions([OPTION.REALM, OPTION.NAME, COMMON_OPTIONS.DRY_RUN]),
-    commandHandler,
+    commandHandler
   )
   .command(
     COMMAND.TELEMETRY,
     "Delete telemetry configuration",
     cliOptions([OPTION.CATEGORY, OPTION.NAME, COMMON_OPTIONS.DRY_RUN]),
-    commandHandler,
+    commandHandler
   )
   .command(
     COMMAND.TENANT_CONFIG,
     "Delete tenant config",
     cliOptions([COMMON_OPTIONS.DRY_RUN]),
-    commandHandler,
+    commandHandler
   )
   .command(
     COMMAND.TERMS_AND_CONDITIONS,
     "Delete terms and conditions",
     cliOptions([OPTION.NAME, COMMON_OPTIONS.DRY_RUN]),
-    commandHandler,
+    commandHandler
   )
   .command(
     COMMAND.THEMES,
     "Delete themes",
     cliOptions([OPTION.NAME, OPTION.REALM, COMMON_OPTIONS.DRY_RUN]),
-    commandHandler,
+    commandHandler
   )
   .command(
     COMMAND.ESVS,
     "Delete environment specific variables",
     cliOptions([OPTION.NAME, COMMON_OPTIONS.DRY_RUN]),
-    commandHandler,
+    commandHandler
   )
-
+  .option(COMMON_OPTIONS.DEBUG, COMMON_CLI_OPTIONS[COMMON_OPTIONS.DEBUG])
   .option(COMMON_OPTIONS.RETRIES, COMMON_CLI_OPTIONS[COMMON_OPTIONS.RETRIES])
-  .option(
-    COMMON_OPTIONS.RETRY_INTERVAL,
-    COMMON_CLI_OPTIONS[COMMON_OPTIONS.RETRY_INTERVAL],
-  )
+  .option(COMMON_OPTIONS.RETRY_INTERVAL, COMMON_CLI_OPTIONS[COMMON_OPTIONS.RETRY_INTERVAL])
   .option(COMMON_OPTIONS.DRY_RUN, COMMON_CLI_OPTIONS[COMMON_OPTIONS.DRY_RUN])
   .option(
     COMMON_OPTIONS.CONFIG_HEADER_OVERRIDES,
-    COMMON_CLI_OPTIONS[COMMON_OPTIONS.CONFIG_HEADER_OVERRIDES],
+    COMMON_CLI_OPTIONS[COMMON_OPTIONS.CONFIG_HEADER_OVERRIDES]
   )
   .demandCommand()
   .parse();

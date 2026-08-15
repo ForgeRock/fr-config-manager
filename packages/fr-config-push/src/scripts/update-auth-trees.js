@@ -45,7 +45,6 @@ async function handleNodes(
 }
 
 async function pushNode(baseUrl, node, token) {
-  console.log("Pushing", JSON.stringify(node));
   const nodeRequestUrl = `${baseUrl}/nodes/${node._type._id}/${node._type.version}/${node._id}`;
   delete node._rev;
   await restPut(nodeRequestUrl, node, token, "protocol=2.1,resource=3.0");

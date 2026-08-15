@@ -8,10 +8,8 @@ const REQUEST_TYPE = {
   FORM: "form",
   DELETE: "delete",
 };
-const { URL } = require("url");
-const path = require("path");
 const { getOption, COMMON_OPTIONS } = require("./cli-options");
-const { debugMode, dryRun } = require("./utils");
+const { debugMode } = require("./utils");
 const { ADMIN_COOKIE_ENV_VAR } = require("./constants");
 const { getCookies } = require("./cookies");
 
@@ -39,14 +37,8 @@ function parseRequestHeaders(rawHeaders) {
   try {
     const parsedHeaders = JSON.parse(rawHeaders);
 
-    if (
-      !parsedHeaders ||
-      Array.isArray(parsedHeaders) ||
-      typeof parsedHeaders !== "object"
-    ) {
-      logCustomHeadersWarning(
-        `Ignoring ${CUSTOM_HEADERS_ENV_VAR}: expected a JSON object`,
-      );
+    if (!parsedHeaders || Array.isArray(parsedHeaders) || typeof parsedHeaders !== "object") {
+      logCustomHeadersWarning(`Ignoring ${CUSTOM_HEADERS_ENV_VAR}: expected a JSON object`);
       return null;
     }
 
@@ -57,9 +49,10 @@ function parseRequestHeaders(rawHeaders) {
       return headers;
     }, {});
   } catch (error) {
-    logCustomHeadersWarning(
-      `Ignoring ${CUSTOM_HEADERS_ENV_VAR}: invalid JSON value`,
-    );
+    logCustomHeadersWarning(`Ignoring ${CUSTOM_HEADERS_ENV_VAR}: invalid JSON value`);
+    if (debugMode()) {
+      console.error("Exception", error);
+    }
     return null;
   }
 }
@@ -70,7 +63,7 @@ function wait(seconds) {
 
 const CONFIG_TYPE_HEADER_EXCLUDED_COMMAND_RULES = [
   { type: "prefix", value: "direct-control-" },
-   { type: "prefix", value: "iga" },
+  { type: "prefix", value: "iga" },
   { type: "exact", value: "variables" },
   { type: "exact", value: "secrets" },
   { type: "exact", value: "saml" },
@@ -117,7 +110,7 @@ async function httpRequest(
   ignoreNotFound = false,
   ifMatch = null,
   ifNoneMatch = null,
-  additionalHeaders = null,
+  additionalHeaders = null
 ) {
   let request = null;
 
@@ -147,21 +140,23 @@ async function httpRequest(
       break;
 
     case REQUEST_TYPE.PUT:
-      let headers = {
-        "Content-Type": "application/json",
-      };
-      if (ifMatch) {
-        headers["If-Match"] = ifMatch;
+      {
+        let headers = {
+          "Content-Type": "application/json",
+        };
+        if (ifMatch) {
+          headers["If-Match"] = ifMatch;
+        }
+        if (ifNoneMatch) {
+          headers["If-None-Match"] = ifMatch;
+        }
+        request = {
+          method: "put",
+          url: requestUrl,
+          data: JSON.stringify(body),
+          headers: headers,
+        };
       }
-      if (ifNoneMatch) {
-        headers["If-None-Match"] = ifMatch;
-      }
-      request = {
-        method: "put",
-        url: requestUrl,
-        data: JSON.stringify(body),
-        headers: headers,
-      };
       break;
 
     case REQUEST_TYPE.GET:
@@ -247,8 +242,7 @@ async function httpRequest(
         return null;
       } else {
         console.error(`Exception processing request to ${requestUrl}`);
-        console.error(error.response?.data);
-        console.error(JSON.stringify(error, null, 2));
+        console.error(error.message);
         responseError = true;
       }
     });
@@ -263,9 +257,7 @@ async function httpRequest(
     }
 
     if (debugMode()) {
-      console.log(
-        "============================== >> DEBUG >> ==============================",
-      );
+      console.log("============================== >> DEBUG >> ==============================");
       if (response) {
         console.log("Request:");
         console.log(JSON.stringify(response.config, null, 2));
@@ -274,9 +266,7 @@ async function httpRequest(
         console.log(JSON.stringify(response.headers, null, 2));
         console.log("Response body:");
         console.log(JSON.stringify(response.data, null, 2));
-        console.log(
-          "============================== << DEBUG << ==============================",
-        );
+        console.log("============================== << DEBUG << ==============================");
       } else {
         console.log("No response data");
         console.log("Request", JSON.stringify(request, null, 2));
@@ -290,13 +280,7 @@ async function httpRequest(
   process.exit(1);
 }
 
-function restGet(
-  requestUrl,
-  requestParameters,
-  token,
-  apiVersion,
-  ignoreNotFound = false,
-) {
+function restGet(requestUrl, requestParameters, token, apiVersion, ignoreNotFound = false) {
   return httpRequest(
     requestUrl,
     requestParameters,
@@ -304,7 +288,7 @@ function restGet(
     null,
     token,
     apiVersion,
-    ignoreNotFound,
+    ignoreNotFound
   );
 }
 
@@ -313,14 +297,7 @@ function restForm(requestUrl, formData, token) {
 }
 
 function restPost(requestUrl, requestParameters, body, token, apiVersion) {
-  return httpRequest(
-    requestUrl,
-    requestParameters,
-    REQUEST_TYPE.POST,
-    body,
-    token,
-    apiVersion,
-  );
+  return httpRequest(requestUrl, requestParameters, REQUEST_TYPE.POST, body, token, apiVersion);
 }
 
 function restPut(
@@ -330,7 +307,7 @@ function restPut(
   apiVersion,
   ignoreNotFound = false,
   ifMatch = null,
-  ifNoneMatch = null,
+  ifNoneMatch = null
 ) {
   return httpRequest(
     requestUrl,
@@ -341,7 +318,7 @@ function restPut(
     apiVersion,
     ignoreNotFound,
     ifMatch,
-    ifNoneMatch,
+    ifNoneMatch
   );
 }
 
@@ -353,19 +330,13 @@ function restDelete(requestUrl, token, apiVersion, ignoreNotFound = false) {
     null,
     token,
     apiVersion,
-    ignoreNotFound,
+    ignoreNotFound
   );
 }
 
 async function restUpsert(requestUrl, body, token, apiVersion) {
   try {
-    var existingEntry = await restGet(
-      requestUrl,
-      null,
-      token,
-      apiVersion,
-      true,
-    );
+    var existingEntry = await restGet(requestUrl, null, token, apiVersion, true);
     if (existingEntry) {
       return await restPut(requestUrl, body, token, apiVersion, true, "*");
     }
@@ -376,12 +347,7 @@ async function restUpsert(requestUrl, body, token, apiVersion) {
   }
 }
 
-function restPlatformAuthenticate(
-  requestUrl,
-  username,
-  password,
-  journey = null,
-) {
+function restPlatformAuthenticate(requestUrl, username, password, journey = null) {
   return httpRequest(
     requestUrl,
     journey ? { authIndexType: "service", authIndexValue: journey } : null,
@@ -392,7 +358,7 @@ function restPlatformAuthenticate(
     false,
     null,
     null,
-    { "x-openam-username": username, "x-openam-password": password },
+    { "x-openam-username": username, "x-openam-password": password }
   );
 }
 

@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.8.3](https://github.com/ForgeRock/fr-config-manager/compare/fr-config-manager-v1.8.2...fr-config-manager-v1.8.3) (2026-08-17)
+
+
+### Bug Fixes
+
+* update list of scopes in sample .env ([#399](https://github.com/ForgeRock/fr-config-manager/issues/399)) ([67a02e7](https://github.com/ForgeRock/fr-config-manager/commit/67a02e7bacde4428864aa7a85a75e540f63b31a6))
+
 ## [1.8.2](https://github.com/ForgeRock/fr-config-manager/compare/fr-config-manager-v1.8.1...fr-config-manager-v1.8.2) (2026-08-12)
 
 

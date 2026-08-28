@@ -35,6 +35,7 @@ Commands:
   fr-config-push cors                   Update CORS configuration
   fr-config-push csp                    Update content security policy
   fr-config-push custom-nodes           Update custom nodes
+  fr-config-push custom-policies        Update custom policies
   fr-config-push email-provider         Update email provider settings
   fr-config-push email-templates        Update email templates
   fr-config-push endpoints              Update custom endpoints
@@ -220,3 +221,7 @@ Any values in the config enclosed in `${..}` will be substituted with environmen
   "type": "HTTP"
 }
 ```
+
+`fr-config-push custom-policies`
+
+The push for custom policies expects the local directory to contain the `custom-policies` directory with a subdirectory per custom policy. To get started, run `fr-config-pull custom-policies` to build the current policies as an example, or if there are no custom policies, refer to [custom policies README](../../docs/custom-policies.md)

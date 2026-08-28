@@ -18,11 +18,7 @@ const THEME_HTML_FIELDS = [
 const CSP_SUBDIR = "csp";
 const CSP_POLICIES = ["enforced", "report-only"];
 
-const ORG_PRIVILEGES_CONFIG = [
-  "alphaOrgPrivileges",
-  "bravoOrgPrivileges",
-  "privilegeAssignments",
-];
+const ORG_PRIVILEGES_CONFIG = ["alphaOrgPrivileges", "bravoOrgPrivileges", "privilegeAssignments"];
 
 const STDOUT_OPTION = "stdout";
 const STDOUT_OPTION_SHORT = "o";
@@ -80,6 +76,7 @@ const COMMAND = {
   DIRECT_CONTROL_ABORT: "direct-control-abort",
   JOURNEYS: "journeys",
   TENANT_CONFIG: "tenant-config",
+  CUSTOM_POLICIES: "custom-policies",
 };
 
 const DEPLOYMENT_COMMANDS = {
@@ -171,6 +168,7 @@ const COMMAND_MAP = {
     COMMAND.AUDIT,
     COMMAND.ORG_PRIVILEGES,
     COMMAND.SAML,
+    COMMAND.CUSTOM_NODES,
   ],
   "all-static": [
     COMMAND.CUSTOM_NODES,
@@ -198,6 +196,7 @@ const COMMAND_MAP = {
     COMMAND.AUDIT,
     COMMAND.ORG_PRIVILEGES,
     COMMAND.IDM_AUTHENTICATION,
+    COMMAND.CUSTOM_POLICIES,
   ],
 };
 

@@ -45,6 +45,7 @@ const {
   applySession,
   abortSession,
 } = require("./update-direct-control");
+const updateCustomPolicies = require("./update-custom-policies");
 
 module.exports = {
   updateAgents,
@@ -91,4 +92,5 @@ module.exports = {
   getSessionState,
   applySession,
   abortSession,
+  updateCustomPolicies,
 };

@@ -20,6 +20,7 @@ const cors = require("./scripts/cors.js");
 const secrets = require("./scripts/secrets.js");
 const variables = require("./scripts/variables.js");
 const telemetry = require("./scripts/telemetry.js");
+const customPolicies = require("./scripts/customPolicies.js");
 
 const { cliOptions, OPTION } = require("./helpers/cli-options");
 
@@ -223,6 +224,16 @@ async function deleteConfig(argv) {
       );
       break;
 
+    case COMMAND.CUSTOM_POLICIES:
+      logDeletion("custom-policies", argv[OPTION.NAME], argv[COMMON_OPTIONS.DRY_RUN]);
+      await customPolicies.deleteCustomPolicies(
+        tenantUrl,
+        argv[OPTION.NAME],
+        token,
+        argv[COMMON_OPTIONS.DRY_RUN]
+      );
+      break;
+
     case COMMAND.SERVICES:
       if (argv[OPTION.NAME] && realms.length > 1) {
         console.error(
@@ -299,6 +310,14 @@ async function deleteConfig(argv) {
 
       logDeletion("custom-nodes", null);
       await customNodes.deleteAmNodes(tenantUrl, null, token, argv[COMMON_OPTIONS.DRY_RUN]);
+
+      logDeletion("custom-policies", null);
+      await customPolicies.deleteCustomPolicies(
+        tenantUrl,
+        null,
+        token,
+        argv[COMMON_OPTIONS.DRY_RUN]
+      );
 
       logDeletion("scripts", null);
       await scripts.deleteScripts(
@@ -426,7 +445,7 @@ yargs
   )
   .command(
     COMMAND.CONNECTOR_DEFINITIONS,
-    "Delete connector cefinitions ",
+    "Delete connector definitions ",
     cliOptions([OPTION.NAME, COMMON_OPTIONS.DRY_RUN]),
     commandHandler
   )
@@ -439,6 +458,12 @@ yargs
   .command(
     COMMAND.CUSTOM_NODES,
     "Delete custom nodes",
+    cliOptions([OPTION.NAME, COMMON_OPTIONS.DRY_RUN]),
+    commandHandler
+  )
+  .command(
+    COMMAND.CUSTOM_POLICIES,
+    "Delete custom policies",
     cliOptions([OPTION.NAME, COMMON_OPTIONS.DRY_RUN]),
     commandHandler
   )

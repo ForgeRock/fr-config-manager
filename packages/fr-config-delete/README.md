@@ -28,6 +28,7 @@ Commands:
   fr-config-delete connectors        Delete connector cefinitions
   fr-config-delete cors              Delete cors
   fr-config-delete custom-nodes      Delete custom nodes
+  fr-config-delete custom-policie    Delete custom policies
   fr-config-delete email-templates   Delete email templates
   fr-config-delete endpoints         Delete custom endpoints
   fr-config-delete journeys          Delete a journey

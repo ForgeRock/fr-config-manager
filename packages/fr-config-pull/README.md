@@ -36,6 +36,7 @@ Commands:
   fr-config-pull cors                   Get CORS configuration
   fr-config-pull csp                    Get content security policy
   fr-config-pull custom-nodes           Get custom nodes
+  fr-config-pull custom-policies        Get custom policies
   fr-config-pull email-provider         Get email provider configuration
   fr-config-pull email-templates        Get email templates
   fr-config-pull endpoints              Get custom endpoints

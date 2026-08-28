@@ -37,6 +37,7 @@ const raw = require("./scripts/raw.js");
 const iga = require("./scripts/igaWorkflows.js");
 const customNodes = require("./scripts/customNodes.js");
 const telemetry = require("./scripts/telemetry.js");
+const customPolicies = require("./scripts/customPolicies.js");
 
 const yargs = require("yargs");
 const { showConfigMetadata } = require("./scripts/configMetadata.js");
@@ -44,70 +45,7 @@ const { COMMON_OPTIONS, COMMON_CLI_OPTIONS } = require("../../fr-config-common/s
 
 require("dotenv").config();
 
-const { COMMAND } = require("../../fr-config-common/src/constants.js");
-
-const COMMAND_MAP = {
-  all: [
-    COMMAND.AUTH_TREE,
-    COMMAND.CONNECTOR_DEFINITIONS,
-    COMMAND.CONNECTOR_MAPPINGS,
-    COMMAND.COOKIE_DOMAINS,
-    COMMAND.CORS,
-    COMMAND.MANAGED_OBJECTS,
-    COMMAND.EMAIL_TEMPLATES,
-    COMMAND.EMAIL_PROVIDER,
-    COMMAND.THEMES,
-    COMMAND.REMOTE_SERVERS,
-    COMMAND.SCRIPTS,
-    COMMAND.SERVICES,
-    COMMAND.AUTHENTICATION,
-    COMMAND.TERMS_AND_CONDITIONS,
-    COMMAND.PASSWORD_POLICY,
-    COMMAND.UI_CONFIG,
-    COMMAND.IDM_ENDPOINTS,
-    COMMAND.IDM_SCHEDULES,
-    COMMAND.IDM_ACCESS_CONFIG,
-    COMMAND.KBA,
-    COMMAND.INTERNAL_ROLES,
-    COMMAND.SECRETS,
-    COMMAND.ESVS,
-    COMMAND.SECRET_MAPPINGS,
-    COMMAND.OAUTH2_AGENTS,
-    COMMAND.AUTHZ_POLICIES,
-    COMMAND.SERVICE_OBJECTS,
-    COMMAND.LOCALES,
-    COMMAND.AUDIT,
-    COMMAND.ORG_PRIVILEGES,
-    COMMAND.SAML,
-  ],
-  "all-static": [
-    COMMAND.CUSTOM_NODES,
-    COMMAND.AUTH_TREE,
-    COMMAND.CONNECTOR_DEFINITIONS,
-    COMMAND.CONNECTOR_MAPPINGS,
-    COMMAND.CORS,
-    COMMAND.MANAGED_OBJECTS,
-    COMMAND.EMAIL_TEMPLATES,
-    COMMAND.EMAIL_PROVIDER,
-    COMMAND.THEMES,
-    COMMAND.REMOTE_SERVERS,
-    COMMAND.SCRIPTS,
-    COMMAND.SERVICES,
-    COMMAND.SECRET_MAPPINGS,
-    COMMAND.AUTHENTICATION,
-    COMMAND.TERMS_AND_CONDITIONS,
-    COMMAND.PASSWORD_POLICY,
-    COMMAND.UI_CONFIG,
-    COMMAND.IDM_ENDPOINTS,
-    COMMAND.IDM_SCHEDULES,
-    COMMAND.IDM_ACCESS_CONFIG,
-    COMMAND.KBA,
-    COMMAND.LOCALES,
-    COMMAND.AUDIT,
-    COMMAND.ORG_PRIVILEGES,
-    COMMAND.IDM_AUTHENTICATION,
-  ],
-};
+const { COMMAND, COMMAND_MAP } = require("../../fr-config-common/src/constants.js");
 
 function matchCommand(argv, command) {
   const requestedCommand = argv._[0];
@@ -481,6 +419,12 @@ async function getConfig(argv) {
 
     telemetry.exportConfig(configDir, tenantUrl, name, argv[OPTION.CATEGORY], token);
   }
+
+  if (matchCommand(argv, COMMAND.CUSTOM_POLICIES)) {
+    console.log("Getting custom policies");
+    const name = argv[OPTION.NAME];
+    customPolicies.exportPolicies(configDir, tenantUrl, name, token);
+  }
 }
 
 yargs
@@ -569,6 +513,12 @@ yargs
   .command({
     command: COMMAND.CUSTOM_NODES,
     desc: "Get custom nodes",
+    builder: cliOptions([OPTION.NAME]),
+    handler: (argv) => getConfig(argv),
+  })
+  .command({
+    command: COMMAND.CUSTOM_POLICIES,
+    desc: "Get custom policies",
     builder: cliOptions([OPTION.NAME]),
     handler: (argv) => getConfig(argv),
   })

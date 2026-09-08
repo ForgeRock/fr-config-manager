@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.9.0](https://github.com/ForgeRock/fr-config-manager/compare/fr-config-manager-v1.8.3...fr-config-manager-v1.9.0) (2026-09-08)
+
+
+### Features
+
+* manage custom policies ([#402](https://github.com/ForgeRock/fr-config-manager/issues/402)) ([42240b2](https://github.com/ForgeRock/fr-config-manager/commit/42240b278a0b33ee7441416e4a7709c889c8586d))
+
 ## [1.7.0](https://github.com/ForgeRock/fr-config-manager/compare/fr-config-manager-v1.6.1...fr-config-manager-v1.7.0) (2026-08-28)
 
 
